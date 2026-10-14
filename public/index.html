@@ -122,9 +122,6 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 .auth-msg{padding:10px;border-radius:6px;font-size:12px;margin-bottom:14px;display:none}
 .auth-msg.error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;display:block}
 .auth-msg.success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;display:block}
-.quick-users{display:flex;gap:6px;margin:12px 0 16px;flex-wrap:wrap}
-.quick-users button{border:1px dashed #94a3b8;background:#f8fafc;padding:5px 9px;border-radius:5px;font-size:11px;color:#334155}
-.quick-users button:hover{background:#e2e8f0;border-color:#64748b}
 .user-table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
 .user-table th{background:#f1f5f9;padding:8px;text-align:left;border-bottom:1px solid #cbd5e1}
 .user-table td{padding:8px;border-bottom:1px solid #e2e8f0}
@@ -318,37 +315,68 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 <!-- Modal ĐĂNG NHẬP -->
 <div id="loginOverlay" class="modal-overlay">
   <div class="modal-card" style="max-width:440px">
-    <div class="modal-top">
-      <strong style="color:var(--primary)">🔐 ĐĂNG NHẬP HỆ THỐNG</strong>
+    <div id="loginSection">
+      <div class="modal-top">
+        <strong style="color:var(--primary)">🔐 ĐĂNG NHẬP HỆ THỐNG</strong>
+      </div>
+      <p style="font-size:12px;color:#64748b;margin:8px 0 14px">
+        Công ty Cổ phần Dược phẩm Phenikaa · Vui lòng nhập tài khoản để làm việc.
+      </p>
+
+      <div id="loginMsg" class="auth-msg"></div>
+
+      <form onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label for="loginUser">Tên đăng nhập</label>
+          <input id="loginUser" autocomplete="username" required placeholder="Nhập tên đăng nhập">
+        </div>
+        <div class="form-group">
+          <label for="loginPass">Mật khẩu</label>
+          <input id="loginPass" type="password" autocomplete="current-password" required placeholder="Nhập mật khẩu">
+        </div>
+
+        <div class="modal-foot">
+          <span style="font-size:11px;color:#94a3b8">Bảo mật Cloudflare D1</span>
+          <button type="submit" class="primary" id="btnLoginSubmit" style="padding:10px 20px">Đăng nhập</button>
+        </div>
+      </form>
     </div>
-    <p style="font-size:12px;color:#64748b;margin:8px 0 14px">
-      Công ty Cổ phần Dược phẩm Phenikaa · Vui lòng nhập tài khoản để làm việc.
-    </p>
 
-    <div id="loginMsg" class="auth-msg"></div>
+    <!-- Khởi tạo lần đầu khi database chưa có tài khoản nào -->
+    <div id="setupSection" style="display:none">
+      <div class="modal-top">
+        <strong style="color:var(--primary)">🛠️ THIẾT LẬP TÀI KHOẢN ADMIN</strong>
+      </div>
+      <p style="font-size:12px;color:#64748b;margin:8px 0 14px">
+        Hệ thống vừa triển khai mới. Vui lòng tự tạo tài khoản Quản trị viên (Admin) của riêng bạn để quản lý và bảo vệ hệ thống:
+      </p>
 
-    <form onsubmit="doLogin(event)">
-      <div class="form-group">
-        <label for="loginUser">Tên đăng nhập</label>
-        <input id="loginUser" autocomplete="username" required placeholder="admin / approver / nhanvien">
-      </div>
-      <div class="form-group">
-        <label for="loginPass">Mật khẩu</label>
-        <input id="loginPass" type="password" autocomplete="current-password" required placeholder="Nhập mật khẩu">
-      </div>
-      
-      <div style="font-size:11px;color:#475569;margin-bottom:6px">Tài khoản mặc định thử nghiệm nhanh:</div>
-      <div class="quick-users">
-        <button type="button" onclick="setQuickLogin('admin','admin@phenikaa')">👑 Admin</button>
-        <button type="button" onclick="setQuickLogin('approver','duyet@phenikaa')">✍️ Người duyệt</button>
-        <button type="button" onclick="setQuickLogin('nhanvien','nhanvien@phenikaa')">📝 Người đề nghị</button>
-      </div>
+      <div id="setupMsg" class="auth-msg"></div>
 
-      <div class="modal-foot">
-        <span style="font-size:11px;color:#94a3b8">Bảo mật Cloudflare D1</span>
-        <button type="submit" class="primary" id="btnLoginSubmit" style="padding:10px 20px">Đăng nhập</button>
-      </div>
-    </form>
+      <form onsubmit="doInitialSetup(event)">
+        <div class="form-group">
+          <label>Tên đăng nhập Admin</label>
+          <input id="setupUser" required placeholder="ví dụ: admin" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Họ và tên Quản trị viên</label>
+          <input id="setupName" required placeholder="ví dụ: Quản trị hệ thống">
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu quản trị (tối thiểu 6 ký tự)</label>
+          <input id="setupPass" type="password" required minlength="6" placeholder="Mật khẩu bảo mật của bạn">
+        </div>
+        <div class="form-group">
+          <label>Xác nhận lại mật khẩu</label>
+          <input id="setupPassConfirm" type="password" required minlength="6" placeholder="Nhập lại mật khẩu">
+        </div>
+
+        <div class="modal-foot">
+          <span style="font-size:11px;color:#94a3b8">Bảo mật Cloudflare D1</span>
+          <button type="submit" class="primary" id="btnSetupSubmit" style="padding:10px 20px">Tạo tài khoản & Đăng nhập</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -522,6 +550,8 @@ function updateUserUI(){
 
 function showLoginModal(msg=''){
   el('loginOverlay').hidden=false;
+  if(el('loginSection'))el('loginSection').style.display='block';
+  if(el('setupSection'))el('setupSection').style.display='none';
   if(msg){
     const m=el('loginMsg');
     m.textContent=msg;
@@ -530,14 +560,73 @@ function showLoginModal(msg=''){
   el('loginUser').focus();
 }
 
-function hideLoginModal(){
-  el('loginOverlay').hidden=true;
-  el('loginMsg').className='auth-msg';
+function showSetupModal(){
+  el('loginOverlay').hidden=false;
+  if(el('loginSection'))el('loginSection').style.display='none';
+  if(el('setupSection'))el('setupSection').style.display='block';
+  el('setupUser').focus();
 }
 
-function setQuickLogin(u,p){
-  el('loginUser').value=u;
-  el('loginPass').value=p;
+function hideLoginModal(){
+  el('loginOverlay').hidden=true;
+  if(el('loginMsg'))el('loginMsg').className='auth-msg';
+  if(el('setupMsg'))el('setupMsg').className='auth-msg';
+}
+
+async function checkSystemSetup(){
+  try{
+    const res=await fetch(authUrl+'?action=check-setup');
+    const result=await res.json().catch(()=>({}));
+    if(result.ok&&result.setupNeeded){
+      showSetupModal();
+      return true;
+    }
+  }catch{}
+  return false;
+}
+
+async function doInitialSetup(e){
+  e.preventDefault();
+  const username=el('setupUser').value.trim();
+  const full_name=el('setupName').value.trim();
+  const password=el('setupPass').value;
+  const confirmPass=el('setupPassConfirm').value;
+  const msg=el('setupMsg');
+  const btn=el('btnSetupSubmit');
+
+  if(password!==confirmPass){
+    msg.textContent='Mật khẩu và xác nhận mật khẩu không khớp';
+    msg.className='auth-msg error';
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent='Đang tạo...';
+
+  try{
+    const res=await fetch(authUrl+'?action=initial-setup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username,full_name,password})
+    });
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok){
+      throw new Error(result.error||'Không thể khởi tạo tài khoản');
+    }
+    authToken=result.token;
+    currentUser=result.user;
+    localStorage.setItem('pka_token',authToken);
+    hideLoginModal();
+    updateUserUI();
+    message('Đã thiết lập tài khoản Quản trị viên thành công!');
+    await loadCloud();
+  }catch(err){
+    msg.textContent=err.message;
+    msg.className='auth-msg error';
+  }finally{
+    btn.disabled=false;
+    btn.textContent='Tạo tài khoản & Đăng nhập';
+  }
 }
 
 async function doLogin(e){
@@ -1230,13 +1319,13 @@ if(authToken){
         updateUserUI();
         loadCloud();
       } else {
-        showLoginModal();
+        checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
       }
     })
     .catch(()=>{
-      showLoginModal();
+      checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
     });
 } else {
-  showLoginModal();
+  checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
 }
 </script></body></html>

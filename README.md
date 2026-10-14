@@ -47,15 +47,13 @@ Dự án được tối ưu hóa cho **Cloudflare Pages**, kết hợp cơ sở 
 
 ---
 
-## 🔑 Tài khoản mặc định hệ thống
+## 🔑 Khởi tạo tài khoản Quản trị & Phân quyền bảo mật
 
-Hệ thống được khởi tạo sẵn 3 tài khoản mẫu với 3 vai trò khác nhau (có thể đổi mật khẩu sau khi đăng nhập):
+Để đảm bảo an toàn tuyệt đối, hệ thống **không lưu cứng mật khẩu mặc định** trên giao diện:
 
-| Tên đăng nhập | Mật khẩu mặc định | Họ và tên | Vai trò (Role) | Quyền hạn |
-| :--- | :--- | :--- | :--- | :--- |
-| `admin` | `admin@phenikaa` | Quản trị hệ thống | `admin` | Toàn quyền, quản lý user, sao lưu/khôi phục |
-| `approver` | `duyet@phenikaa` | Kế toán trưởng / Phê duyệt | `approver` | Duyệt trạng thái, nhóm hợp đồng, NCC, in ấn |
-| `nhanvien` | `nhanvien@phenikaa` | Trần Hải Hà (Cung ứng) | `requester` | Tạo phiếu mới, nhập chi tiết chứng từ |
+1. **Khởi tạo lần đầu (Initial Setup)**: Khi triển khai cơ sở dữ liệu D1 mới, hệ thống sẽ tự động hiện màn hình **Thiết lập tài khoản Quản trị viên (Admin)** để chủ sở hữu tự đặt Tên đăng nhập và Mật khẩu bảo mật riêng của mình.
+2. **Cấp tài khoản cho người dùng**: Sau khi đăng nhập, Quản trị viên sử dụng tính năng **👥 Quản lý User** trên thanh điều hướng để tạo tài khoản cho Kế toán (`approver`) và Nhân viên (`requester`), đồng thời có quyền đặt lại mật khẩu hoặc khóa tài khoản khi cần.
+3. **Mỗi người dùng có thể tự đổi mật khẩu cá nhân** bằng nút **🔑 Đổi MK** ở góc trên màn hình.
 
 ---
 

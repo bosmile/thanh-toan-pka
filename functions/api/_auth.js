@@ -133,40 +133,6 @@ export async function ensureUsersTable(db) {
       updated_at TEXT NOT NULL
     )
   `).run();
-
-  const countRow = await db.prepare('SELECT COUNT(*) as count FROM app_users').first();
-  if (!countRow || countRow.count === 0) {
-    const defaultUsers = [
-      {
-        username: 'admin',
-        password: 'admin@phenikaa',
-        full_name: 'Quản trị hệ thống',
-        role: 'admin'
-      },
-      {
-        username: 'approver',
-        password: 'duyet@phenikaa',
-        full_name: 'Kế toán trưởng / Phê duyệt',
-        role: 'approver'
-      },
-      {
-        username: 'nhanvien',
-        password: 'nhanvien@phenikaa',
-        full_name: 'Trần Hải Hà (Cung ứng)',
-        role: 'requester'
-      }
-    ];
-
-    const now = new Date().toISOString();
-    for (const u of defaultUsers) {
-      const salt = randomHex(16);
-      const hash = await hashPassword(u.password, salt);
-      await db.prepare(`
-        INSERT OR IGNORE INTO app_users (username, password_hash, salt, full_name, role, is_active, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, 1, ?, ?)
-      `).bind(u.username, hash, salt, u.full_name, u.role, now, now).run();
-    }
-  }
 }
 
 export async function authenticateRequest(request, db) {

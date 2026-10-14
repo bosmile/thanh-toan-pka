@@ -27,6 +27,69 @@ export async function onRequest(context) {
     const url = new URL(request.url);
     const action = url.searchParams.get('action') || 'me';
 
+    // 0. CHECK SETUP (Hệ thống có cần tạo tài khoản admin đầu tiên không)
+    if (request.method === 'GET' && action === 'check-setup') {
+      const countRow = await db.prepare('SELECT COUNT(*) as count FROM app_users').first();
+      const setupNeeded = !countRow || countRow.count === 0;
+      return reply({ ok: true, setupNeeded });
+    }
+
+    // 0.1 INITIAL SETUP (Người quản trị tự đặt tài khoản và mật khẩu lần đầu)
+    if (request.method === 'POST' && action === 'initial-setup') {
+      const countRow = await db.prepare('SELECT COUNT(*) as count FROM app_users').first();
+      if (countRow && countRow.count > 0) {
+        return reply({ ok: false, error: 'Hệ thống đã được thiết lập tài khoản quản trị. Vui lòng đăng nhập.' }, 403);
+      }
+
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return reply({ ok: false, error: 'Dữ liệu JSON không hợp lệ' }, 400);
+      }
+
+      const username = String(body.username || '').trim().toLowerCase();
+      const password = String(body.password || '').trim();
+      const full_name = String(body.full_name || '').trim();
+
+      if (!username || !password || !full_name) {
+        return reply({ ok: false, error: 'Vui lòng nhập đầy đủ thông tin tài khoản quản trị' }, 400);
+      }
+      if (password.length < 6) {
+        return reply({ ok: false, error: 'Mật khẩu quản trị phải từ 6 ký tự trở lên' }, 400);
+      }
+
+      const salt = randomHex(16);
+      const hash = await hashPassword(password, salt);
+      const now = new Date().toISOString();
+
+      await db.prepare(`
+        INSERT INTO app_users (username, password_hash, salt, full_name, role, is_active, created_at, updated_at)
+        VALUES (?, ?, ?, ?, 'admin', 1, ?, ?)
+      `).bind(username, hash, salt, full_name, now, now).run();
+
+      const secret = await getJwtSecret(db);
+      const token = await signJwt({
+        sub: username,
+        role: 'admin',
+        name: full_name,
+        exp: Math.floor(Date.now() / 1000) + 7 * 86400
+      }, secret);
+
+      const cookie = `pka_session=${encodeURIComponent(token)}; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax`;
+
+      return reply({
+        ok: true,
+        token,
+        user: {
+          username,
+          full_name,
+          role: 'admin'
+        },
+        message: 'Khởi tạo tài khoản quản trị thành công!'
+      }, 200, { 'Set-Cookie': cookie });
+    }
+
     // 1. LOGIN
     if (request.method === 'POST' && action === 'login') {
       let body;
