@@ -26,14 +26,18 @@ main{padding:16px 18px}h2{font-size:19px;margin:0 0 7px}.desc{font-size:12px;col
 .panelhead{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e3e9ef;background:#fafcff;font-size:13px;font-weight:700}
 .sheet-scroll{overflow:auto;max-height:calc(100vh - 250px);min-height:530px}
 table.grid{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12px}
-table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;font-weight:600;text-align:left;padding:8px 7px;border-right:1px solid #c9d3de;border-bottom:1px solid #9eafc2;white-space:nowrap}
-table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;height:35px;background:#fff}
+table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;font-weight:600;text-align:left;padding:8px 10px 8px 7px;border-right:1px solid #c9d3de;border-bottom:1px solid #9eafc2;white-space:nowrap;position:relative;user-select:none}
+.th-resizer{position:absolute;top:0;right:0;width:6px;height:100%;cursor:col-resize;user-select:none;z-index:10}
+.th-resizer:hover,.th-resizer.resizing{background:var(--primary)}
+table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;min-height:46px;height:46px;background:#fff;vertical-align:middle}
 table.grid tr:nth-child(even) td{background:#f9fbfe}table.grid tr.chosen td{background:#e6f2ff}
-table.grid td input,table.grid td select{width:100%;height:34px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e}
+table.grid td input,table.grid td select{width:100%;height:44px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e}
 table.grid td input:focus,table.grid td select:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
-table.grid td.cell-disabled input,table.grid td.cell-disabled select{background:#f3f4f6;color:#6b7280;cursor:not-allowed}
+.cell-multiline{width:100%;height:44px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e;resize:none;line-height:1.35;white-space:pre-wrap;word-break:break-word;overflow-y:auto;font-family:inherit;box-sizing:border-box;display:block}
+.cell-multiline:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
+table.grid td.cell-disabled input,table.grid td.cell-disabled select,table.grid td.cell-disabled textarea{background:#f3f4f6;color:#6b7280;cursor:not-allowed}
 table.grid .rownum{position:sticky;left:0;z-index:1;background:#ecf2f9!important;font-weight:600;text-align:center;min-width:56px;border-right:2px solid #a9bacd}
-table.grid .rownum button{border:0;background:transparent;color:#164c7e;font-weight:700;width:100%;height:34px}
+table.grid .rownum button{border:0;background:transparent;color:#164c7e;font-weight:700;width:100%;height:44px}
 .review{color:#c06600!important;background:#fff3dc!important}.warn{color:#b93a30;font-weight:600}.status{color:#136443!important}
 table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nums}
 .preview-scroll{max-height:calc(100vh - 243px);min-height:530px;overflow:auto;background:#e7ebf1;padding:12px}
@@ -135,8 +139,6 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     <div id="userProfile" class="user-profile" style="display:none">
       <span>👤 <b id="userFullName">Đang nạp...</b></span>
       <span id="userRoleBadge" class="user-badge badge-admin">Admin</span>
-      <button onclick="openChangePassModal()" title="Đổi mật khẩu tài khoản">🔑 Đổi MK</button>
-      <button id="btnAdminUsers" style="display:none" onclick="openUserModal()" title="Quản lý người dùng hệ thống">👥 Quản lý User</button>
       <button onclick="logout()" title="Đăng xuất khỏi hệ thống">🚪 Thoát</button>
     </div>
     <button id="btnExport" onclick="exportData()">↓ Sao lưu JSON</button>
@@ -147,24 +149,14 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 </header>
 
 <main>
-  <div id="roleBanner" class="role-banner" style="display:none">
-    <span id="roleBannerText">🔒 Bạn đang đăng nhập với vai trò...</span>
-    <span id="roleBannerHelp" style="font-size:11px;opacity:.9"></span>
-  </div>
-
   <nav class="page-tabs">
     <button id="tabData" class="active" onclick="switchPage('data')">Bảng DATA · Thanh toán</button>
     <button id="tabNcc" onclick="switchPage('ncc')">Danh mục NCC</button>
     <button id="tabGroups" onclick="switchPage('groups')">Nhóm hợp đồng / Đơn hàng</button>
+    <button id="tabSettings" onclick="switchPage('settings')">⚙️ Cài đặt & Quản trị</button>
   </nav>
 
   <div id="dataPage">
-    <h2>Danh sách đề nghị thanh toán</h2>
-    <div class="desc">
-      Nhập và sửa trực tiếp trong bảng như Excel. Nhấn STT để chọn phiếu cần in hoặc sửa chi tiết. 
-      Đơn vị hưởng lợi tìm theo tên đầy đủ hoặc viết tắt; bảng ưu tiên hiển thị tên viết tắt, phiếu in dùng tên đầy đủ. 
-      Dữ liệu tự lưu đồng bộ Cloudflare D1 theo phân quyền.
-    </div>
     <div class="tools">
       <button class="primary" id="btnNewRow" onclick="newRow()">＋ Thêm đề nghị (thêm dòng)</button>
       <input id="search" placeholder="Tìm NCC, STT, nội dung, hóa đơn..." oninput="renderTable()">
@@ -285,6 +277,95 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     </section>
   </div>
 
+  <div id="settingsPage" class="hidden-view">
+    <div style="max-width:980px;margin:0 auto">
+      <div id="settingsAdminSection" style="background:#fff;border:1px solid #d9e1eb;border-radius:8px;padding:20px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0;padding-bottom:12px;margin-bottom:16px">
+          <div>
+            <h3 style="margin:0;font-size:16px;color:#1e293b">👥 Quản lý người dùng & phân quyền hệ thống</h3>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Quản trị viên có thể tạo tài khoản, phân quyền (Người duyệt / Người đề nghị) và đặt lại mật khẩu</div>
+          </div>
+          <button class="primary" id="btnToggleNewUser" onclick="toggleNewUserBox()">＋ Thêm tài khoản</button>
+        </div>
+
+        <div id="settingsUserMsg" class="auth-msg"></div>
+
+        <div id="newUserBox" style="display:none;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;padding:14px;margin-bottom:16px">
+          <strong style="font-size:13px;display:block;margin-bottom:10px;color:#0f172a">Thêm tài khoản người dùng mới</strong>
+          <form onsubmit="doCreateUser(event)" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end">
+            <div>
+              <label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Tên đăng nhập</label>
+              <input id="newUsername" placeholder="ví dụ: ketoan01" required style="padding:8px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Họ và tên</label>
+              <input id="newFullName" placeholder="Nguyễn Văn A" required style="padding:8px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Vai trò</label>
+              <select id="newRole" style="padding:8px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+                <option value="requester">Người đề nghị</option>
+                <option value="approver">Người duyệt / Kế toán</option>
+                <option value="admin">Quản trị viên</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Mật khẩu ban đầu</label>
+              <input id="newUserPass" type="password" placeholder="Mật khẩu" required minlength="4" style="padding:8px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+            </div>
+            <div>
+              <button type="submit" class="primary" style="padding:8px 16px;border-radius:5px">Tạo</button>
+            </div>
+          </form>
+        </div>
+
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th style="width:50px">ID</th>
+              <th>Tên đăng nhập</th>
+              <th>Họ và tên</th>
+              <th>Vai trò</th>
+              <th>Trạng thái</th>
+              <th style="text-align:right">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="settingsUserBody"></tbody>
+        </table>
+      </div>
+
+      <div style="background:#fff;border:1px solid #d9e1eb;border-radius:8px;padding:20px;margin-bottom:18px">
+        <h3 style="margin:0 0 4px;font-size:16px;color:#1e293b">🔑 Đổi mật khẩu tài khoản cá nhân</h3>
+        <div style="font-size:12px;color:#64748b;margin-bottom:14px">Thay đổi mật khẩu đăng nhập của bạn</div>
+        <div id="settingsChangePassMsg" class="auth-msg"></div>
+        <form onsubmit="doSettingsChangePassword(event)" style="max-width:420px">
+          <div class="form-group">
+            <label>Mật khẩu hiện tại</label>
+            <input id="setOldPass" type="password" required>
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu mới (tối thiểu 4 ký tự)</label>
+            <input id="setNewPass" type="password" required minlength="4">
+          </div>
+          <div class="form-group">
+            <label>Xác nhận mật khẩu mới</label>
+            <input id="setConfirmPass" type="password" required minlength="4">
+          </div>
+          <button type="submit" class="primary" style="padding:9px 18px">Lưu mật khẩu mới</button>
+        </form>
+      </div>
+
+      <div id="settingsBackupSection" style="background:#fff;border:1px solid #d9e1eb;border-radius:8px;padding:20px">
+        <h3 style="margin:0 0 4px;font-size:16px;color:#1e293b">💾 Quản lý Sao lưu & Phục hồi dữ liệu</h3>
+        <div style="font-size:12px;color:#64748b;margin-bottom:14px">Tải tệp sao lưu JSON về máy hoặc khôi phục dữ liệu lên Cloudflare D1</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn" onclick="exportData()" style="padding:9px 16px">↓ Tải tệp sao lưu JSON</button>
+          <button class="btn" id="btnTabRestore" onclick="document.getElementById('restoreInput').click()" style="padding:9px 16px">↑ Khôi phục từ tệp JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <datalist id="groupList"></datalist>
   <datalist id="beneficiaryList"></datalist>
   <datalist id="bankList"></datalist>
@@ -380,100 +461,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
   </div>
 </div>
 
-<!-- Modal ĐỔI MẬT KHẨU -->
-<div id="changePassOverlay" class="modal-overlay" hidden>
-  <div class="modal-card" style="max-width:420px">
-    <div class="modal-top">
-      <strong>🔑 Đổi mật khẩu tài khoản</strong>
-      <button type="button" onclick="closeChangePassModal()">✕</button>
-    </div>
-    <div id="changePassMsg" class="auth-msg"></div>
-    <form onsubmit="doChangePassword(event)" style="margin-top:14px">
-      <div class="form-group">
-        <label>Mật khẩu hiện tại</label>
-        <input id="oldPass" type="password" required>
-      </div>
-      <div class="form-group">
-        <label>Mật khẩu mới (tối thiểu 4 ký tự)</label>
-        <input id="newPass" type="password" required minlength="4">
-      </div>
-      <div class="form-group">
-        <label>Xác nhận mật khẩu mới</label>
-        <input id="confirmPass" type="password" required minlength="4">
-      </div>
-      <div class="modal-foot">
-        <button type="button" onclick="closeChangePassModal()">Hủy</button>
-        <button type="submit" class="primary">Xác nhận đổi</button>
-      </div>
-    </form>
-  </div>
-</div>
 
-<!-- Modal QUẢN LÝ NGƯỜI DÙNG (ADMIN) -->
-<div id="userModalOverlay" class="modal-overlay" hidden>
-  <div class="modal-card" style="max-width:760px">
-    <div class="modal-top">
-      <strong>👥 Quản lý người dùng & phân quyền hệ thống</strong>
-      <button type="button" onclick="closeUserModal()">✕</button>
-    </div>
-    <p style="font-size:12px;color:#64748b;margin:6px 0 14px">
-      Quản trị viên có thể tạo tài khoản mới, phân quyền (Người duyệt / Người đề nghị) và đặt lại mật khẩu.
-    </p>
-
-    <div id="userAdminMsg" class="auth-msg"></div>
-
-    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;background:#f8fafc">
-      <strong style="font-size:13px;color:#1e293b">＋ Tạo tài khoản người dùng mới</strong>
-      <form onsubmit="doCreateUser(event)" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;margin-top:8px;align-items:end">
-        <div>
-          <label style="font-size:11px;display:block;margin-bottom:3px">Tên đăng nhập</label>
-          <input id="newUsername" placeholder="ví dụ: ketoan01" required style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
-        </div>
-        <div>
-          <label style="font-size:11px;display:block;margin-bottom:3px">Họ và tên</label>
-          <input id="newFullName" placeholder="Nguyễn Văn A" required style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
-        </div>
-        <div>
-          <label style="font-size:11px;display:block;margin-bottom:3px">Vai trò</label>
-          <select id="newRole" style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
-            <option value="requester">Người đề nghị</option>
-            <option value="approver">Người duyệt / Kế toán</option>
-            <option value="admin">Quản trị viên</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:11px;display:block;margin-bottom:3px">Mật khẩu ban đầu</label>
-          <input id="newUserPass" type="password" placeholder="Mật khẩu" required minlength="4" style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
-        </div>
-        <div>
-          <button type="submit" class="primary" style="padding:7px 14px;border-radius:5px">Tạo</button>
-        </div>
-      </form>
-    </div>
-
-    <strong style="font-size:13px;color:#1e293b">Danh sách tài khoản hiện tại</strong>
-    <div style="max-height:280px;overflow:auto">
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tên đăng nhập</th>
-            <th>Họ và tên</th>
-            <th>Vai trò</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
-          </tr>
-        </thead>
-        <tbody id="userTableBody"></tbody>
-      </table>
-    </div>
-
-    <div class="modal-foot">
-      <span></span>
-      <button type="button" class="primary" onclick="closeUserModal()">Đóng</button>
-    </div>
-  </div>
-</div>
 
 <script>
 const ORIGINAL={beneficiaries:[],requests:[]};
@@ -512,7 +500,6 @@ function roleBadgeClass(r){
 function updateUserUI(){
   if(!currentUser){
     el('userProfile').style.display='none';
-    el('roleBanner').style.display='none';
     return;
   }
   el('userProfile').style.display='flex';
@@ -522,29 +509,18 @@ function updateUserUI(){
   badge.className='user-badge '+roleBadgeClass(currentUser.role);
 
   if(currentUser.role==='admin'){
-    el('btnAdminUsers').style.display='inline-block';
     el('btnRestore').style.display='inline-block';
+    if(el('btnTabRestore'))el('btnTabRestore').style.display='inline-block';
+    if(el('settingsAdminSection'))el('settingsAdminSection').style.display='block';
   } else {
-    el('btnAdminUsers').style.display='none';
     if(currentUser.role==='requester'){
-      el('btnRestore').style.display='none'; // Người đề nghị không được quyền khôi phục DB
+      el('btnRestore').style.display='none';
+      if(el('btnTabRestore'))el('btnTabRestore').style.display='none';
     } else {
       el('btnRestore').style.display='inline-block';
+      if(el('btnTabRestore'))el('btnTabRestore').style.display='inline-block';
     }
-  }
-
-  // Role Banner
-  const banner=el('roleBanner');
-  banner.style.display='flex';
-  if(currentUser.role==='admin'){
-    el('roleBannerText').innerHTML='👑 <b>Quản trị viên:</b> Bạn có toàn quyền cấu hình hệ thống, quản lý người dùng, sao lưu/khôi phục và phê duyệt thanh toán.';
-    el('roleBannerHelp').textContent='Chế độ Admin';
-  } else if(currentUser.role==='approver'){
-    el('roleBannerText').innerHTML='✍️ <b>Người duyệt / Kế toán:</b> Bạn có quyền phê duyệt đề nghị, chuyển trạng thái thanh toán, quản lý nhóm hợp đồng và NCC.';
-    el('roleBannerHelp').textContent='Chế độ Phê duyệt';
-  } else {
-    el('roleBannerText').innerHTML='📝 <b>Người đề nghị:</b> Bạn có thể tạo phiếu mới và sửa các phiếu chưa thanh toán. Chỉ Người duyệt mới có quyền hoàn tất phiếu.';
-    el('roleBannerHelp').textContent='Chế độ Nhập liệu';
+    if(el('settingsAdminSection'))el('settingsAdminSection').style.display='none';
   }
 }
 
@@ -687,25 +663,55 @@ async function logout(){
   showLoginModal('Đã đăng xuất thành công.');
 }
 
-function openChangePassModal(){
-  el('oldPass').value='';
-  el('newPass').value='';
-  el('confirmPass').value='';
-  el('changePassMsg').className='auth-msg';
-  el('changePassOverlay').hidden=false;
-  el('oldPass').focus();
+function toggleNewUserBox(){
+  const box=el('newUserBox');
+  if(!box)return;
+  box.style.display=box.style.display==='none'?'block':'none';
+  if(box.style.display==='block')el('newUsername').focus();
 }
 
-function closeChangePassModal(){
-  el('changePassOverlay').hidden=true;
+async function renderSettings(){
+  if(currentUser?.role==='admin'){
+    if(el('settingsAdminSection'))el('settingsAdminSection').style.display='block';
+    await loadSettingsUsersList();
+  } else {
+    if(el('settingsAdminSection'))el('settingsAdminSection').style.display='none';
+  }
 }
 
-async function doChangePassword(e){
+async function loadSettingsUsersList(){
+  const tbody=el('settingsUserBody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:12px;color:#64748b">Đang tải danh sách người dùng...</td></tr>';
+  try {
+    const res=await fetch(authUrl+'?action=users',{headers:getAuthHeaders()});
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok)throw new Error(result.error||'Không tải được danh sách');
+    const users=result.users||[];
+    tbody.innerHTML=users.map(u=>`
+      <tr>
+        <td>${esc(u.id)}</td>
+        <td><b>${esc(u.username)}</b></td>
+        <td>${esc(u.full_name)}</td>
+        <td><span class="user-badge ${roleBadgeClass(u.role)}">${roleLabel(u.role)}</span></td>
+        <td>${u.is_active===1?'<span style="color:#16a34a">● Hoạt động</span>':'<span style="color:#dc2626">○ Đã khóa</span>'}</td>
+        <td style="text-align:right">
+          <button class="btn" style="padding:4px 8px;font-size:11px" onclick="promptResetPass(${u.id},'${esc(u.username)}')">Đặt lại MK</button>
+          ${u.id===currentUser.id?'':'<button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="deleteUser('+u.id+',\''+esc(u.username)+'\')">Xóa</button>'}
+        </td>
+      </tr>
+    `).join('');
+  } catch(err){
+    tbody.innerHTML=`<tr><td colspan="6" style="color:#dc2626;padding:12px">${esc(err.message)}</td></tr>`;
+  }
+}
+
+async function doSettingsChangePassword(e){
   e.preventDefault();
-  const oldPassword=el('oldPass').value;
-  const newPassword=el('newPass').value;
-  const confirmPassword=el('confirmPass').value;
-  const msg=el('changePassMsg');
+  const oldPassword=el('setOldPass').value;
+  const newPassword=el('setNewPass').value;
+  const confirmPassword=el('setConfirmPass').value;
+  const msg=el('settingsChangePassMsg');
 
   if(newPassword!==confirmPassword){
     msg.textContent='Mật khẩu mới và xác nhận mật khẩu không khớp';
@@ -725,47 +731,13 @@ async function doChangePassword(e){
     }
     msg.textContent='Đổi mật khẩu thành công!';
     msg.className='auth-msg success';
-    setTimeout(closeChangePassModal,1500);
+    el('setOldPass').value='';
+    el('setNewPass').value='';
+    el('setConfirmPass').value='';
+    setTimeout(()=>{msg.className='auth-msg';},4000);
   } catch(err){
     msg.textContent=err.message;
     msg.className='auth-msg error';
-  }
-}
-
-async function openUserModal(){
-  if(currentUser?.role!=='admin')return alert('Chỉ Quản trị viên mới có quyền này.');
-  el('userModalOverlay').hidden=false;
-  el('userAdminMsg').className='auth-msg';
-  await loadUsersList();
-}
-
-function closeUserModal(){
-  el('userModalOverlay').hidden=true;
-}
-
-async function loadUsersList(){
-  const tbody=el('userTableBody');
-  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:12px;color:#64748b">Đang tải danh sách người dùng...</td></tr>';
-  try {
-    const res=await fetch(authUrl+'?action=users',{headers:getAuthHeaders()});
-    const result=await res.json().catch(()=>({}));
-    if(!res.ok||!result.ok)throw new Error(result.error||'Không tải được danh sách');
-    const users=result.users||[];
-    tbody.innerHTML=users.map(u=>`
-      <tr>
-        <td>${esc(u.id)}</td>
-        <td><b>${esc(u.username)}</b></td>
-        <td>${esc(u.full_name)}</td>
-        <td><span class="user-badge ${roleBadgeClass(u.role)}">${roleLabel(u.role)}</span></td>
-        <td>${u.is_active===1?'<span style="color:#16a34a">● Hoạt động</span>':'<span style="color:#dc2626">○ Đã khóa</span>'}</td>
-        <td>
-          <button class="btn" style="padding:4px 8px;font-size:11px" onclick="promptResetPass(${u.id},'${esc(u.username)}')">Đặt lại MK</button>
-          ${u.id===currentUser.id?'':'<button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="deleteUser('+u.id+',\''+esc(u.username)+'\')">Xóa</button>'}
-        </td>
-      </tr>
-    `).join('');
-  } catch(err){
-    tbody.innerHTML=`<tr><td colspan="6" style="color:#dc2626;padding:12px">${esc(err.message)}</td></tr>`;
   }
 }
 
@@ -775,7 +747,7 @@ async function doCreateUser(e){
   const full_name=el('newFullName').value.trim();
   const role=el('newRole').value;
   const password=el('newUserPass').value.trim();
-  const msg=el('userAdminMsg');
+  const msg=el('settingsUserMsg');
 
   try {
     const res=await fetch(authUrl+'?action=create-user',{
@@ -790,7 +762,8 @@ async function doCreateUser(e){
     el('newUsername').value='';
     el('newFullName').value='';
     el('newUserPass').value='';
-    await loadUsersList();
+    if(el('newUserBox'))el('newUserBox').style.display='none';
+    await loadSettingsUsersList();
   } catch(err){
     msg.textContent=err.message;
     msg.className='auth-msg error';
@@ -828,7 +801,7 @@ async function deleteUser(id,username){
     });
     const result=await res.json().catch(()=>({}));
     if(!res.ok||!result.ok)throw new Error(result.error||'Không thể xóa');
-    await loadUsersList();
+    await loadSettingsUsersList();
   } catch(err){
     alert('Lỗi: '+err.message);
   }
@@ -956,7 +929,48 @@ window.addEventListener('beforeunload',e=>{if(saving||savePending||saveFailed){e
 
 function message(s){el('notice').textContent=s;el('notice').style.display='block';setTimeout(()=>el('notice').style.display='none',5500)}
 function fmt(x){let n=Number(x||0);return Number.isFinite(n)?n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'}
-function plainAmount(x){return String(x??'').replace(/,/g,'').trim()}
+function plainAmount(x){return String(x??'').replace(/[\.,\s]/g,'').trim()}
+function formatMoneyDisplay(val){
+  if(val===undefined||val===null||val==='')return '0';
+  let clean=String(val).replace(/,/g,'').replace(/\./g,'').trim();
+  let n=Number(clean);
+  if(!Number.isFinite(n))return '0';
+  return n.toLocaleString('vi-VN');
+}
+
+function initColumnResizers(){
+  const ths=document.querySelectorAll('table.grid th');
+  ths.forEach((th,index)=>{
+    const saved=localStorage.getItem('pka_col_w_'+index);
+    if(saved){th.style.width=saved+'px';th.style.minWidth=saved+'px'}
+    if(th.querySelector('.th-resizer'))return;
+    const resizer=document.createElement('div');
+    resizer.className='th-resizer';
+    th.appendChild(resizer);
+    let startX,startWidth;
+    resizer.addEventListener('mousedown',e=>{
+      e.stopPropagation();e.preventDefault();
+      startX=e.pageX;startWidth=th.offsetWidth;
+      resizer.classList.add('resizing');
+      const onMouseMove=moveEvent=>{
+        const diff=moveEvent.pageX-startX;
+        const newWidth=Math.max(45,startWidth+diff);
+        th.style.width=newWidth+'px';th.style.minWidth=newWidth+'px';
+        localStorage.setItem('pka_col_w_'+index,newWidth);
+      };
+      const onMouseUp=()=>{
+        resizer.classList.remove('resizing');
+        document.removeEventListener('mousemove',onMouseMove);
+        document.removeEventListener('mouseup',onMouseUp);
+        document.body.style.cursor='';document.body.style.userSelect='';
+      };
+      document.addEventListener('mousemove',onMouseMove);
+      document.addEventListener('mouseup',onMouseUp);
+      document.body.style.cursor='col-resize';document.body.style.userSelect='none';
+    });
+  });
+}
+
 function opts(a,v){return '<option value=""></option>'+a.map(s=>`<option value="${esc(s)}" ${v===s?'selected':''}>${esc(s)}</option>`).join('')}
 function beneficiaryForRequest(x){return DB.beneficiaries.find(b=>String(b.id)===String(x.beneficiary_id))||DB.beneficiaries.find(b=>normName(b.name)===normName(x.payee_name))||null}
 function beneficiaryDisplay(x){let b=beneficiaryForRequest(x);return b&&String(b.short_name||'').trim()?b.short_name:x.payee_name}
@@ -978,6 +992,16 @@ function renderTable(){
         <input class="cell-editor" aria-label="${k}" value="${esc(k==='payee_name'?beneficiaryDisplay(x):x[k])}" 
         ${disabledForRequester?'readonly title="Phiếu đã duyệt/thanh toán, không thể sửa"':''}
         onchange="setField(${x.id},'${k}',this.value)" ${k==='payee_name'?'list="beneficiaryList"':k==='bank'?'list="bankList"':''}>
+      </td>`;
+    };
+
+    let multilineField=(k,w=160)=>{
+      return `<td class="${disabledForRequester?'cell-disabled':''}" style="min-width:${w}px">
+        <textarea class="cell-editor cell-multiline" rows="2" aria-label="${k}" 
+          ${disabledForRequester?'readonly title="Phiếu đã duyệt/thanh toán, không thể sửa"':''}
+          onchange="setField(${x.id},'${k}',this.value)"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}"
+        >${esc(x[k]||'')}</textarea>
       </td>`;
     };
 
@@ -1003,11 +1027,15 @@ function renderTable(){
         <input class="cell-editor group-entry" list="groupList" aria-label="Nhóm hợp đồng, gõ mã mới để tạo" title="Chọn nhóm hoặc gõ mã mới, nhấn Tab/Enter để tạo và liên kết" placeholder="Chọn / gõ mã nhóm mới" value="${esc(groupById(x.group_id)?.code||'')}" 
         ${disabledForRequester?'readonly':''} onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
       </td>
-      ${field('description',385)}
+      ${multilineField('description',320)}
       ${field('item_name',230)}
-      ${field('invoice_no',138)}
+      ${multilineField('invoice_no',150)}
       <td class="edit-amount ${disabledForRequester?'cell-disabled':''}" style="min-width:145px">
-        <input class="cell-editor" value="${esc(x.amount)}" ${disabledForRequester?'readonly':''} onchange="setAmount(${x.id},this.value)">
+        <input class="cell-editor" value="${esc(formatMoneyDisplay(x.amount))}" 
+          ${disabledForRequester?'readonly':''} 
+          onfocus="this.value=plainAmount(this.value)" 
+          onblur="this.value=formatMoneyDisplay(this.value)" 
+          onchange="setAmount(${x.id},this.value)">
       </td>
       ${sl('currency',['VND','USD','EUR'],100)}
       <td style="min-width:170px">
@@ -1027,6 +1055,7 @@ function renderTable(){
       </td>
     </tr>`;
   }).join('');
+  initColumnResizers();
 }
 
 function selectRow(id,v){id=Number(id);v?checked.add(id):checked.delete(id);if(v)active=id;renderTable();renderDetail()}
@@ -1249,8 +1278,8 @@ function paper(x){
   </div>`;
 }
 
-function renderDetail(){let x=request(active);if(!x){el('lines').innerHTML='';return}el('lines').innerHTML=(x.lines||[]).map((l,i)=>`<div class="lineitem"><input title="Tên hàng hóa" value="${esc(l.description)}" onchange="lineChanged(${i},'description',this.value)"><input title="Hóa đơn" value="${esc(l.invoice_no)}" onchange="lineChanged(${i},'invoice_no',this.value)"><input title="Số tiền" value="${esc(l.amount)}" onchange="lineChanged(${i},'amount',this.value)"><button title="Xóa dòng" onclick="delLine(${i})">×</button></div>`).join('')}
-function switchPage(page){for(const p of ['data','ncc','groups']){el(p==='data'?'dataPage':p==='ncc'?'nccPage':'groupsPage').classList.toggle('hidden-view',page!==p);el(p==='data'?'tabData':p==='ncc'?'tabNcc':'tabGroups').classList.toggle('active',page===p)}if(page==='ncc')renderNcc();if(page==='groups')renderGroups()}
+function renderDetail(){let x=request(active);if(!x){el('lines').innerHTML='';return}el('lines').innerHTML=(x.lines||[]).map((l,i)=>`<div class="lineitem"><input title="Tên hàng hóa" value="${esc(l.description)}" onchange="lineChanged(${i},'description',this.value)"><input title="Hóa đơn" value="${esc(l.invoice_no)}" onchange="lineChanged(${i},'invoice_no',this.value)"><input title="Số tiền" value="${esc(formatMoneyDisplay(l.amount))}" onfocus="this.value=plainAmount(this.value)" onblur="this.value=formatMoneyDisplay(this.value)" onchange="lineChanged(${i},'amount',this.value)"><button title="Xóa dòng" onclick="delLine(${i})">×</button></div>`).join('')}
+function switchPage(page){for(const p of ['data','ncc','groups','settings']){const node=el(p==='data'?'dataPage':p==='ncc'?'nccPage':p==='groups'?'groupsPage':'settingsPage');if(node)node.classList.toggle('hidden-view',page!==p);const tabBtn=el(p==='data'?'tabData':p==='ncc'?'tabNcc':p==='groups'?'tabGroups':'tabSettings');if(tabBtn)tabBtn.classList.toggle('active',page===p)}if(page==='ncc')renderNcc();if(page==='groups')renderGroups();if(page==='settings')renderSettings()}
 
 function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn btn-danger" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('')}
 function addNcc(){let id=Math.max(0,...DB.beneficiaries.map(b=>Number(b.id)||0))+1;DB.beneficiaries.push({id,name:'',short_name:'',address:'',account_no:'',bank:''});save();el('nccSearch').value='';renderNcc();const first=el('nccBody').querySelector('.ncc-cell');if(first)first.focus()}
