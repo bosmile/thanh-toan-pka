@@ -113,9 +113,27 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 .detail-inline .lineitem{max-width:880px}
 .ncc-help{font-size:12px;color:#5e7086;margin:8px 0 12px}
 .hidden-view{display:none!important}
-@media print{.page-tabs,#nccPage,.detail-inline,.role-banner{display:none!important}}
+@media print{.page-tabs,#nccPage,#groupsPage,#settingsPage,#templatePage,.detail-inline,.role-banner{display:none!important}}
 
 .group-table th,.group-table td{padding:7px 8px;min-width:90px}.group-table input{min-width:100px}.group-table select{padding:7px;border:1px solid #d5dce6;background:white}.group-note{padding:12px;color:#667489;font-size:12px}
+
+/* Template Page Styles */
+.tpl-container{display:grid;grid-template-columns:minmax(500px,1.2fr) minmax(420px,1fr);gap:18px;align-items:start}
+@media(max-width:1150px){.tpl-container{grid-template-columns:1fr}}
+.tpl-card{background:#fff;border:1px solid #d9e1eb;border-radius:8px;padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.tpl-card h3{margin:0 0 12px;font-size:14px;color:#1e3a8a;border-bottom:1px solid #e2e8f0;padding-bottom:8px;display:flex;align-items:center;gap:6px}
+.tpl-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tpl-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.tpl-field{margin-bottom:11px}
+.tpl-field label{display:block;font-size:11px;font-weight:600;color:#475569;margin-bottom:4px}
+.tpl-field input,.tpl-field textarea{width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;font-family:inherit;box-sizing:border-box}
+.tpl-field input:focus,.tpl-field textarea:focus{outline:2px solid var(--primary);border-color:transparent}
+.tpl-field textarea{resize:vertical;min-height:56px}
+.tpl-field small{font-size:10.5px;color:#64748b;display:block;margin-top:2px}
+.tpl-preview-box{position:sticky;top:10px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:14px;overflow:hidden}
+.tpl-preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:600;font-size:13px;color:#1e293b}
+.tpl-preview-wrap{max-height:calc(100vh - 180px);overflow:auto;background:#e2e8f0;padding:12px;border-radius:6px;display:flex;justify-content:center}
+.tpl-preview-scale{transform:scale(0.58);transform-origin:top center;margin-bottom:-420px}
 
 /* Form Styles inside Modals */
 .form-group{margin-bottom:14px}
@@ -133,12 +151,12 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 <header>
   <div>
     <b>PHENIKAA · QUẢN LÝ ĐỀ NGHỊ THANH TOÁN</b><br>
-    <small>HỆ THỐNG PHÂN QUYỀN V11 · BẢO MẬT & PHÊ DUYỆT TRỰC TUYẾN D1</small>
+    <small>HỆ THỐNG QUẢN LÝ VÀ TẠO PHIẾU THANH TOÁN TRỰC TUYẾN D1</small>
   </div>
   <div class="header-actions">
     <div id="userProfile" class="user-profile" style="display:none">
       <span>👤 <b id="userFullName">Đang nạp...</b></span>
-      <span id="userRoleBadge" class="user-badge badge-admin">Admin</span>
+      <span id="userRoleBadge" class="user-badge badge-admin">Quản lý</span>
       <button onclick="logout()" title="Đăng xuất khỏi hệ thống">🚪 Thoát</button>
     </div>
     <button id="btnExport" onclick="exportData()">↓ Sao lưu JSON</button>
@@ -153,6 +171,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     <button id="tabData" class="active" onclick="switchPage('data')">Bảng DATA · Thanh toán</button>
     <button id="tabNcc" onclick="switchPage('ncc')">Danh mục NCC</button>
     <button id="tabGroups" onclick="switchPage('groups')">Nhóm hợp đồng / Đơn hàng</button>
+    <button id="tabTemplate" onclick="switchPage('template')">📄 Mẫu phiếu thanh toán</button>
     <button id="tabSettings" onclick="switchPage('settings')">⚙️ Cài đặt & Quản trị</button>
   </nav>
 
@@ -366,6 +385,244 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     </div>
   </div>
 
+  <!-- Tab Mẫu phiếu thanh toán (Tùy biến toàn bộ câu từ & người ký) -->
+  <div id="templatePage" class="hidden-view">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2 style="margin:0;font-size:18px;color:#1e3a8a">📄 Tùy biến mẫu phiếu thanh toán</h2>
+        <div class="ncc-help" style="margin:4px 0 0">
+          Chỉnh sửa toàn bộ tiêu đề, câu chữ, nhãn trường, địa danh, chức danh và họ tên 4 người ký. Mọi thay đổi sẽ tự động áp dụng ngay khi in phiếu.
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="primary" onclick="saveTemplateForm()" style="padding:9px 18px">💾 Lưu cấu hình mẫu</button>
+        <button class="btn" onclick="printTemplateSample()" style="padding:9px 14px">⎙ In thử mẫu này</button>
+        <button class="btn btn-danger" onclick="resetTemplateDefault()" style="padding:9px 14px">↺ Khôi phục gốc</button>
+      </div>
+    </div>
+
+    <div class="tpl-container">
+      <!-- Cột Trái: Form cấu hình chi tiết -->
+      <div class="tpl-form-col">
+        <!-- 1. Tiêu đề & Đơn vị -->
+        <div class="tpl-card">
+          <h3>🏢 1. Tiêu đề & Đơn vị phát hành</h3>
+          <div class="tpl-field">
+            <label>Tên đơn vị / Công ty (Dòng trên cùng bên trái)</label>
+            <input id="tpl_company_name" oninput="updateTemplatePreview()" placeholder="CÔNG TY CỔ PHẦN DƯỢC PHẨM PHENIKAA">
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Ký hiệu mẫu biểu (Góc trên phải)</label>
+              <input id="tpl_form_code" oninput="updateTemplatePreview()" placeholder="Mẫu số 01 – TT">
+            </div>
+            <div class="tpl-field">
+              <label>Địa danh ngày tháng (Trước ngày... tháng... năm...)</label>
+              <input id="tpl_date_location" oninput="updateTemplatePreview()" placeholder="Hà Nội">
+            </div>
+          </div>
+          <div class="tpl-field">
+            <label>Tiêu đề chính của phiếu (Chữ in hoa giữa trang)</label>
+            <input id="tpl_form_title" oninput="updateTemplatePreview()" placeholder="GIẤY ĐỀ NGHỊ THANH TOÁN BẰNG CHUYỂN KHOẢN">
+          </div>
+        </div>
+
+        <!-- 2. Kính gửi & Người đề nghị -->
+        <div class="tpl-card">
+          <h3>👥 2. Kính gửi & Bộ phận đề nghị</h3>
+          <div class="tpl-field">
+            <label>Nhãn kính gửi</label>
+            <input id="tpl_recipient_label" oninput="updateTemplatePreview()" placeholder="Kính gửi:">
+          </div>
+          <div class="tpl-field">
+            <label>Nơi nhận / Đơn vị kính gửi (Mỗi dòng một gạch đầu dòng)</label>
+            <textarea id="tpl_recipients" oninput="updateTemplatePreview()" rows="2" placeholder="- BAN LÃNH ĐẠO CÔNG TY&#10;- PHÒNG TÀI CHÍNH - KẾ TOÁN"></textarea>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Nhãn người đề nghị</label>
+              <input id="tpl_label_requester" oninput="updateTemplatePreview()" placeholder="Họ tên người đề nghị:">
+            </div>
+            <div class="tpl-field">
+              <label>Họ tên người đề nghị mặc định</label>
+              <input id="tpl_default_requester_name" oninput="updateTemplatePreview()" placeholder="Trần Hải Hà">
+              <small>Dùng khi phiếu chưa gán người đề nghị cụ thể</small>
+            </div>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Nhãn bộ phận</label>
+              <input id="tpl_label_department" oninput="updateTemplatePreview()" placeholder="Bộ phận:">
+            </div>
+            <div class="tpl-field">
+              <label>Tên bộ phận</label>
+              <input id="tpl_department_name" oninput="updateTemplatePreview()" placeholder="Phòng Cung Ứng">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Nhãn các trường thông tin chi tiết -->
+        <div class="tpl-card">
+          <h3>📝 3. Lời dẫn & Nhãn trường thông tin (Bôi đậm khi in)</h3>
+          <div class="tpl-field">
+            <label>Câu mở đầu đề nghị</label>
+            <input id="tpl_intro_text" oninput="updateTemplatePreview()" placeholder="Đề nghị xét duyệt và chuyển tiền cho đơn vị đã cung cấp hàng hóa, dịch vụ dưới đây:">
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Nhãn Đơn vị hưởng lợi</label>
+              <input id="tpl_label_payee" oninput="updateTemplatePreview()" placeholder="Đơn vị hưởng lợi:">
+            </div>
+            <div class="tpl-field">
+              <label>Nhãn Địa chỉ</label>
+              <input id="tpl_label_address" oninput="updateTemplatePreview()" placeholder="Địa chỉ:">
+            </div>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Nhãn Tài khoản</label>
+              <input id="tpl_label_account" oninput="updateTemplatePreview()" placeholder="Tài khoản:">
+            </div>
+            <div class="tpl-field">
+              <label>Nhãn Ngân hàng</label>
+              <input id="tpl_label_bank" oninput="updateTemplatePreview()" placeholder="Ngân hàng:">
+            </div>
+          </div>
+          <div class="tpl-field">
+            <label>Nhãn Nội dung chuyển tiền</label>
+            <input id="tpl_label_description" oninput="updateTemplatePreview()" placeholder="Nội dung chuyển tiền:">
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Nhãn thời hạn thanh toán</label>
+              <input id="tpl_deadline_label" oninput="updateTemplatePreview()" placeholder="Thời hạn chuyển tiền:">
+            </div>
+            <div class="tpl-field">
+              <label>Quy định thời hạn</label>
+              <input id="tpl_deadline_val" oninput="updateTemplatePreview()" placeholder="Trong vòng 3 ngày kể từ ngày đề nghị">
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Tiêu đề bảng kê & Cột số liệu -->
+        <div class="tpl-card">
+          <h3>📊 4. Tiêu đề bảng kê, các cột & Chứng từ</h3>
+          <div class="tpl-field">
+            <label>Lời dẫn tiêu đề bảng kê</label>
+            <input id="tpl_table_title" oninput="updateTemplatePreview()" placeholder="Số tiền chuyển theo bảng kê dưới đây:">
+          </div>
+          <div class="tpl-grid-3">
+            <div class="tpl-field">
+              <label>Cột 1 (Số TT)</label>
+              <input id="tpl_col_stt" oninput="updateTemplatePreview()" placeholder="TT">
+            </div>
+            <div class="tpl-field">
+              <label>Cột 2 (Hóa đơn)</label>
+              <input id="tpl_col_invoice" oninput="updateTemplatePreview()" placeholder="Số hóa đơn (nếu có)">
+            </div>
+            <div class="tpl-field">
+              <label>Cột 3 (Tên hàng)</label>
+              <input id="tpl_col_item" oninput="updateTemplatePreview()" placeholder="Tên hàng hóa/dịch vụ">
+            </div>
+          </div>
+          <div class="tpl-grid-3">
+            <div class="tpl-field">
+              <label>Cột 4 (Số tiền)</label>
+              <input id="tpl_col_amount" oninput="updateTemplatePreview()" placeholder="Số tiền">
+            </div>
+            <div class="tpl-field">
+              <label>Cột 5 (Ghi chú)</label>
+              <input id="tpl_col_note" oninput="updateTemplatePreview()" placeholder="Ghi chú">
+            </div>
+            <div class="tpl-field">
+              <label>Dòng Tổng cộng</label>
+              <input id="tpl_col_total" oninput="updateTemplatePreview()" placeholder="Tổng cộng">
+            </div>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Nhãn Số tiền bằng chữ</label>
+              <input id="tpl_label_money_words" oninput="updateTemplatePreview()" placeholder="Số tiền bằng chữ:">
+            </div>
+            <div class="tpl-field">
+              <label>Nhãn Chứng từ đi kèm</label>
+              <input id="tpl_label_docs" oninput="updateTemplatePreview()" placeholder="Chứng từ đi kèm">
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. 4 Khối chữ ký -->
+        <div class="tpl-card">
+          <h3>✍️ 5. Bốn khối chức danh & Họ tên người ký</h3>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Chức danh 1 (Trái cùng)</label>
+              <input id="tpl_sign1_title" oninput="updateTemplatePreview()" placeholder="Lãnh đạo phê duyệt">
+            </div>
+            <div class="tpl-field">
+              <label>Họ tên Người ký 1</label>
+              <input id="tpl_sign1_name" oninput="updateTemplatePreview()" placeholder="Đinh Anh Hào">
+            </div>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Chức danh 2</label>
+              <input id="tpl_sign2_title" oninput="updateTemplatePreview()" placeholder="Kế toán trưởng">
+            </div>
+            <div class="tpl-field">
+              <label>Họ tên Người ký 2</label>
+              <input id="tpl_sign2_name" oninput="updateTemplatePreview()" placeholder="Nguyễn Thị Nga">
+            </div>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Chức danh 3</label>
+              <input id="tpl_sign3_title" oninput="updateTemplatePreview()" placeholder="Trưởng bộ phận">
+            </div>
+            <div class="tpl-field">
+              <label>Họ tên Người ký 3</label>
+              <input id="tpl_sign3_name" oninput="updateTemplatePreview()" placeholder="Lưu Thị Thanh Xuân">
+            </div>
+          </div>
+          <div class="tpl-grid-2">
+            <div class="tpl-field">
+              <label>Chức danh 4 (Phải cùng)</label>
+              <input id="tpl_sign4_title" oninput="updateTemplatePreview()" placeholder="Người đề nghị TT">
+            </div>
+            <div class="tpl-field">
+              <label>Họ tên Người ký 4</label>
+              <input id="tpl_sign4_name" oninput="updateTemplatePreview()" placeholder="Tự động theo người tạo hoặc mặc định">
+              <small>Để trống sẽ tự động lấy theo người đề nghị của phiếu</small>
+            </div>
+          </div>
+          <div class="tpl-field" style="margin-top:6px">
+            <label>Cảnh báo bản nháp (khi chưa rõ tiền tệ)</label>
+            <input id="tpl_draft_warning" oninput="updateTemplatePreview()" placeholder="BẢN NHÁP – CHƯA XÁC NHẬN TIỀN TỆ">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <button class="primary" onclick="saveTemplateForm()" style="padding:10px 22px;font-size:13px">💾 Lưu cấu hình mẫu phiếu</button>
+          <button class="btn" onclick="printTemplateSample()" style="padding:10px 16px;font-size:13px">⎙ In thử ngay</button>
+          <button class="btn btn-danger" onclick="resetTemplateDefault()" style="padding:10px 16px;font-size:13px">↺ Khôi phục mẫu gốc</button>
+        </div>
+      </div>
+
+      <!-- Cột Phải: Xem trước trực tiếp -->
+      <div class="tpl-preview-col">
+        <div class="tpl-preview-box">
+          <div class="tpl-preview-header">
+            <span>👁️ Xem trước trực tiếp mẫu in A4</span>
+            <button class="btn" onclick="printTemplateSample()" style="padding:4px 10px;font-size:11px">⎙ In thử</button>
+          </div>
+          <div class="tpl-preview-wrap">
+            <div class="tpl-preview-scale" id="templateLivePreview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <datalist id="groupList"></datalist>
   <datalist id="beneficiaryList"></datalist>
   <datalist id="bankList"></datalist>
@@ -471,6 +728,54 @@ const STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán
 const PAID_STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán (chờ giao hàng)'];
 const DOCS=['ĐNTT','ĐNPD','Hóa đơn','Hợp đồng','BB bàn giao','Bảo lãnh','Packing List','Invoice','DQ','CO','CQ','IQ/OQ','Phụ lục','FAT','BB nghiệm thu','Bảng tổng hợp khối lượng','Khác'];
 
+const DEFAULT_TEMPLATE = {
+  company_name: 'CÔNG TY CỔ PHẦN DƯỢC PHẨM PHENIKAA',
+  form_code: 'Mẫu số 01 – TT',
+  form_title: 'GIẤY ĐỀ NGHỊ THANH TOÁN BẰNG CHUYỂN KHOẢN',
+  recipient_label: 'Kính gửi:',
+  recipients: '- BAN LÃNH ĐẠO CÔNG TY\n- PHÒNG TÀI CHÍNH - KẾ TOÁN',
+  label_requester: 'Họ tên người đề nghị:',
+  default_requester_name: 'Trần Hải Hà',
+  label_department: 'Bộ phận:',
+  department_name: 'Phòng Cung Ứng',
+  intro_text: 'Đề nghị xét duyệt và chuyển tiền cho đơn vị đã cung cấp hàng hóa, dịch vụ dưới đây:',
+  label_payee: 'Đơn vị hưởng lợi:',
+  label_address: 'Địa chỉ:',
+  label_account: 'Tài khoản:',
+  label_bank: 'Ngân hàng:',
+  label_description: 'Nội dung chuyển tiền:',
+  deadline_label: 'Thời hạn chuyển tiền:',
+  deadline_val: 'Trong vòng 3 ngày kể từ ngày đề nghị',
+  table_title: 'Số tiền chuyển theo bảng kê dưới đây:',
+  col_stt: 'TT',
+  col_invoice: 'Số hóa đơn (nếu có)',
+  col_item: 'Tên hàng hóa/dịch vụ',
+  col_amount: 'Số tiền',
+  col_note: 'Ghi chú',
+  col_total: 'Tổng cộng',
+  label_money_words: 'Số tiền bằng chữ:',
+  label_docs: 'Chứng từ đi kèm',
+  date_location: 'Hà Nội',
+  sign1_title: 'Lãnh đạo phê duyệt',
+  sign1_name: 'Đinh Anh Hào',
+  sign2_title: 'Kế toán trưởng',
+  sign2_name: 'Nguyễn Thị Nga',
+  sign3_title: 'Trưởng bộ phận',
+  sign3_name: 'Lưu Thị Thanh Xuân',
+  sign4_title: 'Người đề nghị TT',
+  sign4_name: '',
+  draft_warning: 'BẢN NHÁP – CHƯA XÁC NHẬN TIỀN TỆ'
+};
+
+function getPrintTemplate(){
+  if(!DB.print_template||typeof DB.print_template!=='object'){
+    let local=null;
+    try{local=JSON.parse(localStorage.getItem('pka_print_template')||'null');}catch{}
+    DB.print_template=Object.assign({},DEFAULT_TEMPLATE,local||{});
+  }
+  return Object.assign({},DEFAULT_TEMPLATE,DB.print_template);
+}
+
 let DB, active=null, checked=new Set(), docModalId=null;
 const el=id=>document.getElementById(id), esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 DB=structuredClone(ORIGINAL);
@@ -505,23 +810,12 @@ function updateUserUI(){
   el('userProfile').style.display='flex';
   el('userFullName').textContent=currentUser.full_name||currentUser.username;
   const badge=el('userRoleBadge');
-  badge.textContent=roleLabel(currentUser.role);
-  badge.className='user-badge '+roleBadgeClass(currentUser.role);
+  badge.textContent='Quản lý';
+  badge.className='user-badge badge-admin';
 
-  if(currentUser.role==='admin'){
-    el('btnRestore').style.display='inline-block';
-    if(el('btnTabRestore'))el('btnTabRestore').style.display='inline-block';
-    if(el('settingsAdminSection'))el('settingsAdminSection').style.display='block';
-  } else {
-    if(currentUser.role==='requester'){
-      el('btnRestore').style.display='none';
-      if(el('btnTabRestore'))el('btnTabRestore').style.display='none';
-    } else {
-      el('btnRestore').style.display='inline-block';
-      if(el('btnTabRestore'))el('btnTabRestore').style.display='inline-block';
-    }
-    if(el('settingsAdminSection'))el('settingsAdminSection').style.display='none';
-  }
+  el('btnRestore').style.display='inline-block';
+  if(el('btnTabRestore'))el('btnTabRestore').style.display='inline-block';
+  if(el('settingsAdminSection'))el('settingsAdminSection').style.display='block';
 }
 
 function showLoginModal(msg=''){
@@ -981,24 +1275,17 @@ function renderTable(){
   let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.item_name,x.created_by_name].join(' ').toLocaleLowerCase('vi').includes(q)));
   el('count').textContent=list.length+' / '+DB.requests.length+' đề nghị';
 
-  const isRequester=currentUser?.role==='requester';
-
   el('tbody').innerHTML=list.map(x=>{
-    const isPaid=PAID_STATUSES.includes(x.status);
-    const disabledForRequester=isRequester&&isPaid;
-
     let field=(k,w=150)=>{
-      return `<td class="${disabledForRequester?'cell-disabled':''}" style="min-width:${w}px">
+      return `<td style="min-width:${w}px">
         <input class="cell-editor" aria-label="${k}" value="${esc(k==='payee_name'?beneficiaryDisplay(x):x[k])}" 
-        ${disabledForRequester?'readonly title="Phiếu đã duyệt/thanh toán, không thể sửa"':''}
         onchange="setField(${x.id},'${k}',this.value)" ${k==='payee_name'?'list="beneficiaryList"':k==='bank'?'list="bankList"':''}>
       </td>`;
     };
 
     let multilineField=(k,w=160)=>{
-      return `<td class="${disabledForRequester?'cell-disabled':''}" style="min-width:${w}px">
+      return `<td style="min-width:${w}px">
         <textarea class="cell-editor cell-multiline" rows="2" aria-label="${k}" 
-          ${disabledForRequester?'readonly title="Phiếu đã duyệt/thanh toán, không thể sửa"':''}
           onchange="setField(${x.id},'${k}',this.value)"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}"
         >${esc(x[k]||'')}</textarea>
@@ -1006,15 +1293,9 @@ function renderTable(){
     };
 
     let sl=(k,a,w)=>{
-      // Trạng thái: Người đề nghị không được chọn các trạng thái Done / Đã thanh toán
-      let optionsList=a;
-      if(k==='status'&&isRequester){
-        optionsList=['Đã giao KT, chờ đi tiền'];
-        if(x.status&&!optionsList.includes(x.status))optionsList=[x.status,...optionsList];
-      }
-      return `<td class="${disabledForRequester?'cell-disabled':''}" style="min-width:${w}px">
-        <select class="cell-editor" ${disabledForRequester||(k==='status'&&isRequester)?'disabled title="Chỉ Người duyệt mới có quyền chuyển trạng thái này"':''} onchange="setField(${x.id},'${k}',this.value)">
-          ${opts(optionsList,x[k])}
+      return `<td style="min-width:${w}px">
+        <select class="cell-editor" onchange="setField(${x.id},'${k}',this.value)">
+          ${opts(a,x[k])}
         </select>
       </td>`;
     };
@@ -1023,16 +1304,15 @@ function renderTable(){
       <td><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td>
       <td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>
       ${field('payee_name',255)}
-      <td style="min-width:200px" class="${disabledForRequester?'cell-disabled':''}">
+      <td style="min-width:200px">
         <input class="cell-editor group-entry" list="groupList" aria-label="Nhóm hợp đồng, gõ mã mới để tạo" title="Chọn nhóm hoặc gõ mã mới, nhấn Tab/Enter để tạo và liên kết" placeholder="Chọn / gõ mã nhóm mới" value="${esc(groupById(x.group_id)?.code||'')}" 
-        ${disabledForRequester?'readonly':''} onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+        onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
       </td>
       ${multilineField('description',320)}
       ${field('item_name',230)}
       ${multilineField('invoice_no',150)}
-      <td class="edit-amount ${disabledForRequester?'cell-disabled':''}" style="min-width:145px">
+      <td class="edit-amount" style="min-width:145px">
         <input class="cell-editor" value="${esc(formatMoneyDisplay(x.amount))}" 
-          ${disabledForRequester?'readonly':''} 
           onfocus="this.value=plainAmount(this.value)" 
           onblur="this.value=formatMoneyDisplay(this.value)" 
           onchange="setAmount(${x.id},this.value)">
@@ -1041,8 +1321,8 @@ function renderTable(){
       <td style="min-width:170px">
         <button class="doc-cell-btn cell-editor" title="Chọn hồ sơ đi kèm" onclick="openDocModal(${x.id})">📎 ${(x.documents||[]).length} hồ sơ ▾</button>
       </td>
-      <td style="min-width:145px" class="${disabledForRequester?'cell-disabled':''}">
-        <input class="cell-editor" type="date" aria-label="Ngày đề nghị" value="${esc(x.request_date||'')}" ${disabledForRequester?'readonly':''} onchange="setField(${x.id},'request_date',this.value)">
+      <td style="min-width:145px">
+        <input class="cell-editor" type="date" aria-label="Ngày đề nghị" value="${esc(x.request_date||'')}" onchange="setField(${x.id},'request_date',this.value)">
       </td>
       ${sl('payment_type',TYPES,155)}
       ${sl('status',STATUSES,220)}
@@ -1081,20 +1361,6 @@ function registerBeneficiary(x){
 
 function setField(id,k,v){
   let x=request(id);if(!x)return;
-  // Role permission check
-  if(currentUser?.role==='requester'){
-    if(PAID_STATUSES.includes(x.status)){
-      alert('Phiếu này đã thanh toán/hoàn tất. Người đề nghị không thể thay đổi thông tin.');
-      renderTable();
-      return;
-    }
-    if(k==='status'&&PAID_STATUSES.includes(v)){
-      alert('Người đề nghị không có quyền chuyển trạng thái sang hoàn tất hoặc đã thanh toán. Cần Người duyệt phê duyệt.');
-      renderTable();
-      return;
-    }
-  }
-
   active=id;
   x[k]=v;
   if(k==='payee_name'){
@@ -1126,11 +1392,6 @@ function setAmount(id,v){
   active=id;
   let x=request(id);
   if(!x)return;
-  if(currentUser?.role==='requester'&&PAID_STATUSES.includes(x.status)){
-    alert('Phiếu đã duyệt/thanh toán, không thể sửa số tiền.');
-    renderTable();
-    return;
-  }
   let n=Number(plainAmount(v));
   if(!Number.isFinite(n)||n<0)return message('Số tiền không hợp lệ');
   x.amount=String(n);
@@ -1165,8 +1426,8 @@ function newRow(){
     followup:'',
     documents:[],
     lines:[{description:'',invoice_no:'',amount:'0'}],
-    created_by:currentUser?.username||'nhanvien',
-    created_by_name:currentUser?.full_name||'Người đề nghị',
+    created_by:currentUser?.username||'admin',
+    created_by_name:currentUser?.full_name||'Quản lý',
     created_at:new Date().toISOString()
   });
   save();
@@ -1181,18 +1442,6 @@ function activate(id){active=id;renderTable();renderDetail()}
 function deleteSelected(){
   const ids=checked.size?[...checked].map(Number).filter(id=>DB.requests.some(x=>Number(x.id)===id)):(active==null?[]:[Number(active)]);
   if(!ids.length){alert('Hãy tích chọn dòng cần xóa hoặc bấm vào STT để chọn dòng.');return}
-
-  // Requester cannot delete paid requests
-  if(currentUser?.role==='requester'){
-    const hasPaid=ids.some(id=>{
-      const x=DB.requests.find(z=>Number(z.id)===id);
-      return x&&PAID_STATUSES.includes(x.status);
-    });
-    if(hasPaid){
-      alert('Bạn không thể xóa phiếu đã hoàn tất hoặc đã thanh toán. Chỉ Người duyệt hoặc Admin mới có quyền xóa.');
-      return;
-    }
-  }
 
   const names=ids.slice(0,4).map(id=>{let x=DB.requests.find(z=>Number(z.id)===id);return '• '+(x?.legacy_stt??'Mới '+id)+' — '+(x?.payee_name||'Chưa nhập NCC')}).join('\n');
   const msg='Bạn có chắc muốn xóa '+ids.length+' đề nghị thanh toán?\n'+names+(ids.length>4?'\n...':'')+'\n\nThao tác không thể hoàn tác. Hãy sao lưu dữ liệu JSON trước khi xóa.';
@@ -1236,57 +1485,178 @@ function printEntries(x){
  }));
 }
 
-function paper(x){
-  let date=printDate(x.request_date||x.raw_date)||printDate(new Date().toISOString().slice(0,10));
-  let entries=printEntries(x);
-  const requesterName=x.created_by_name||'Trần Hải Hà';
+function paper(x, customTpl=null){
+  let tpl = customTpl || getPrintTemplate();
+  let date = printDate(x.request_date||x.raw_date)||printDate(new Date().toISOString().slice(0,10));
+  let entries = printEntries(x);
+  const requesterName = (tpl.sign4_name && tpl.sign4_name.trim()) ? tpl.sign4_name.trim() : (x.created_by_name || tpl.default_requester_name || 'Trần Hải Hà');
+  const recipientLines = (tpl.recipients || '- BAN LÃNH ĐẠO CÔNG TY\n- PHÒNG TÀI CHÍNH - KẾ TOÁN')
+    .split('\n')
+    .filter(Boolean)
+    .map(line => esc(line.trim()))
+    .join('<br>');
+
   return `<div class="paper">
-    <div class="upper">CÔNG TY CỔ PHẦN DƯỢC PHẨM PHENIKAA</div>
-    <div class="model">Mẫu số 01 – TT</div>
-    <h1>GIẤY ĐỀ NGHỊ THANH TOÁN BẰNG CHUYỂN KHOẢN</h1>
-    <div class="recipients"><strong>Kính gửi:</strong><div>- BAN LÃNH ĐẠO CÔNG TY<br>- PHÒNG TÀI CHÍNH - KẾ TOÁN</div></div>
-    <div class="person"><span>Họ tên người đề nghị:</span><span>${esc(requesterName)}</span><span>Bộ phận:</span><span>Phòng Cung Ứng</span></div>
-    <div class="intro">Đề nghị xét duyệt và chuyển tiền cho đơn vị đã cung cấp hàng hóa, dịch vụ dưới đây:</div>
-    <div class="details">
-      <span>Đơn vị hưởng lợi:</span><span class="val"><b>${esc(x.payee_name)}</b></span>
-      <span>Địa chỉ:</span><span class="val">${esc(x.address)}</span>
-      <span>Tài khoản:</span><span class="val">${esc(x.account_no)}</span>
-      <span>Ngân hàng:</span><span class="val">${esc(x.bank)}</span>
-      <span class="transfer">Nội dung chuyển tiền:</span><span class="val transfer">${esc(x.description)}</span>
+    <div class="upper">${esc(tpl.company_name)}</div>
+    <div class="model">${esc(tpl.form_code)}</div>
+    <h1>${esc(tpl.form_title)}</h1>
+    <div class="recipients"><strong>${esc(tpl.recipient_label)}</strong><div>${recipientLines}</div></div>
+    <div class="person">
+      <span>${esc(tpl.label_requester)}</span>
+      <span>${esc(requesterName)}</span>
+      <span>${esc(tpl.label_department)}</span>
+      <span>${esc(tpl.department_name)}</span>
     </div>
-    <div class="time">Thời hạn chuyển tiền: &nbsp; Trong vòng 3 ngày kể từ ngày đề nghị</div>
-    <div class="moneytitle">Số tiền chuyển theo bảng kê dưới đây:</div>
+    <div class="intro">${esc(tpl.intro_text)}</div>
+    <div class="details">
+      <span><b>${esc(tpl.label_payee)}</b></span><span class="val"><b>${esc(x.payee_name || '')}</b></span>
+      <span><b>${esc(tpl.label_address)}</b></span><span class="val">${esc(x.address || '')}</span>
+      <span><b>${esc(tpl.label_account)}</b></span><span class="val">${esc(x.account_no || '')}</span>
+      <span><b>${esc(tpl.label_bank)}</b></span><span class="val">${esc(x.bank || '')}</span>
+      <span class="transfer"><b>${esc(tpl.label_description)}</b></span><span class="val transfer">${esc(x.description || '')}</span>
+    </div>
+    <div class="time">${esc(tpl.deadline_label)} &nbsp; ${esc(tpl.deadline_val)}</div>
+    <div class="moneytitle">${esc(tpl.table_title)}</div>
     <table>
       <colgroup><col style="width:4%"><col style="width:19%"><col style="width:35%"><col style="width:20%"><col style="width:22%"></colgroup>
-      <thead><tr><th>TT</th><th>Số hóa đơn (nếu có)</th><th>Tên hàng hóa/dịch vụ</th><th>Số tiền</th><th>Ghi chú</th></tr></thead>
+      <thead><tr>
+        <th>${esc(tpl.col_stt)}</th>
+        <th>${esc(tpl.col_invoice)}</th>
+        <th>${esc(tpl.col_item)}</th>
+        <th>${esc(tpl.col_amount)}</th>
+        <th>${esc(tpl.col_note)}</th>
+      </tr></thead>
       <tbody>
         ${entries.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.invoice_no||'')}</td><td style="text-align:left">${esc(l.description||'')}</td><td>${fmt(l.amount)}</td><td></td></tr>`).join('')}
-        <tr class="sum"><td colspan="3">Tổng cộng</td><td>${fmt(x.amount)}</td><td style="text-align:left">${esc(x.currency||'CHƯA RÕ')}</td></tr>
+        <tr class="sum"><td colspan="3">${esc(tpl.col_total)}</td><td>${fmt(x.amount)}</td><td style="text-align:left">${esc(x.currency||'CHƯA RÕ')}</td></tr>
       </tbody>
     </table>
-    <div class="words"><span>Số tiền bằng chữ:</span><span>${esc(moneyWords(x))}</span></div>
-    <div class="doclabel">Chứng từ đi kèm</div>
-    <div class="docs">${esc((x.documents||[]).join(', '))}</div>
-    <div class="date">Hà Nội, ngày ${date.d} &nbsp; tháng ${date.m} &nbsp; năm ${date.y}</div>
+    <div class="words"><span>${esc(tpl.label_money_words)}</span><span>${esc(moneyWords(x))}</span></div>
+    <div class="doclabel"><b>${esc(tpl.label_docs)}</b></div>
+    <div class="docs"><b>${esc((x.documents||[]).join(', '))}</b></div>
+    <div class="date">${esc(tpl.date_location)}, ngày ${date.d} &nbsp; tháng ${date.m} &nbsp; năm ${date.y}</div>
     <div class="sign">
-      <div>Lãnh đạo phê duyệt<span>Đinh Anh Hào</span></div>
-      <div>Kế toán trưởng<span>Nguyễn Thị Nga</span></div>
-      <div>Trưởng bộ phận<span>Lưu Thị Thanh Xuân</span></div>
-      <div>Người đề nghị TT<span>${esc(requesterName)}</span></div>
+      <div>${esc(tpl.sign1_title)}<span>${esc(tpl.sign1_name)}</span></div>
+      <div>${esc(tpl.sign2_title)}<span>${esc(tpl.sign2_name)}</span></div>
+      <div>${esc(tpl.sign3_title)}<span>${esc(tpl.sign3_name)}</span></div>
+      <div>${esc(tpl.sign4_title)}<span>${esc(requesterName)}</span></div>
     </div>
-    ${!x.currency?'<p style="font-size:10px;text-align:center;color:red">BẢN NHÁP – CHƯA XÁC NHẬN TIỀN TỆ</p>':''}
+    ${!x.currency?`<p style="font-size:10px;text-align:center;color:red">${esc(tpl.draft_warning)}</p>`:''}
   </div>`;
 }
 
+const TPL_KEYS = [
+  'company_name','form_code','form_title','date_location',
+  'recipient_label','recipients','label_requester','default_requester_name','label_department','department_name',
+  'intro_text','label_payee','label_address','label_account','label_bank','label_description','deadline_label','deadline_val',
+  'table_title','col_stt','col_invoice','col_item','col_amount','col_note','col_total','label_money_words','label_docs',
+  'sign1_title','sign1_name','sign2_title','sign2_name','sign3_title','sign3_name','sign4_title','sign4_name','draft_warning'
+];
+
+function getTemplateFromForm(){
+  let tpl = {};
+  for(const k of TPL_KEYS){
+    const inp = el('tpl_' + k);
+    if(inp){
+      tpl[k] = inp.value;
+    }
+  }
+  return tpl;
+}
+
+function renderTemplatePage(){
+  const tpl = getPrintTemplate();
+  for(const k of TPL_KEYS){
+    const inp = el('tpl_' + k);
+    if(inp){
+      inp.value = tpl[k] !== undefined ? tpl[k] : (DEFAULT_TEMPLATE[k] || '');
+    }
+  }
+  updateTemplatePreview();
+}
+
+function getSampleRequest(){
+  let req = active !== null ? request(active) : null;
+  if(!req && DB.requests.length > 0) req = DB.requests[0];
+  if(req) return req;
+  return {
+    id: 999,
+    legacy_stt: '01',
+    payee_name: 'Công ty Cổ phần Công nghệ và Giải pháp ABC',
+    address: 'Số 123 Đường Cầu Giấy, P. Dịch Vọng, Q. Cầu Giấy, TP. Hà Nội',
+    account_no: '19035678901234',
+    bank: 'Techcombank - Chi nhánh Thăng Long',
+    description: 'Thanh toán tiền vật tư, nguyên phụ liệu sản xuất theo HĐ số 45/2026/PKA-ABC đợt 1',
+    request_date: localToday(),
+    amount: '45000000',
+    currency: 'VND',
+    documents: ['Hóa đơn điện tử GTGT', 'Biên bản nghiệm thu bàn giao', 'Hợp đồng mua bán', 'Bảng kê chi tiết'],
+    lines: [
+      {description: 'Nguyên phụ liệu dược phẩm lô A-01', invoice_no: 'HD-001289', amount: '25000000'},
+      {description: 'Bao bì và tá dược tiêu chuẩn GMP', invoice_no: 'HD-001290', amount: '20000000'}
+    ],
+    created_by_name: 'Trần Hải Hà'
+  };
+}
+
+function updateTemplatePreview(){
+  const previewEl = el('templateLivePreview');
+  if(!previewEl) return;
+  const tpl = getTemplateFromForm();
+  const sample = getSampleRequest();
+  previewEl.innerHTML = paper(sample, tpl);
+}
+
+function saveTemplateForm(){
+  const tpl = getTemplateFromForm();
+  DB.print_template = Object.assign({}, DEFAULT_TEMPLATE, tpl);
+  try{
+    localStorage.setItem('pka_print_template', JSON.stringify(DB.print_template));
+  }catch{}
+  save();
+  updateTemplatePreview();
+  message('Đã lưu cấu hình mẫu phiếu thanh toán thành công!');
+}
+
+function resetTemplateDefault(){
+  if(!confirm('Khôi phục toàn bộ các trường về mẫu gốc chuẩn của Phenikaa?')) return;
+  DB.print_template = Object.assign({}, DEFAULT_TEMPLATE);
+  try{
+    localStorage.removeItem('pka_print_template');
+  }catch{}
+  save();
+  renderTemplatePage();
+  message('Đã khôi phục mẫu phiếu gốc thành công!');
+}
+
+function printTemplateSample(){
+  const tpl = getTemplateFromForm();
+  const sample = getSampleRequest();
+  el('printArea').innerHTML = paper(sample, tpl);
+  window.print();
+}
+
 function renderDetail(){let x=request(active);if(!x){el('lines').innerHTML='';return}el('lines').innerHTML=(x.lines||[]).map((l,i)=>`<div class="lineitem"><input title="Tên hàng hóa" value="${esc(l.description)}" onchange="lineChanged(${i},'description',this.value)"><input title="Hóa đơn" value="${esc(l.invoice_no)}" onchange="lineChanged(${i},'invoice_no',this.value)"><input title="Số tiền" value="${esc(formatMoneyDisplay(l.amount))}" onfocus="this.value=plainAmount(this.value)" onblur="this.value=formatMoneyDisplay(this.value)" onchange="lineChanged(${i},'amount',this.value)"><button title="Xóa dòng" onclick="delLine(${i})">×</button></div>`).join('')}
-function switchPage(page){for(const p of ['data','ncc','groups','settings']){const node=el(p==='data'?'dataPage':p==='ncc'?'nccPage':p==='groups'?'groupsPage':'settingsPage');if(node)node.classList.toggle('hidden-view',page!==p);const tabBtn=el(p==='data'?'tabData':p==='ncc'?'tabNcc':p==='groups'?'tabGroups':'tabSettings');if(tabBtn)tabBtn.classList.toggle('active',page===p)}if(page==='ncc')renderNcc();if(page==='groups')renderGroups();if(page==='settings')renderSettings()}
+
+function switchPage(page){
+  for(const p of ['data','ncc','groups','template','settings']){
+    const node=el(p==='data'?'dataPage':p==='ncc'?'nccPage':p==='groups'?'groupsPage':p==='template'?'templatePage':'settingsPage');
+    if(node)node.classList.toggle('hidden-view',page!==p);
+    const tabBtn=el(p==='data'?'tabData':p==='ncc'?'tabNcc':p==='groups'?'tabGroups':p==='template'?'tabTemplate':'tabSettings');
+    if(tabBtn)tabBtn.classList.toggle('active',page===p);
+  }
+  if(page==='ncc')renderNcc();
+  if(page==='groups')renderGroups();
+  if(page==='template')renderTemplatePage();
+  if(page==='settings')renderSettings();
+}
 
 function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn btn-danger" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('')}
 function addNcc(){let id=Math.max(0,...DB.beneficiaries.map(b=>Number(b.id)||0))+1;DB.beneficiaries.push({id,name:'',short_name:'',address:'',account_no:'',bank:''});save();el('nccSearch').value='';renderNcc();const first=el('nccBody').querySelector('.ncc-cell');if(first)first.focus()}
 function editNcc(id,k,v){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;v=String(v).trim();if((k==='name'||k==='short_name')&&v&&DB.beneficiaries.some(z=>Number(z.id)!==id&&(normName(z.name)===normName(v)||normName(z.short_name)===normName(v)))){alert('Tên này đã được một NCC khác sử dụng (tên đầy đủ hoặc tên viết tắt). Vui lòng nhập tên khác.');renderNcc();return}if(k==='short_name'&&v&&normName(b.name)===normName(v)){alert('Tên viết tắt trùng tên đầy đủ; hãy để trống hoặc chọn tên ngắn khác.');renderNcc();return}b[k]=v;save();refreshLists();}
 function deleteNcc(id){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;if(DB.requests.some(x=>Number(x.beneficiary_id)===id)){alert('NCC đã được dùng trong đề nghị thanh toán. Không thể xóa để bảo toàn liên kết.');return}if(!confirm('Xóa NCC '+(b.name||id)+' khỏi danh mục?'))return;DB.beneficiaries=DB.beneficiaries.filter(z=>Number(z.id)!==id);save();refreshLists();renderNcc()}
 
-function doPrint(ids){let rows=ids.map(request).filter(Boolean);if(!rows.length)return message('Hãy chọn ít nhất một dòng');if(rows.some(x=>!x.currency)&&!confirm('Có phiếu chưa xác nhận loại tiền. Tiếp tục in bản NHÁP?'))return;el('printArea').innerHTML=rows.map(paper).join('');window.print()}
+function doPrint(ids){let rows=ids.map(request).filter(Boolean);if(!rows.length)return message('Hãy chọn ít nhất một dòng');if(rows.some(x=>!x.currency)&&!confirm('Có phiếu chưa xác nhận loại tiền. Tiếp tục in bản NHÁP?'))return;el('printArea').innerHTML=rows.map(x=>paper(x)).join('');window.print()}
 function printSelection(){if(active!==null)doPrint([active])}function printChecked(){doPrint([...checked])}
 
 function exportData(){
@@ -1299,11 +1669,6 @@ function exportData(){
 }
 
 async function restoreData(e){
-  if(currentUser?.role==='requester'){
-    alert('Người đề nghị không có quyền khôi phục toàn bộ cơ sở dữ liệu. Vui lòng liên hệ Admin.');
-    e.target.value='';
-    return;
-  }
   let f=e.target.files[0];if(!f)return;
   try{
     let a=JSON.parse(await f.text());
@@ -1320,6 +1685,7 @@ function init(){
   groups();
   refreshLists();
   refreshGroupOptions();
+  getPrintTemplate();
   el('statusFilter').innerHTML='<option value="">Tất cả trạng thái</option>'+STATUSES.map(s=>`<option>${esc(s)}</option>`).join('');
   active=DB.requests.find(x=>x.legacy_stt===99)?.id||DB.requests[0]?.id||null;
   renderTable();

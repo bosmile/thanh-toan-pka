@@ -79,30 +79,7 @@ export async function onRequest(context) {
       return reply({ ok: false, error: 'Sai cấu trúc dữ liệu' }, 400);
     }
 
-    // Role Enforcement: If user is requester, check permissions
-    if (currentUser.role === 'requester') {
-      const oldRecord = await db.prepare('SELECT payload FROM app_state WHERE id = 1').first();
-      if (oldRecord) {
-        try {
-          const oldData = JSON.parse(oldRecord.payload);
-          const oldRequests = oldData.requests || [];
-          const oldById = new Map(oldRequests.map(r => [r.id, r]));
-
-          for (const newReq of data.requests) {
-            const prev = oldById.get(newReq.id);
-            if (prev) {
-              // Requester cannot switch to Paid / Done status
-              if (!PAID_STATUSES.includes(prev.status) && PAID_STATUSES.includes(newReq.status)) {
-                return reply({
-                  ok: false,
-                  error: `Tài khoản '${currentUser.full_name}' là Người đề nghị, không có quyền chuyển trạng thái hoàn tất/đã thanh toán cho phiếu ${newReq.legacy_stt || newReq.id}. Cần Người duyệt phê duyệt.`
-                }, 403);
-              }
-            }
-          }
-        } catch {}
-      }
-    }
+    // Single user app: all authenticated users have full access to update data
 
     const current = await db.prepare(
       'UPDATE app_state SET payload = ?, revision = revision + 1, updated_at = CURRENT_TIMESTAMP WHERE id = 1 AND revision = ?'
