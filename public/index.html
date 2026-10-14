@@ -1,39 +1,756 @@
 <!doctype html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PHENIKAA · Quản lý thanh toán</title>
 <style>
-:root{font-family:Arial,sans-serif;color:#203047;background:#f0f3f7}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}header{height:60px;background:#17365b;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:15px}header b{font-size:19px}header small{color:#c9d8ed}header button{border:1px solid #7895b7;background:#274a70;color:white;padding:8px 11px;border-radius:6px}main{padding:16px 18px}h2{font-size:19px;margin:0 0 7px}.desc{font-size:12px;color:#718096;margin-bottom:14px}.tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tools button,.btn{background:white;border:1px solid #c5cfdb;border-radius:6px;padding:9px 11px;color:#243d5d}.tools .primary,.primary{background:#1763a6;color:white;border-color:#1763a6}.tools input,.tools select{border:1px solid #cbd5e0;padding:9px;border-radius:6px;background:white}.tools input{width:285px}.count{margin-left:auto;font-size:12px;color:#65758c}.workspace{display:grid;grid-template-columns:minmax(520px,1fr) 410px;gap:12px;align-items:start}.sheet-panel,.preview-panel{background:white;border:1px solid #d9e1eb;border-radius:7px;overflow:hidden}.panelhead{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e3e9ef;background:#fafcff;font-size:13px;font-weight:700}.sheet-scroll{overflow:auto;max-height:calc(100vh - 244px);min-height:530px}table.grid{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12px}table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;font-weight:600;text-align:left;padding:8px 7px;border-right:1px solid #c9d3de;border-bottom:1px solid #9eafc2;white-space:nowrap}table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;height:35px;background:#fff}table.grid tr:nth-child(even) td{background:#f9fbfe}table.grid tr.chosen td{background:#e6f2ff}table.grid td input,table.grid td select{width:100%;height:34px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e}table.grid td input:focus,table.grid td select:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}table.grid td[data-tip]{position:relative}table.grid .rownum{position:sticky;left:0;z-index:1;background:#ecf2f9!important;font-weight:600;text-align:center;min-width:56px;border-right:2px solid #a9bacd}table.grid .rownum button{border:0;background:transparent;color:#164c7e;font-weight:700;width:100%;height:34px}.review{color:#c06600!important;background:#fff3dc!important}.warn{color:#b93a30;font-weight:600}.status{color:#136443!important}table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nums}.preview-scroll{max-height:calc(100vh - 243px);min-height:530px;overflow:auto;background:#e7ebf1;padding:12px}.preview-scale{width:735px;transform:scale(.52);transform-origin:top left;margin-bottom:-460px}.paper{font:14px 'Times New Roman',serif;width:735px;min-height:1040px;background:white;color:#000;padding:26px 14px 28px;line-height:1.18;box-shadow:0 3px 12px #aeb8c5}.paper h1{font:bold 17px 'Times New Roman';text-align:center;margin:22px 0 25px}.paper .upper{font-weight:bold;text-decoration:underline}.paper .model{text-align:right;font-weight:bold;margin:12px 0 0}.paper .recipients{width:86%;margin:0 auto 27px;display:flex;gap:10px;align-items:start}.paper .recipients strong{font-style:italic;text-decoration:underline}.paper .recipients div{font-weight:bold}.paper .person{display:grid;grid-template-columns:120px 220px 88px 1fr;gap:0;margin:10px 27px}.paper .intro{margin:11px 0 18px}.paper .details{display:grid;grid-template-columns:138px 1fr;gap:6px 0;margin:0 25px}.paper .details .val{min-height:18px;color:red}.paper .transfer{margin-top:15px}.paper .time{margin:24px 25px 8px}.paper .moneytitle{margin:8px 25px 25px}.paper table{border-collapse:collapse;width:100%;table-layout:fixed}.paper th,.paper td{border:1px solid #000;padding:7px 5px;text-align:center}.paper th{height:39px}.paper td{height:76px}.paper td:nth-child(4){text-align:right}.paper .sum td{height:20px;padding:1px 5px}.paper .sum td:first-child{text-align:center;font-weight:bold}.paper .words{display:grid;grid-template-columns:136px 1fr;margin-top:3px;font-style:italic;font-weight:bold}.paper .doclabel{font-weight:bold;text-decoration:underline;font-style:italic;margin-top:11px}.paper .docs{color:red;margin-top:5px;min-height:27px}.paper .date{text-align:right;font-style:italic;margin:2px 12px 0}.paper .sign{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;margin-top:4px;font-weight:bold}.paper .sign div{display:flex;flex-direction:column;justify-content:space-between;height:135px}.paper .sign span{font-style:italic}.below{padding:12px;border-top:1px solid #e2e7ef;background:white}.below button{padding:8px 12px;margin-right:6px;border:1px solid #b9c5d4;border-radius:5px;background:#fff}.drawer{border-top:1px solid #e1e7f0;margin:8px 12px;padding-top:12px}.drawer h3{font-size:13px;margin:0 0 9px}.chips{display:flex;flex-wrap:wrap;gap:5px}.chips label{font-size:11px;display:flex;gap:4px;align-items:center;padding:6px;border:1px solid #d5dce6;border-radius:5px;cursor:pointer}.linebox{margin:8px 12px;font-size:12px}.linebox input{border:1px solid #c8d3e0;border-radius:4px;padding:7px;width:100%;min-width:0}.lineitem{display:grid;grid-template-columns:1fr 105px 100px 22px;gap:4px;margin:5px 0}.subnote{font-size:11px;color:#738294}.alert{padding:9px;background:#fff3d8;color:#865000;font-size:12px;display:none}.selected-info{font-size:12px;color:#395474}datalist{display:none}@media(max-width:1060px){.workspace{display:block}.preview-panel{margin-top:12px}.preview-scroll{max-height:460px}.sheet-scroll{max-height:65vh}}
-@media print{body{background:white}header,main,.preview-panel,.sheet-panel,.tools{display:none!important}#printArea{display:block!important}#printArea .paper{box-shadow:none;width:190mm;min-height:273mm;padding:5mm 3mm;font-size:13px;break-after:page;page-break-after:always}#printArea .paper:last-child{break-after:auto;page-break-after:auto}@page{size:A4 portrait;margin:9mm 10mm}}
+:root{font-family:Arial,sans-serif;color:#203047;background:#f0f3f7;--primary:#1763a6;--header-bg:#17365b}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}
+header{height:62px;background:var(--header-bg);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+header b{font-size:18px;letter-spacing:.3px}header small{color:#c9d8ed;font-size:11px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.header-actions button{border:1px solid #7895b7;background:#274a70;color:white;padding:7px 11px;border-radius:6px;font-size:12px}
+.header-actions button:hover{background:#335b87}
+.user-profile{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);font-size:12px}
+.user-badge{padding:2px 7px;border-radius:12px;font-weight:700;font-size:11px;text-transform:uppercase}
+.badge-admin{background:#ef4444;color:#fff}
+.badge-approver{background:#0284c7;color:#fff}
+.badge-requester{background:#16a34a;color:#fff}
+main{padding:16px 18px}h2{font-size:19px;margin:0 0 7px}.desc{font-size:12px;color:#718096;margin-bottom:14px}
+.tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tools button,.btn{background:white;border:1px solid #c5cfdb;border-radius:6px;padding:8px 11px;color:#243d5d;font-size:12px}
+.tools button:hover,.btn:hover{background:#f8fafc}
+.tools .primary,.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.tools .primary:hover,.primary:hover{background:#13528b}
+.btn-danger{background:#fff;border-color:#fca5a5;color:#b91c1c}
+.btn-danger:hover{background:#fef2f2}
+.tools input,.tools select{border:1px solid #cbd5e0;padding:8px;border-radius:6px;background:white;font-size:12px}
+.tools input{width:280px}.count{margin-left:auto;font-size:12px;color:#65758c}
+.workspace{display:grid;grid-template-columns:minmax(520px,1fr) 410px;gap:12px;align-items:start}
+.sheet-panel,.preview-panel{background:white;border:1px solid #d9e1eb;border-radius:7px;overflow:hidden}
+.panelhead{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e3e9ef;background:#fafcff;font-size:13px;font-weight:700}
+.sheet-scroll{overflow:auto;max-height:calc(100vh - 250px);min-height:530px}
+table.grid{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12px}
+table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;font-weight:600;text-align:left;padding:8px 7px;border-right:1px solid #c9d3de;border-bottom:1px solid #9eafc2;white-space:nowrap}
+table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;height:35px;background:#fff}
+table.grid tr:nth-child(even) td{background:#f9fbfe}table.grid tr.chosen td{background:#e6f2ff}
+table.grid td input,table.grid td select{width:100%;height:34px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e}
+table.grid td input:focus,table.grid td select:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
+table.grid td.cell-disabled input,table.grid td.cell-disabled select{background:#f3f4f6;color:#6b7280;cursor:not-allowed}
+table.grid .rownum{position:sticky;left:0;z-index:1;background:#ecf2f9!important;font-weight:600;text-align:center;min-width:56px;border-right:2px solid #a9bacd}
+table.grid .rownum button{border:0;background:transparent;color:#164c7e;font-weight:700;width:100%;height:34px}
+.review{color:#c06600!important;background:#fff3dc!important}.warn{color:#b93a30;font-weight:600}.status{color:#136443!important}
+table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nums}
+.preview-scroll{max-height:calc(100vh - 243px);min-height:530px;overflow:auto;background:#e7ebf1;padding:12px}
+.preview-scale{width:735px;transform:scale(.52);transform-origin:top left;margin-bottom:-460px}
+.paper{font:14px 'Times New Roman',serif;width:735px;min-height:1040px;background:white;color:#000;padding:26px 14px 28px;line-height:1.18;box-shadow:0 3px 12px #aeb8c5}
+.paper h1{font:bold 17px 'Times New Roman';text-align:center;margin:22px 0 25px}
+.paper .upper{font-weight:bold;text-decoration:underline}.paper .model{text-align:right;font-weight:bold;margin:12px 0 0}
+.paper .recipients{width:86%;margin:0 auto 27px;display:flex;gap:10px;align-items:start}.paper .recipients strong{font-style:italic;text-decoration:underline}.paper .recipients div{font-weight:bold}
+.paper .person{display:grid;grid-template-columns:120px 220px 88px 1fr;gap:0;margin:10px 27px}.paper .intro{margin:11px 0 18px}
+.paper .details{display:grid;grid-template-columns:138px 1fr;gap:6px 0;margin:0 25px}.paper .details .val{min-height:18px;color:red}
+.paper .transfer{margin-top:15px}.paper .time{margin:24px 25px 8px}.paper .moneytitle{margin:8px 25px 25px}
+.paper table{border-collapse:collapse;width:100%;table-layout:fixed}
+.paper th,.paper td{border:1px solid #000;padding:7px 5px;text-align:center}
+.paper th{height:39px}.paper td{height:76px}.paper td:nth-child(4){text-align:right}
+.paper .sum td{height:20px;padding:1px 5px}.paper .sum td:first-child{text-align:center;font-weight:bold}
+.paper .words{display:grid;grid-template-columns:136px 1fr;margin-top:3px;font-style:italic;font-weight:bold}
+.paper .doclabel{font-weight:bold;text-decoration:underline;font-style:italic;margin-top:11px}
+.paper .docs{color:red;margin-top:5px;min-height:27px}.paper .date{text-align:right;font-style:italic;margin:2px 12px 0}
+.paper .sign{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;margin-top:4px;font-weight:bold}
+.paper .sign div{display:flex;flex-direction:column;justify-content:space-between;height:135px}
+.paper .sign span{font-style:italic}
+.below{padding:12px;border-top:1px solid #e2e7ef;background:white}
+.below button{padding:8px 12px;margin-right:6px;border:1px solid #b9c5d4;border-radius:5px;background:#fff}
+.drawer{border-top:1px solid #e1e7f0;margin:8px 12px;padding-top:12px}
+.drawer h3{font-size:13px;margin:0 0 9px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips label{font-size:11px;display:flex;gap:4px;align-items:center;padding:6px;border:1px solid #d5dce6;border-radius:5px;cursor:pointer}
+.linebox{margin:8px 12px;font-size:12px}
+.linebox input{border:1px solid #c8d3e0;border-radius:4px;padding:7px;width:100%;min-width:0}
+.lineitem{display:grid;grid-template-columns:1fr 105px 100px 22px;gap:4px;margin:5px 0}
+.subnote{font-size:11px;color:#738294}
+.alert{padding:9px;background:#fff3d8;color:#865000;font-size:12px;display:none}
+.role-banner{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:8px 14px;border-radius:6px;margin-bottom:12px;font-size:12px;display:flex;align-items:center;justify-content:space-between}
+.selected-info{font-size:12px;color:#395474}
+datalist{display:none}
+@media(max-width:1060px){.workspace{display:block}.preview-panel{margin-top:12px}.preview-scroll{max-height:460px}.sheet-scroll{max-height:65vh}}
+@media print{body{background:white}header,main,.preview-panel,.sheet-panel,.tools,.modal-overlay,.doc-overlay{display:none!important}#printArea{display:block!important}#printArea .paper{box-shadow:none;width:190mm;min-height:273mm;padding:5mm 3mm;font-size:13px;break-after:page;page-break-after:always}#printArea .paper:last-child{break-after:auto;page-break-after:auto}@page{size:A4 portrait;margin:9mm 10mm}}
 #printArea{display:none}
 
-.doc-overlay:not([hidden]){position:fixed;inset:0;background:rgba(13,30,51,.52);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}.doc-modal{background:#fff;border-radius:10px;width:min(620px,100%);max-height:85vh;overflow:auto;box-shadow:0 15px 70px #11253a55;padding:18px;color:#23374f}.doc-top,.doc-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}.doc-top strong{font-size:18px}.doc-top button{border:0;background:#f2f5f9;border-radius:6px;padding:7px 12px;font-size:18px}.doc-hint{color:#67788e;font-size:12px;margin:10px 0}.doc-options{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:43vh;overflow:auto;padding:3px}.doc-options label{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #d6deea;border-radius:6px;font-size:13px;cursor:pointer}.doc-options label:has(input:checked){background:#eaf3ff;border-color:#7aa9dc}.doc-options input{accent-color:#1763a6;width:16px;height:16px}.doc-add{display:flex;gap:8px;margin:15px 0}.doc-add input{flex:1;min-width:0;padding:10px;border:1px solid #c6d2e0;border-radius:6px}.doc-add button,.doc-foot button{padding:10px;border-radius:6px;border:1px solid #c6d2e0;cursor:pointer}.doc-foot{border-top:1px solid #e4e9ef;padding-top:13px;font-size:13px}.doc-foot .primary{border-color:#1763a6}table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-radius:4px;background:#f0f6ff;color:#185284;font-size:12px;cursor:pointer;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;text-align:left;padding:0 9px}@media(max-width:520px){.doc-options{grid-template-columns:1fr}}
+.doc-overlay:not([hidden]),.modal-overlay:not([hidden]){position:fixed;inset:0;background:rgba(13,30,51,.65);backdrop-filter:blur(2px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
+.doc-modal,.modal-card{background:#fff;border-radius:10px;width:min(640px,100%);max-height:88vh;overflow:auto;box-shadow:0 15px 70px #11253a55;padding:22px;color:#23374f}
+.doc-top,.doc-foot,.modal-top,.modal-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.doc-top strong,.modal-top strong{font-size:18px}
+.doc-top button,.modal-top button{border:0;background:#f2f5f9;border-radius:6px;padding:7px 12px;font-size:18px}
+.doc-hint{color:#67788e;font-size:12px;margin:10px 0}
+.doc-options{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:43vh;overflow:auto;padding:3px}
+.doc-options label{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #d6deea;border-radius:6px;font-size:13px;cursor:pointer}
+.doc-options label:has(input:checked){background:#eaf3ff;border-color:#7aa9dc}
+.doc-options input{accent-color:var(--primary);width:16px;height:16px}
+.doc-add{display:flex;gap:8px;margin:15px 0}
+.doc-add input{flex:1;min-width:0;padding:10px;border:1px solid #c6d2e0;border-radius:6px}
+.doc-add button,.doc-foot button,.modal-foot button{padding:10px 14px;border-radius:6px;border:1px solid #c6d2e0;cursor:pointer}
+.doc-foot,.modal-foot{border-top:1px solid #e4e9ef;padding-top:14px;font-size:13px}
+.doc-foot .primary,.modal-foot .primary{border-color:var(--primary)}
+table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-radius:4px;background:#f0f6ff;color:#185284;font-size:12px;cursor:pointer;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;text-align:left;padding:0 9px}
+@media(max-width:520px){.doc-options{grid-template-columns:1fr}}
 
 .workspace{display:block}.sheet-panel{width:100%}.sheet-scroll{max-height:calc(100vh - 255px)}
-.page-tabs{display:flex;gap:6px;margin:0 0 14px}.page-tabs button{border:1px solid #c3d0df;background:white;padding:10px 18px;border-radius:6px;font-weight:600;color:#26425c}.page-tabs button.active{background:#1763a6;color:#fff;border-color:#1763a6}
-.ncc-panel{background:#fff;border:1px solid #d9e1eb;border-radius:7px;overflow:hidden}.ncc-cell{width:100%;min-width:0;border:0;padding:9px 8px;font-size:13px;background:transparent}.ncc-cell:focus{outline:2px solid #1763a6;outline-offset:-2px;background:#fff}.ncc-table{width:100%;border-collapse:collapse;font-size:13px}.ncc-table th{background:#e7edf5;position:sticky;top:0;text-align:left;padding:11px 8px;border-bottom:1px solid #a3b3c5;z-index:1}.ncc-table td{border-bottom:1px solid #e2e8f0}.ncc-table tbody tr:nth-child(even){background:#f7faff}.ncc-table .ncc-id{text-align:center;color:#59708b}.ncc-wrapper{overflow:auto;max-height:calc(100vh - 268px)}.detail-inline{background:white;border:1px solid #d9e1eb;border-radius:7px;margin-top:10px;padding:12px}.detail-inline summary{cursor:pointer;font-weight:600;color:#264a72}.detail-inline .lineitem{max-width:880px}.ncc-help{font-size:12px;color:#5e7086;margin:8px 0 12px}.hidden-view{display:none!important}
-@media print{.page-tabs,#nccPage,.detail-inline{display:none!important}}
+.page-tabs{display:flex;gap:6px;margin:0 0 14px}
+.page-tabs button{border:1px solid #c3d0df;background:white;padding:10px 18px;border-radius:6px;font-weight:600;color:#26425c}
+.page-tabs button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.ncc-panel{background:#fff;border:1px solid #d9e1eb;border-radius:7px;overflow:hidden}
+.ncc-cell{width:100%;min-width:0;border:0;padding:9px 8px;font-size:13px;background:transparent}
+.ncc-cell:focus{outline:2px solid var(--primary);outline-offset:-2px;background:#fff}
+.ncc-table{width:100%;border-collapse:collapse;font-size:13px}
+.ncc-table th{background:#e7edf5;position:sticky;top:0;text-align:left;padding:11px 8px;border-bottom:1px solid #a3b3c5;z-index:1}
+.ncc-table td{border-bottom:1px solid #e2e8f0}
+.ncc-table tbody tr:nth-child(even){background:#f7faff}
+.ncc-table .ncc-id{text-align:center;color:#59708b}
+.ncc-wrapper{overflow:auto;max-height:calc(100vh - 268px)}
+.detail-inline{background:white;border:1px solid #d9e1eb;border-radius:7px;margin-top:10px;padding:12px}
+.detail-inline summary{cursor:pointer;font-weight:600;color:#264a72}
+.detail-inline .lineitem{max-width:880px}
+.ncc-help{font-size:12px;color:#5e7086;margin:8px 0 12px}
+.hidden-view{display:none!important}
+@media print{.page-tabs,#nccPage,.detail-inline,.role-banner{display:none!important}}
 
 .group-table th,.group-table td{padding:7px 8px;min-width:90px}.group-table input{min-width:100px}.group-table select{padding:7px;border:1px solid #d5dce6;background:white}.group-note{padding:12px;color:#667489;font-size:12px}
+
+/* Form Styles inside Modals */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:#334155}
+.form-group input,.form-group select{width:100%;padding:9px 11px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px}
+.form-group input:focus,.form-group select:focus{outline:2px solid var(--primary);border-color:transparent}
+.form-note{font-size:11px;color:#64748b;margin-top:4px}
+.auth-msg{padding:10px;border-radius:6px;font-size:12px;margin-bottom:14px;display:none}
+.auth-msg.error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;display:block}
+.auth-msg.success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;display:block}
+.quick-users{display:flex;gap:6px;margin:12px 0 16px;flex-wrap:wrap}
+.quick-users button{border:1px dashed #94a3b8;background:#f8fafc;padding:5px 9px;border-radius:5px;font-size:11px;color:#334155}
+.quick-users button:hover{background:#e2e8f0;border-color:#64748b}
+.user-table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
+.user-table th{background:#f1f5f9;padding:8px;text-align:left;border-bottom:1px solid #cbd5e1}
+.user-table td{padding:8px;border-bottom:1px solid #e2e8f0}
 </style></head><body>
-<header><div><b>PHENIKAA · QUẢN LÝ ĐỀ NGHỊ THANH TOÁN</b><br><small>ONLINE V10 · Tạo nhóm ngay trên DATA · Tự lưu D1</small></div><div><button onclick="exportData()">↓ Sao lưu JSON</button> <button onclick="document.getElementById('restoreInput').click()">↑ Khôi phục JSON</button><input id="restoreInput" type="file" accept=".json" hidden onchange="restoreData(event)"></div><div id="cloudStatus" style="padding:3px 12px;font-size:13px;color:#d7f5dc">Đang kết nối D1...</div></header>
-<main><nav class="page-tabs"><button id="tabData" class="active" onclick="switchPage('data')">Bảng DATA · Thanh toán</button><button id="tabNcc" onclick="switchPage('ncc')">Danh mục NCC</button><button id="tabGroups" onclick="switchPage('groups')">Nhóm hợp đồng / Đơn hàng</button></nav><div id="dataPage"><h2>Danh sách đề nghị thanh toán</h2><div class="desc">Nhập và sửa trực tiếp trong bảng như Excel. Nhấn STT để chọn phiếu cần in hoặc sửa chi tiết. Đơn vị hưởng lợi có thể tìm theo tên đầy đủ hoặc viết tắt; bảng ưu tiên hiển thị tên viết tắt, phiếu in vẫn dùng tên đầy đủ. Ngân hàng có gợi ý khi gõ. NCC mới được thêm tự động vào danh mục sau khi có tên, địa chỉ, tài khoản, ngân hàng. Dữ liệu tự lưu lên Cloudflare D1. Nên sao lưu JSON định kỳ.</div>
-<div class="tools"><button class="primary" onclick="newRow()">＋ Thêm đề nghị (thêm dòng)</button><input id="search" placeholder="Tìm NCC, STT, nội dung, hóa đơn..." oninput="renderTable()"><select id="statusFilter" onchange="renderTable()"><option value="">Tất cả trạng thái</option></select><select id="groupFilter" onchange="renderTable()"><option value="">Tất cả nhóm</option></select><button onclick="printSelection()">⎙ In phiếu đang xem</button><button onclick="printChecked()">⎙ In các dòng đã tích</button><button onclick="deleteSelected()">Xóa dòng đã chọn</button><span class="count" id="count"></span></div>
-<div class="workspace"><section class="sheet-panel"><div class="panelhead"><span>DATA · Sửa trực tiếp từng ô</span><span class="selected-info">Chọn STT → chọn dòng · Tự lưu sau khi sửa</span></div><div class="sheet-scroll"><table class="grid"><thead><tr><th>✓</th><th>A · STT</th><th>B · Đơn vị hưởng lợi (viết tắt)</th><th>Nhóm hợp đồng / Đơn hàng (gõ để tạo)</th><th>C · Nội dung chuyển tiền</th><th>D · Hàng hóa / dịch vụ</th><th>E · Số hóa đơn</th><th>F · Số tiền</th><th>G · Tiền tệ</th><th>H · Hồ sơ đi kèm</th><th>I · Ngày</th><th>J · Loại thanh toán</th><th>K · Trạng thái</th><th>L · Bổ sung hồ sơ</th><th>M · Địa chỉ</th><th>N · Tài khoản</th><th>O · Ngân hàng ▾</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="alert" id="notice"></div></section>
-</div><details class="detail-inline"><summary>Chi tiết nhiều hóa đơn / hàng hóa của dòng đang chọn (bấm để mở)</summary><p class="subnote">Chọn STT trong bảng rồi chỉnh sửa các dòng chi tiết tại đây. Không có khung xem trước phiếu.</p><div id="lines"></div><button class="btn" onclick="addLine()">＋ Thêm dòng hàng hóa</button></details></div>
-<div id="groupsPage" class="hidden-view"><h2>Nhóm thanh toán theo hợp đồng / đơn hàng</h2><div class="ncc-help">Có thể tạo nhóm ngay trong cột Nhóm hợp đồng trên bảng DATA bằng cách gõ mã mới và nhấn Tab hoặc Enter. Bạn cũng có thể quản lý đầy đủ thông tin nhóm tại đây. “Đã trả” gồm Done và các trạng thái Đã thanh toán; các phiếu chưa rõ trạng thái được tính vào phần chưa xác nhận.</div><div class="tools"><button class="primary" onclick="addGroup()">＋ Thêm nhóm</button><input id="groupSearch" placeholder="Tìm mã nhóm, hợp đồng, NCC..." oninput="renderGroups()"><span id="groupCount" class="count"></span></div><div class="ncc-panel"><div class="ncc-wrapper"><table class="ncc-table group-table"><thead><tr><th>Mã nhóm</th><th>Tên hợp đồng / đơn hàng</th><th>Đơn vị hưởng lợi</th><th>Giá trị hợp đồng</th><th>Tiền tệ</th><th>Đã trả</th><th>Chờ đi tiền / chưa rõ</th><th>Còn lại</th><th>Số phiếu</th><th>Thao tác</th></tr></thead><tbody id="groupsBody"></tbody></table></div></div><div class="group-note">Số còn lại = giá trị hợp đồng − các phiếu xác nhận đã thanh toán. Phiếu chưa thanh toán không làm giảm số còn lại. Không gộp nhiều loại tiền tệ.</div></div>
-<div id="nccPage" class="hidden-view"><h2>Danh mục nhà cung cấp / Đơn vị hưởng lợi</h2><div class="ncc-help">Tương đương sheet NCC trong Excel. Có thể bổ sung tên viết tắt để tìm và hiển thị ở bảng DATA; phiếu in vẫn dùng tên đầy đủ. Nhấn Tab để chuyển ô. Cập nhật danh mục không tự ghi đè thông tin ngân hàng của các phiếu đã tạo.</div><div class="tools"><button class="primary" onclick="addNcc()">＋ Thêm nhà cung cấp</button><input id="nccSearch" placeholder="Tìm tên đầy đủ, tên viết tắt, tài khoản, ngân hàng..." oninput="renderNcc()" style="min-width:360px"><span id="nccCount" class="count"></span></div><section class="ncc-panel"><div class="panelhead">NCC · Danh mục đơn vị hưởng lợi</div><div class="ncc-wrapper"><table class="ncc-table"><thead><tr><th style="width:54px">STT</th><th style="min-width:290px">Tên đơn vị hưởng lợi (đầy đủ)</th><th style="min-width:155px">Tên viết tắt</th><th style="min-width:360px">Địa chỉ</th><th style="min-width:200px">Số tài khoản</th><th style="min-width:310px">Ngân hàng</th><th style="width:86px">Thao tác</th></tr></thead><tbody id="nccBody"></tbody></table></div></section></div>
-<datalist id="groupList"></datalist><datalist id="beneficiaryList"></datalist><datalist id="bankList"></datalist></main><div id="printArea"></div>
-<div id="docOverlay" class="doc-overlay" hidden><div class="doc-modal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle"><div class="doc-top"><strong id="docModalTitle">Hồ sơ / chứng từ đi kèm</strong><button type="button" onclick="closeDocModal()" aria-label="Đóng">✕</button></div><div class="doc-hint" id="docRequestName"></div><div id="modalDocs" class="doc-options"></div><div class="doc-add"><input id="newDocType" placeholder="Nhập tên hồ sơ chưa có trong danh sách" onkeydown="if(event.key==='Enter'){event.preventDefault();addDocType()}"><button type="button" onclick="addDocType()">＋ Thêm hồ sơ</button></div><div class="doc-foot"><span>Đã chọn: <b id="docCount">0</b></span><button type="button" class="primary" onclick="closeDocModal()">Hoàn tất</button></div></div></div>
+<header>
+  <div>
+    <b>PHENIKAA · QUẢN LÝ ĐỀ NGHỊ THANH TOÁN</b><br>
+    <small>HỆ THỐNG PHÂN QUYỀN V11 · BẢO MẬT & PHÊ DUYỆT TRỰC TUYẾN D1</small>
+  </div>
+  <div class="header-actions">
+    <div id="userProfile" class="user-profile" style="display:none">
+      <span>👤 <b id="userFullName">Đang nạp...</b></span>
+      <span id="userRoleBadge" class="user-badge badge-admin">Admin</span>
+      <button onclick="openChangePassModal()" title="Đổi mật khẩu tài khoản">🔑 Đổi MK</button>
+      <button id="btnAdminUsers" style="display:none" onclick="openUserModal()" title="Quản lý người dùng hệ thống">👥 Quản lý User</button>
+      <button onclick="logout()" title="Đăng xuất khỏi hệ thống">🚪 Thoát</button>
+    </div>
+    <button id="btnExport" onclick="exportData()">↓ Sao lưu JSON</button>
+    <button id="btnRestore" onclick="document.getElementById('restoreInput').click()">↑ Khôi phục JSON</button>
+    <input id="restoreInput" type="file" accept=".json" hidden onchange="restoreData(event)">
+  </div>
+  <div id="cloudStatus" style="padding:3px 12px;font-size:13px;color:#d7f5dc">Đang kết nối...</div>
+</header>
+
+<main>
+  <div id="roleBanner" class="role-banner" style="display:none">
+    <span id="roleBannerText">🔒 Bạn đang đăng nhập với vai trò...</span>
+    <span id="roleBannerHelp" style="font-size:11px;opacity:.9"></span>
+  </div>
+
+  <nav class="page-tabs">
+    <button id="tabData" class="active" onclick="switchPage('data')">Bảng DATA · Thanh toán</button>
+    <button id="tabNcc" onclick="switchPage('ncc')">Danh mục NCC</button>
+    <button id="tabGroups" onclick="switchPage('groups')">Nhóm hợp đồng / Đơn hàng</button>
+  </nav>
+
+  <div id="dataPage">
+    <h2>Danh sách đề nghị thanh toán</h2>
+    <div class="desc">
+      Nhập và sửa trực tiếp trong bảng như Excel. Nhấn STT để chọn phiếu cần in hoặc sửa chi tiết. 
+      Đơn vị hưởng lợi tìm theo tên đầy đủ hoặc viết tắt; bảng ưu tiên hiển thị tên viết tắt, phiếu in dùng tên đầy đủ. 
+      Dữ liệu tự lưu đồng bộ Cloudflare D1 theo phân quyền.
+    </div>
+    <div class="tools">
+      <button class="primary" id="btnNewRow" onclick="newRow()">＋ Thêm đề nghị (thêm dòng)</button>
+      <input id="search" placeholder="Tìm NCC, STT, nội dung, hóa đơn..." oninput="renderTable()">
+      <select id="statusFilter" onchange="renderTable()"><option value="">Tất cả trạng thái</option></select>
+      <select id="groupFilter" onchange="renderTable()"><option value="">Tất cả nhóm</option></select>
+      <button onclick="printSelection()">⎙ In phiếu đang xem</button>
+      <button onclick="printChecked()">⎙ In các dòng đã tích</button>
+      <button class="btn-danger" id="btnDeleteSelected" onclick="deleteSelected()">Xóa dòng đã chọn</button>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="workspace">
+      <section class="sheet-panel">
+        <div class="panelhead">
+          <span>DATA · Sửa trực tiếp từng ô</span>
+          <span class="selected-info">Chọn STT → chọn dòng · Tự lưu sau khi sửa</span>
+        </div>
+        <div class="sheet-scroll">
+          <table class="grid">
+            <thead>
+              <tr>
+                <th>✓</th>
+                <th>A · STT</th>
+                <th>B · Đơn vị hưởng lợi (viết tắt)</th>
+                <th>Nhóm hợp đồng / Đơn hàng (gõ để tạo)</th>
+                <th>C · Nội dung chuyển tiền</th>
+                <th>D · Hàng hóa / dịch vụ</th>
+                <th>E · Số hóa đơn</th>
+                <th>F · Số tiền</th>
+                <th>G · Tiền tệ</th>
+                <th>H · Hồ sơ đi kèm</th>
+                <th>I · Ngày</th>
+                <th>J · Loại thanh toán</th>
+                <th>K · Trạng thái ▾</th>
+                <th>L · Bổ sung hồ sơ</th>
+                <th>M · Địa chỉ</th>
+                <th>N · Tài khoản</th>
+                <th>O · Ngân hàng ▾</th>
+                <th>Người tạo</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="alert" id="notice"></div>
+      </section>
+    </div>
+
+    <details class="detail-inline">
+      <summary>Chi tiết nhiều hóa đơn / hàng hóa của dòng đang chọn (bấm để mở)</summary>
+      <p class="subnote">Chọn STT trong bảng rồi chỉnh sửa các dòng chi tiết tại đây.</p>
+      <div id="lines"></div>
+      <button class="btn" id="btnAddLine" onclick="addLine()">＋ Thêm dòng hàng hóa</button>
+    </details>
+  </div>
+
+  <div id="groupsPage" class="hidden-view">
+    <h2>Nhóm thanh toán theo hợp đồng / đơn hàng</h2>
+    <div class="ncc-help">
+      Có thể tạo nhóm ngay trong cột Nhóm hợp đồng trên bảng DATA bằng cách gõ mã mới và nhấn Tab hoặc Enter. 
+      “Đã trả” gồm Done và các trạng thái Đã thanh toán.
+    </div>
+    <div class="tools">
+      <button class="primary" id="btnAddGroup" onclick="addGroup()">＋ Thêm nhóm</button>
+      <input id="groupSearch" placeholder="Tìm mã nhóm, hợp đồng, NCC..." oninput="renderGroups()">
+      <span id="groupCount" class="count"></span>
+    </div>
+    <div class="ncc-panel">
+      <div class="ncc-wrapper">
+        <table class="ncc-table group-table">
+          <thead>
+            <tr>
+              <th>Mã nhóm</th>
+              <th>Tên hợp đồng / đơn hàng</th>
+              <th>Đơn vị hưởng lợi</th>
+              <th>Giá trị hợp đồng</th>
+              <th>Tiền tệ</th>
+              <th>Đã trả</th>
+              <th>Chờ đi tiền / chưa rõ</th>
+              <th>Còn lại</th>
+              <th>Số phiếu</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="groupsBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="group-note">Số còn lại = giá trị hợp đồng − các phiếu xác nhận đã thanh toán.</div>
+  </div>
+
+  <div id="nccPage" class="hidden-view">
+    <h2>Danh mục nhà cung cấp / Đơn vị hưởng lợi</h2>
+    <div class="ncc-help">Có thể bổ sung tên viết tắt để tìm và hiển thị ở bảng DATA; phiếu in vẫn dùng tên đầy đủ.</div>
+    <div class="tools">
+      <button class="primary" id="btnAddNcc" onclick="addNcc()">＋ Thêm nhà cung cấp</button>
+      <input id="nccSearch" placeholder="Tìm tên đầy đủ, tên viết tắt, tài khoản, ngân hàng..." oninput="renderNcc()" style="min-width:360px">
+      <span id="nccCount" class="count"></span>
+    </div>
+    <section class="ncc-panel">
+      <div class="panelhead">NCC · Danh mục đơn vị hưởng lợi</div>
+      <div class="ncc-wrapper">
+        <table class="ncc-table">
+          <thead>
+            <tr>
+              <th style="width:54px">STT</th>
+              <th style="min-width:290px">Tên đơn vị hưởng lợi (đầy đủ)</th>
+              <th style="min-width:155px">Tên viết tắt</th>
+              <th style="min-width:360px">Địa chỉ</th>
+              <th style="min-width:200px">Số tài khoản</th>
+              <th style="min-width:310px">Ngân hàng</th>
+              <th style="width:86px">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="nccBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <datalist id="groupList"></datalist>
+  <datalist id="beneficiaryList"></datalist>
+  <datalist id="bankList"></datalist>
+</main>
+
+<div id="printArea"></div>
+
+<!-- Modal Đính kèm Hồ sơ -->
+<div id="docOverlay" class="doc-overlay" hidden>
+  <div class="doc-modal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle">
+    <div class="doc-top">
+      <strong id="docModalTitle">Hồ sơ / chứng từ đi kèm</strong>
+      <button type="button" onclick="closeDocModal()" aria-label="Đóng">✕</button>
+    </div>
+    <div class="doc-hint" id="docRequestName"></div>
+    <div id="modalDocs" class="doc-options"></div>
+    <div class="doc-add">
+      <input id="newDocType" placeholder="Nhập tên hồ sơ chưa có trong danh sách" onkeydown="if(event.key==='Enter'){event.preventDefault();addDocType()}">
+      <button type="button" onclick="addDocType()">＋ Thêm hồ sơ</button>
+    </div>
+    <div class="doc-foot">
+      <span>Đã chọn: <b id="docCount">0</b></span>
+      <button type="button" class="primary" onclick="closeDocModal()">Hoàn tất</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ĐĂNG NHẬP -->
+<div id="loginOverlay" class="modal-overlay">
+  <div class="modal-card" style="max-width:440px">
+    <div class="modal-top">
+      <strong style="color:var(--primary)">🔐 ĐĂNG NHẬP HỆ THỐNG</strong>
+    </div>
+    <p style="font-size:12px;color:#64748b;margin:8px 0 14px">
+      Công ty Cổ phần Dược phẩm Phenikaa · Vui lòng nhập tài khoản để làm việc.
+    </p>
+
+    <div id="loginMsg" class="auth-msg"></div>
+
+    <form onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label for="loginUser">Tên đăng nhập</label>
+        <input id="loginUser" autocomplete="username" required placeholder="admin / approver / nhanvien">
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Mật khẩu</label>
+        <input id="loginPass" type="password" autocomplete="current-password" required placeholder="Nhập mật khẩu">
+      </div>
+      
+      <div style="font-size:11px;color:#475569;margin-bottom:6px">Tài khoản mặc định thử nghiệm nhanh:</div>
+      <div class="quick-users">
+        <button type="button" onclick="setQuickLogin('admin','admin@phenikaa')">👑 Admin</button>
+        <button type="button" onclick="setQuickLogin('approver','duyet@phenikaa')">✍️ Người duyệt</button>
+        <button type="button" onclick="setQuickLogin('nhanvien','nhanvien@phenikaa')">📝 Người đề nghị</button>
+      </div>
+
+      <div class="modal-foot">
+        <span style="font-size:11px;color:#94a3b8">Bảo mật Cloudflare D1</span>
+        <button type="submit" class="primary" id="btnLoginSubmit" style="padding:10px 20px">Đăng nhập</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal ĐỔI MẬT KHẨU -->
+<div id="changePassOverlay" class="modal-overlay" hidden>
+  <div class="modal-card" style="max-width:420px">
+    <div class="modal-top">
+      <strong>🔑 Đổi mật khẩu tài khoản</strong>
+      <button type="button" onclick="closeChangePassModal()">✕</button>
+    </div>
+    <div id="changePassMsg" class="auth-msg"></div>
+    <form onsubmit="doChangePassword(event)" style="margin-top:14px">
+      <div class="form-group">
+        <label>Mật khẩu hiện tại</label>
+        <input id="oldPass" type="password" required>
+      </div>
+      <div class="form-group">
+        <label>Mật khẩu mới (tối thiểu 4 ký tự)</label>
+        <input id="newPass" type="password" required minlength="4">
+      </div>
+      <div class="form-group">
+        <label>Xác nhận mật khẩu mới</label>
+        <input id="confirmPass" type="password" required minlength="4">
+      </div>
+      <div class="modal-foot">
+        <button type="button" onclick="closeChangePassModal()">Hủy</button>
+        <button type="submit" class="primary">Xác nhận đổi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal QUẢN LÝ NGƯỜI DÙNG (ADMIN) -->
+<div id="userModalOverlay" class="modal-overlay" hidden>
+  <div class="modal-card" style="max-width:760px">
+    <div class="modal-top">
+      <strong>👥 Quản lý người dùng & phân quyền hệ thống</strong>
+      <button type="button" onclick="closeUserModal()">✕</button>
+    </div>
+    <p style="font-size:12px;color:#64748b;margin:6px 0 14px">
+      Quản trị viên có thể tạo tài khoản mới, phân quyền (Người duyệt / Người đề nghị) và đặt lại mật khẩu.
+    </p>
+
+    <div id="userAdminMsg" class="auth-msg"></div>
+
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;background:#f8fafc">
+      <strong style="font-size:13px;color:#1e293b">＋ Tạo tài khoản người dùng mới</strong>
+      <form onsubmit="doCreateUser(event)" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;margin-top:8px;align-items:end">
+        <div>
+          <label style="font-size:11px;display:block;margin-bottom:3px">Tên đăng nhập</label>
+          <input id="newUsername" placeholder="ví dụ: ketoan01" required style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+        </div>
+        <div>
+          <label style="font-size:11px;display:block;margin-bottom:3px">Họ và tên</label>
+          <input id="newFullName" placeholder="Nguyễn Văn A" required style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+        </div>
+        <div>
+          <label style="font-size:11px;display:block;margin-bottom:3px">Vai trò</label>
+          <select id="newRole" style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+            <option value="requester">Người đề nghị</option>
+            <option value="approver">Người duyệt / Kế toán</option>
+            <option value="admin">Quản trị viên</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;display:block;margin-bottom:3px">Mật khẩu ban đầu</label>
+          <input id="newUserPass" type="password" placeholder="Mật khẩu" required minlength="4" style="padding:7px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;width:100%">
+        </div>
+        <div>
+          <button type="submit" class="primary" style="padding:7px 14px;border-radius:5px">Tạo</button>
+        </div>
+      </form>
+    </div>
+
+    <strong style="font-size:13px;color:#1e293b">Danh sách tài khoản hiện tại</strong>
+    <div style="max-height:280px;overflow:auto">
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tên đăng nhập</th>
+            <th>Họ và tên</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="modal-foot">
+      <span></span>
+      <button type="button" class="primary" onclick="closeUserModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const ORIGINAL={beneficiaries:[],requests:[]};const KEY='phenikaa-payment-offline-v1';const TYPES=['TT trước 100%','TT sau 100%','TT lần 1','TT lần 2','TT lần 3','TT lần 4'];const STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán (chờ giao hàng)','Đã giao KT, chờ đi tiền'];const DOCS=['ĐNTT','ĐNPD','Hóa đơn','Hợp đồng','BB bàn giao','Bảo lãnh','Packing List','Invoice','DQ','CO','CQ','IQ/OQ','Phụ lục','FAT','BB nghiệm thu','Bảng tổng hợp khối lượng','Khác'];
-let DB,active=null,checked=new Set(),docModalId=null;const el=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ORIGINAL={beneficiaries:[],requests:[]};
+const KEY='phenikaa-payment-offline-v1';
+const TYPES=['TT trước 100%','TT sau 100%','TT lần 1','TT lần 2','TT lần 3','TT lần 4'];
+const STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán (chờ giao hàng)','Đã giao KT, chờ đi tiền'];
+const PAID_STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán (chờ giao hàng)'];
+const DOCS=['ĐNTT','ĐNPD','Hóa đơn','Hợp đồng','BB bàn giao','Bảo lãnh','Packing List','Invoice','DQ','CO','CQ','IQ/OQ','Phụ lục','FAT','BB nghiệm thu','Bảng tổng hợp khối lượng','Khác'];
+
+let DB, active=null, checked=new Set(), docModalId=null;
+const el=id=>document.getElementById(id), esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 DB=structuredClone(ORIGINAL);
+
 let serverRevision=0, saving=false, savePending=false, loaded=false, saveFailed=false;
 const apiUrl='/api/state';
-const PAID_STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán (chờ giao hàng)'];
+const authUrl='/api/auth';
+
+// AUTH STATE
+let currentUser=null;
+let authToken=localStorage.getItem('pka_token')||'';
+
+function getAuthHeaders(){
+  const h={'Content-Type':'application/json'};
+  if(authToken)h['Authorization']='Bearer '+authToken;
+  return h;
+}
+
+function roleLabel(r){
+  return r==='admin'?'Quản trị viên':r==='approver'?'Người duyệt / Kế toán':'Người đề nghị';
+}
+
+function roleBadgeClass(r){
+  return r==='admin'?'badge-admin':r==='approver'?'badge-approver':'badge-requester';
+}
+
+function updateUserUI(){
+  if(!currentUser){
+    el('userProfile').style.display='none';
+    el('roleBanner').style.display='none';
+    return;
+  }
+  el('userProfile').style.display='flex';
+  el('userFullName').textContent=currentUser.full_name||currentUser.username;
+  const badge=el('userRoleBadge');
+  badge.textContent=roleLabel(currentUser.role);
+  badge.className='user-badge '+roleBadgeClass(currentUser.role);
+
+  if(currentUser.role==='admin'){
+    el('btnAdminUsers').style.display='inline-block';
+    el('btnRestore').style.display='inline-block';
+  } else {
+    el('btnAdminUsers').style.display='none';
+    if(currentUser.role==='requester'){
+      el('btnRestore').style.display='none'; // Người đề nghị không được quyền khôi phục DB
+    } else {
+      el('btnRestore').style.display='inline-block';
+    }
+  }
+
+  // Role Banner
+  const banner=el('roleBanner');
+  banner.style.display='flex';
+  if(currentUser.role==='admin'){
+    el('roleBannerText').innerHTML='👑 <b>Quản trị viên:</b> Bạn có toàn quyền cấu hình hệ thống, quản lý người dùng, sao lưu/khôi phục và phê duyệt thanh toán.';
+    el('roleBannerHelp').textContent='Chế độ Admin';
+  } else if(currentUser.role==='approver'){
+    el('roleBannerText').innerHTML='✍️ <b>Người duyệt / Kế toán:</b> Bạn có quyền phê duyệt đề nghị, chuyển trạng thái thanh toán, quản lý nhóm hợp đồng và NCC.';
+    el('roleBannerHelp').textContent='Chế độ Phê duyệt';
+  } else {
+    el('roleBannerText').innerHTML='📝 <b>Người đề nghị:</b> Bạn có thể tạo phiếu mới và sửa các phiếu chưa thanh toán. Chỉ Người duyệt mới có quyền hoàn tất phiếu.';
+    el('roleBannerHelp').textContent='Chế độ Nhập liệu';
+  }
+}
+
+function showLoginModal(msg=''){
+  el('loginOverlay').hidden=false;
+  if(msg){
+    const m=el('loginMsg');
+    m.textContent=msg;
+    m.className='auth-msg error';
+  }
+  el('loginUser').focus();
+}
+
+function hideLoginModal(){
+  el('loginOverlay').hidden=true;
+  el('loginMsg').className='auth-msg';
+}
+
+function setQuickLogin(u,p){
+  el('loginUser').value=u;
+  el('loginPass').value=p;
+}
+
+async function doLogin(e){
+  e.preventDefault();
+  const u=el('loginUser').value.trim();
+  const p=el('loginPass').value.trim();
+  const msg=el('loginMsg');
+  const btn=el('btnLoginSubmit');
+  btn.disabled=true;
+  btn.textContent='Đang xác thực...';
+
+  try {
+    const res=await fetch(authUrl+'?action=login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:u,password:p})
+    });
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok){
+      throw new Error(result.error||'Tài khoản hoặc mật khẩu không chính xác');
+    }
+    authToken=result.token;
+    currentUser=result.user;
+    localStorage.setItem('pka_token',authToken);
+    hideLoginModal();
+    updateUserUI();
+    message('Đăng nhập thành công với vai trò: '+roleLabel(currentUser.role));
+    await loadCloud();
+  } catch(err){
+    // Demo offline fallback if API is not available on local static server
+    if(err.message.includes('Failed to fetch')||err.message.includes('404')){
+      if(confirm('Không thể kết nối máy chủ API D1. Bạn có muốn đăng nhập chế độ Thử nghiệm ngoại tuyến (Demo) với tài khoản này không?')){
+        const role = u==='admin'?'admin':u==='approver'?'approver':'requester';
+        currentUser={id:1,username:u,full_name:u==='admin'?'Quản trị viên':u==='approver'?'Người duyệt (Kế toán)':'Trần Hải Hà (Cung ứng)',role};
+        hideLoginModal();
+        updateUserUI();
+        init();
+        return;
+      }
+    }
+    msg.textContent=err.message;
+    msg.className='auth-msg error';
+  } finally {
+    btn.disabled=false;
+    btn.textContent='Đăng nhập';
+  }
+}
+
+async function logout(){
+  if(!confirm('Bạn có chắc muốn đăng xuất?'))return;
+  try{
+    await fetch(authUrl+'?action=logout',{method:'POST',headers:getAuthHeaders()});
+  }catch{}
+  authToken='';
+  currentUser=null;
+  localStorage.removeItem('pka_token');
+  updateUserUI();
+  showLoginModal('Đã đăng xuất thành công.');
+}
+
+function openChangePassModal(){
+  el('oldPass').value='';
+  el('newPass').value='';
+  el('confirmPass').value='';
+  el('changePassMsg').className='auth-msg';
+  el('changePassOverlay').hidden=false;
+  el('oldPass').focus();
+}
+
+function closeChangePassModal(){
+  el('changePassOverlay').hidden=true;
+}
+
+async function doChangePassword(e){
+  e.preventDefault();
+  const oldPassword=el('oldPass').value;
+  const newPassword=el('newPass').value;
+  const confirmPassword=el('confirmPass').value;
+  const msg=el('changePassMsg');
+
+  if(newPassword!==confirmPassword){
+    msg.textContent='Mật khẩu mới và xác nhận mật khẩu không khớp';
+    msg.className='auth-msg error';
+    return;
+  }
+
+  try {
+    const res=await fetch(authUrl+'?action=change-password',{
+      method:'POST',
+      headers:getAuthHeaders(),
+      body:JSON.stringify({oldPassword,newPassword})
+    });
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok){
+      throw new Error(result.error||'Không thể đổi mật khẩu');
+    }
+    msg.textContent='Đổi mật khẩu thành công!';
+    msg.className='auth-msg success';
+    setTimeout(closeChangePassModal,1500);
+  } catch(err){
+    msg.textContent=err.message;
+    msg.className='auth-msg error';
+  }
+}
+
+async function openUserModal(){
+  if(currentUser?.role!=='admin')return alert('Chỉ Quản trị viên mới có quyền này.');
+  el('userModalOverlay').hidden=false;
+  el('userAdminMsg').className='auth-msg';
+  await loadUsersList();
+}
+
+function closeUserModal(){
+  el('userModalOverlay').hidden=true;
+}
+
+async function loadUsersList(){
+  const tbody=el('userTableBody');
+  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:12px;color:#64748b">Đang tải danh sách người dùng...</td></tr>';
+  try {
+    const res=await fetch(authUrl+'?action=users',{headers:getAuthHeaders()});
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok)throw new Error(result.error||'Không tải được danh sách');
+    const users=result.users||[];
+    tbody.innerHTML=users.map(u=>`
+      <tr>
+        <td>${esc(u.id)}</td>
+        <td><b>${esc(u.username)}</b></td>
+        <td>${esc(u.full_name)}</td>
+        <td><span class="user-badge ${roleBadgeClass(u.role)}">${roleLabel(u.role)}</span></td>
+        <td>${u.is_active===1?'<span style="color:#16a34a">● Hoạt động</span>':'<span style="color:#dc2626">○ Đã khóa</span>'}</td>
+        <td>
+          <button class="btn" style="padding:4px 8px;font-size:11px" onclick="promptResetPass(${u.id},'${esc(u.username)}')">Đặt lại MK</button>
+          ${u.id===currentUser.id?'':'<button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="deleteUser('+u.id+',\''+esc(u.username)+'\')">Xóa</button>'}
+        </td>
+      </tr>
+    `).join('');
+  } catch(err){
+    tbody.innerHTML=`<tr><td colspan="6" style="color:#dc2626;padding:12px">${esc(err.message)}</td></tr>`;
+  }
+}
+
+async function doCreateUser(e){
+  e.preventDefault();
+  const username=el('newUsername').value.trim();
+  const full_name=el('newFullName').value.trim();
+  const role=el('newRole').value;
+  const password=el('newUserPass').value.trim();
+  const msg=el('userAdminMsg');
+
+  try {
+    const res=await fetch(authUrl+'?action=create-user',{
+      method:'POST',
+      headers:getAuthHeaders(),
+      body:JSON.stringify({username,full_name,role,password})
+    });
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok)throw new Error(result.error||'Không thể tạo tài khoản');
+    msg.textContent='Đã tạo người dùng mới: '+username;
+    msg.className='auth-msg success';
+    el('newUsername').value='';
+    el('newFullName').value='';
+    el('newUserPass').value='';
+    await loadUsersList();
+  } catch(err){
+    msg.textContent=err.message;
+    msg.className='auth-msg error';
+  }
+}
+
+async function promptResetPass(id,username){
+  const newPass=prompt('Nhập mật khẩu mới cho tài khoản '+username+' (tối thiểu 4 ký tự):');
+  if(newPass===null)return;
+  if(newPass.trim().length<4)return alert('Mật khẩu phải từ 4 ký tự trở lên.');
+  try {
+    const u=await fetch(authUrl+'?action=users',{headers:getAuthHeaders()}).then(r=>r.json());
+    const target=(u.users||[]).find(x=>x.id===id);
+    if(!target)return;
+    const res=await fetch(authUrl+'?action=update-user',{
+      method:'POST',
+      headers:getAuthHeaders(),
+      body:JSON.stringify({id,full_name:target.full_name,role:target.role,is_active:target.is_active,newPassword:newPass.trim()})
+    });
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok)throw new Error(result.error||'Không thể cập nhật mật khẩu');
+    alert('Đã đặt lại mật khẩu cho tài khoản '+username+' thành công.');
+  } catch(err){
+    alert('Lỗi: '+err.message);
+  }
+}
+
+async function deleteUser(id,username){
+  if(!confirm('Bạn có chắc muốn xóa tài khoản: '+username+'?'))return;
+  try {
+    const res=await fetch(authUrl+'?action=delete-user',{
+      method:'POST',
+      headers:getAuthHeaders(),
+      body:JSON.stringify({id})
+    });
+    const result=await res.json().catch(()=>({}));
+    if(!res.ok||!result.ok)throw new Error(result.error||'Không thể xóa');
+    await loadUsersList();
+  } catch(err){
+    alert('Lỗi: '+err.message);
+  }
+}
+
 function groups(){if(!Array.isArray(DB.payment_groups))DB.payment_groups=[];return DB.payment_groups}
 function groupById(id){return groups().find(g=>String(g.id)===String(id))}
 function groupTotals(g){let rows=DB.requests.filter(x=>String(x.group_id||'')===String(g.id));let paid=0,pending=0;for(const x of rows){let v=Number(x.amount||0);if(!Number.isFinite(v))continue;if(PAID_STATUSES.includes(x.status))paid+=v;else pending+=v;}return {paid,pending,remaining:Number(g.total_amount||0)-paid,count:rows.length}}
 function moneyGroup(n){return Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2})}
 function refreshGroupOptions(){const cur=el('groupFilter')?.value||'';if(el('groupFilter')){el('groupFilter').innerHTML='<option value="">Tất cả nhóm</option>'+groups().map(g=>`<option value="${esc(g.id)}">${esc(g.code||g.name||g.id)}</option>`).join('');el('groupFilter').value=groups().some(g=>String(g.id)===cur)?cur:'';}if(el('groupList'))el('groupList').innerHTML=groups().map(g=>`<option value="${esc(g.code)}"></option>`).join('')}
+
 function setGroupForRequest(id,value){
  let x=request(id);if(!x)return;
  const raw=String(value||'').trim();
@@ -53,6 +770,7 @@ function setGroupForRequest(id,value){
  x.group_id=g?g.id:null;active=id;
  refreshGroupOptions();save();renderTable();renderGroups();
 }
+
 function addGroup(){let code=prompt('Nhập mã nhóm/hợp đồng (không trùng), ví dụ HD-2026-089:');if(code===null)return;code=code.trim();if(!code)return alert('Cần mã nhóm');if(groups().some(g=>normName(g.code)===normName(code)))return alert('Mã nhóm đã tồn tại');let id=Math.max(0,...groups().map(g=>Number(g.id)||0))+1;groups().push({id,code,name:'',payee_name:'',total_amount:'0',currency:'VND'});save();refreshGroupOptions();renderTable();switchPage('groups');renderGroups();}
 function editGroup(id,key,value){let g=groupById(id);if(!g)return;value=String(value).trim();if(key==='code'){if(!value||groups().some(z=>z!==g&&normName(z.code)===normName(value))){alert('Mã nhóm không được trống hoặc trùng');renderGroups();return}}if(key==='total_amount'){let n=Number(plainAmount(value));if(!Number.isFinite(n)||n<0){alert('Giá trị không hợp lệ');renderGroups();return}value=String(n)}if(key==='currency'&&DB.requests.some(x=>String(x.group_id)===String(id)&&x.currency!==value)){alert('Có phiếu thuộc nhóm đang dùng tiền tệ khác. Không thể đổi.');renderGroups();return}g[key]=value;save();refreshGroupOptions();renderGroups();renderTable()}
 function deleteGroup(id){let g=groupById(id);if(!g)return;if(DB.requests.some(x=>String(x.group_id)===String(id))){alert('Nhóm đang có phiếu liên kết. Hãy chuyển các phiếu sang nhóm khác trước khi xóa.');return}if(!confirm('Xóa nhóm '+g.code+'?'))return;DB.payment_groups=groups().filter(z=>String(z.id)!==String(id));save();refreshGroupOptions();renderGroups();renderTable()}
@@ -60,24 +778,91 @@ function showGroup(id){switchPage('data');el('groupFilter').value=String(id);ren
 function renderGroups(){let target=el('groupsBody');if(!target)return;let q=normName(el('groupSearch')?.value||'');let gg=groups().filter(g=>!q||normName([g.code,g.name,g.payee_name].join(' ')).includes(q));el('groupCount').textContent=gg.length+' / '+groups().length+' nhóm';target.innerHTML=gg.map(g=>{let t=groupTotals(g),input=(k,w)=>`<input class="ncc-cell" style="min-width:${w}px" value="${esc(g[k]||'')}" onchange="editGroup(${g.id},'${k}',this.value)">`;return `<tr><td>${input('code',115)}</td><td>${input('name',230)}</td><td>${input('payee_name',230)}</td><td>${input('total_amount',130)}</td><td><select onchange="editGroup(${g.id},'currency',this.value)">${['VND','USD','EUR'].map(c=>`<option ${g.currency===c?'selected':''}>${c}</option>`).join('')}</select></td><td style="white-space:nowrap">${moneyGroup(t.paid)} ${esc(g.currency)}</td><td style="white-space:nowrap">${moneyGroup(t.pending)} ${esc(g.currency)}</td><td style="white-space:nowrap;color:${t.remaining<0?'#b91c1c':'#145a32'}">${moneyGroup(t.remaining)} ${esc(g.currency)}</td><td><button class="btn" onclick="showGroup(${g.id})">${t.count} phiếu ↗</button></td><td><button class="btn" onclick="deleteGroup(${g.id})">Xóa</button></td></tr>`}).join('')}
 
 function syncStatus(s,color){const node=el('cloudStatus');if(node){node.textContent=s;node.style.color=color||'#d7f5dc'}}
+
 async function loadCloud(){
- try{syncStatus('Đang tải dữ liệu...');let response=await fetch(apiUrl,{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);
- let result=await response.json();if(!result.ok)throw Error(result.error||'Không đọc được dữ liệu');
- DB=result.data&&Array.isArray(result.data.requests)&&Array.isArray(result.data.beneficiaries)?result.data:structuredClone(ORIGINAL);
- serverRevision=result.revision||0;loaded=true;init();syncStatus('✓ Đã kết nối · '+DB.requests.length+' phiếu');
- if(!DB.requests.length)message('Dữ liệu D1 đang trống. Hãy bấm Khôi phục JSON và nhập file KHOI_TAO để tải dữ liệu gốc lên.');
- }catch(err){loaded=false;syncStatus('⚠ Không kết nối D1','#ffcccc');alert('Chưa thể kết nối dữ liệu Cloudflare D1: '+err.message+'\nKiểm tra D1 binding tên DB và triển khai lại. Không thể sửa khi mất kết nối.');}
+  if(!authToken){
+    showLoginModal();
+    return;
+  }
+  try{
+    syncStatus('Đang tải dữ liệu...');
+    let response=await fetch(apiUrl,{headers:getAuthHeaders(),cache:'no-store'});
+    if(response.status===401){
+      authToken='';
+      localStorage.removeItem('pka_token');
+      showLoginModal('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
+      return;
+    }
+    if(!response.ok)throw Error('HTTP '+response.status);
+    let result=await response.json();
+    if(!result.ok)throw Error(result.error||'Không đọc được dữ liệu');
+    DB=result.data&&Array.isArray(result.data.requests)&&Array.isArray(result.data.beneficiaries)?result.data:structuredClone(ORIGINAL);
+    serverRevision=result.revision||0;
+    loaded=true;
+    if(result.currentUser){
+      currentUser=result.currentUser;
+      updateUserUI();
+    }
+    init();
+    syncStatus('✓ Đã kết nối · '+DB.requests.length+' phiếu');
+    if(!DB.requests.length)message('Dữ liệu D1 đang trống.');
+  }catch(err){
+    loaded=false;
+    syncStatus('⚠ Không kết nối D1','#ffcccc');
+    // If not logged in, show login modal
+    if(!currentUser)showLoginModal('Chưa kết nối Cloudflare D1. Đăng nhập để sử dụng.');
+  }
 }
+
 function save(){if(!loaded){message('Chưa kết nối dữ liệu máy chủ; thao tác không được lưu.');return}savePending=true;syncStatus('● Đang lưu...');if(!saving)flushSave()}
-async function flushSave(){if(saving)return;saving=true;
- while(savePending){savePending=false;let payload=JSON.stringify({revision:serverRevision,data:DB});
- try{let res=await fetch(apiUrl,{method:'PUT',headers:{'Content-Type':'application/json'},body:payload});
- let result=await res.json().catch(()=>({}));if(res.status===409){saveFailed=true;savePending=false;syncStatus('⚠ Xung đột phiên chỉnh sửa','#ffcccc');alert('Dữ liệu trên máy chủ đã thay đổi từ nơi khác. Hãy sao lưu JSON trước, sau đó tải lại trang để tránh ghi đè.');break}
- if(!res.ok||!result.ok)throw Error(result.error||'HTTP '+res.status);
- serverRevision=result.revision;saveFailed=false;syncStatus('✓ Đã lưu lên Cloudflare');
- }catch(err){saveFailed=true;savePending=false;syncStatus('⚠ Lưu thất bại','#ffcccc');alert('Chưa lưu lên Cloudflare: '+err.message+'\nHãy dùng nút Sao lưu JSON để giữ dữ liệu trước khi tải lại trang.');break}
- }saving=false;
+
+async function flushSave(){
+  if(saving)return;
+  saving=true;
+  while(savePending){
+    savePending=false;
+    let payload=JSON.stringify({revision:serverRevision,data:DB});
+    try{
+      let res=await fetch(apiUrl,{
+        method:'PUT',
+        headers:getAuthHeaders(),
+        body:payload
+      });
+      if(res.status===401){
+        saveFailed=true;savePending=false;
+        syncStatus('⚠ Phiên hết hạn','#ffcccc');
+        showLoginModal('Phiên đăng nhập đã hết hạn.');
+        break;
+      }
+      if(res.status===403){
+        saveFailed=true;savePending=false;
+        let result=await res.json().catch(()=>({}));
+        syncStatus('⚠ Không đủ quyền','#ffcccc');
+        alert(result.error||'Bạn không có quyền thực hiện thao tác này.');
+        await loadCloud();
+        break;
+      }
+      let result=await res.json().catch(()=>({}));
+      if(res.status===409){
+        saveFailed=true;savePending=false;
+        syncStatus('⚠ Xung đột phiên','#ffcccc');
+        alert('Dữ liệu trên máy chủ đã thay đổi từ nơi khác. Hãy sao lưu JSON trước, sau đó tải lại trang.');
+        break;
+      }
+      if(!res.ok||!result.ok)throw Error(result.error||'HTTP '+res.status);
+      serverRevision=result.revision;
+      saveFailed=false;
+      syncStatus('✓ Đã lưu D1');
+    }catch(err){
+      saveFailed=true;savePending=false;
+      syncStatus('⚠ Lưu thất bại','#ffcccc');
+      alert('Chưa lưu lên Cloudflare: '+err.message);
+      break;
+    }
+  }
+  saving=false;
 }
+
 window.addEventListener('beforeunload',e=>{if(saving||savePending||saveFailed){e.preventDefault();e.returnValue='Dữ liệu có thể chưa được lưu';}});
 
 function message(s){el('notice').textContent=s;el('notice').style.display='block';setTimeout(()=>el('notice').style.display='none',5500)}
@@ -87,46 +872,224 @@ function opts(a,v){return '<option value=""></option>'+a.map(s=>`<option value="
 function beneficiaryForRequest(x){return DB.beneficiaries.find(b=>String(b.id)===String(x.beneficiary_id))||DB.beneficiaries.find(b=>normName(b.name)===normName(x.payee_name))||null}
 function beneficiaryDisplay(x){let b=beneficiaryForRequest(x);return b&&String(b.short_name||'').trim()?b.short_name:x.payee_name}
 function findBeneficiary(v){let k=normName(v);return DB.beneficiaries.find(b=>normName(b.name)===k)||DB.beneficiaries.find(b=>b.short_name&&normName(b.short_name)===k)||null}
-function renderTable(){let q=el('search').value.toLocaleLowerCase('vi'),st=el('statusFilter').value,gf=el('groupFilter').value;let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.item_name].join(' ').toLocaleLowerCase('vi').includes(q)));el('count').textContent=list.length+' / '+DB.requests.length+' đề nghị';el('tbody').innerHTML=list.map(x=>{let field=(k,w=150)=>`<td style="min-width:${w}px"><input class="cell-editor" aria-label="${k}" value="${esc(k==='payee_name'?beneficiaryDisplay(x):x[k])}" onchange="setField(${x.id},'${k}',this.value)" ${k==='payee_name'?'list="beneficiaryList"':k==='bank'?'list="bankList"':''}></td>`;let sl=(k,a,w)=>`<td style="min-width:${w}px"><select class="cell-editor" onchange="setField(${x.id},'${k}',this.value)">${opts(a,x[k])}</select></td>`;return `<tr class="${x.id===active?'chosen':''}"><td><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td><td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>${field('payee_name',255)}<td style="min-width:200px"><input class="cell-editor group-entry" list="groupList" aria-label="Nhóm hợp đồng, gõ mã mới để tạo" title="Chọn nhóm hoặc gõ mã mới, nhấn Tab/Enter để tạo và liên kết" placeholder="Chọn / gõ mã nhóm mới" value="${esc(groupById(x.group_id)?.code||'')}" onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"></td>${field('description',385)}${field('item_name',230)}${field('invoice_no',138)}<td class="edit-amount" style="min-width:145px"><input class="cell-editor" value="${esc(x.amount)}" onchange="setAmount(${x.id},this.value)"></td>${sl('currency',['VND','USD','EUR'],100)}<td style="min-width:170px"><button class="doc-cell-btn cell-editor" title="Chọn hồ sơ đi kèm" onclick="openDocModal(${x.id})">📎 ${(x.documents||[]).length} hồ sơ ▾</button></td><td style="min-width:145px"><input class="cell-editor" type="date" aria-label="Ngày đề nghị" value="${esc(x.request_date||'')}" onchange="setField(${x.id},'request_date',this.value)"></td>${sl('payment_type',TYPES,155)}${sl('status',STATUSES,220)}${field('followup',190)}${field('address',280)}${field('account_no',170)}${field('bank',240)}</tr>`}).join('')}
+
+function renderTable(){
+  let q=el('search').value.toLocaleLowerCase('vi'),st=el('statusFilter').value,gf=el('groupFilter').value;
+  let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.item_name,x.created_by_name].join(' ').toLocaleLowerCase('vi').includes(q)));
+  el('count').textContent=list.length+' / '+DB.requests.length+' đề nghị';
+
+  const isRequester=currentUser?.role==='requester';
+
+  el('tbody').innerHTML=list.map(x=>{
+    const isPaid=PAID_STATUSES.includes(x.status);
+    const disabledForRequester=isRequester&&isPaid;
+
+    let field=(k,w=150)=>{
+      return `<td class="${disabledForRequester?'cell-disabled':''}" style="min-width:${w}px">
+        <input class="cell-editor" aria-label="${k}" value="${esc(k==='payee_name'?beneficiaryDisplay(x):x[k])}" 
+        ${disabledForRequester?'readonly title="Phiếu đã duyệt/thanh toán, không thể sửa"':''}
+        onchange="setField(${x.id},'${k}',this.value)" ${k==='payee_name'?'list="beneficiaryList"':k==='bank'?'list="bankList"':''}>
+      </td>`;
+    };
+
+    let sl=(k,a,w)=>{
+      // Trạng thái: Người đề nghị không được chọn các trạng thái Done / Đã thanh toán
+      let optionsList=a;
+      if(k==='status'&&isRequester){
+        optionsList=['Đã giao KT, chờ đi tiền'];
+        if(x.status&&!optionsList.includes(x.status))optionsList=[x.status,...optionsList];
+      }
+      return `<td class="${disabledForRequester?'cell-disabled':''}" style="min-width:${w}px">
+        <select class="cell-editor" ${disabledForRequester||(k==='status'&&isRequester)?'disabled title="Chỉ Người duyệt mới có quyền chuyển trạng thái này"':''} onchange="setField(${x.id},'${k}',this.value)">
+          ${opts(optionsList,x[k])}
+        </select>
+      </td>`;
+    };
+
+    return `<tr class="${x.id===active?'chosen':''}">
+      <td><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td>
+      <td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>
+      ${field('payee_name',255)}
+      <td style="min-width:200px" class="${disabledForRequester?'cell-disabled':''}">
+        <input class="cell-editor group-entry" list="groupList" aria-label="Nhóm hợp đồng, gõ mã mới để tạo" title="Chọn nhóm hoặc gõ mã mới, nhấn Tab/Enter để tạo và liên kết" placeholder="Chọn / gõ mã nhóm mới" value="${esc(groupById(x.group_id)?.code||'')}" 
+        ${disabledForRequester?'readonly':''} onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      </td>
+      ${field('description',385)}
+      ${field('item_name',230)}
+      ${field('invoice_no',138)}
+      <td class="edit-amount ${disabledForRequester?'cell-disabled':''}" style="min-width:145px">
+        <input class="cell-editor" value="${esc(x.amount)}" ${disabledForRequester?'readonly':''} onchange="setAmount(${x.id},this.value)">
+      </td>
+      ${sl('currency',['VND','USD','EUR'],100)}
+      <td style="min-width:170px">
+        <button class="doc-cell-btn cell-editor" title="Chọn hồ sơ đi kèm" onclick="openDocModal(${x.id})">📎 ${(x.documents||[]).length} hồ sơ ▾</button>
+      </td>
+      <td style="min-width:145px" class="${disabledForRequester?'cell-disabled':''}">
+        <input class="cell-editor" type="date" aria-label="Ngày đề nghị" value="${esc(x.request_date||'')}" ${disabledForRequester?'readonly':''} onchange="setField(${x.id},'request_date',this.value)">
+      </td>
+      ${sl('payment_type',TYPES,155)}
+      ${sl('status',STATUSES,220)}
+      ${field('followup',190)}
+      ${field('address',280)}
+      ${field('account_no',170)}
+      ${field('bank',240)}
+      <td style="min-width:130px;font-size:11px;color:#64748b;padding:0 8px;vertical-align:middle;white-space:nowrap">
+        ${esc(x.created_by_name||x.created_by||'Chưa rõ')}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
 function selectRow(id,v){id=Number(id);v?checked.add(id):checked.delete(id);if(v)active=id;renderTable();renderDetail()}
 function request(id){return DB.requests.find(x=>x.id===id)}
 function normName(v){return String(v||'').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi')}
-function refreshLists(){el('beneficiaryList').innerHTML=DB.beneficiaries.flatMap(b=>[b.short_name?`<option value="${esc(b.short_name)}" label="${esc(b.name)}"></option>`:'',`<option value="${esc(b.name)}" label="${esc(b.short_name||'Tên đầy đủ')}"></option>`]).join('');let banks=[...new Set(DB.beneficiaries.map(b=>String(b.bank||'').trim()).concat(DB.requests.map(x=>String(x.bank||'').trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));el('bankList').innerHTML=banks.map(v=>`<option value="${esc(v)}"></option>`).join('')}
-function registerBeneficiary(x){if(!x.payee_name?.trim()||!x.address?.trim()||!x.account_no?.trim()||!x.bank?.trim())return;
+
+function refreshLists(){
+  el('beneficiaryList').innerHTML=DB.beneficiaries.flatMap(b=>[b.short_name?`<option value="${esc(b.short_name)}" label="${esc(b.name)}"></option>`:'',`<option value="${esc(b.name)}" label="${esc(b.short_name||'Tên đầy đủ')}"></option>`]).join('');
+  let banks=[...new Set(DB.beneficiaries.map(b=>String(b.bank||'').trim()).concat(DB.requests.map(x=>String(x.bank||'').trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
+  el('bankList').innerHTML=banks.map(v=>`<option value="${esc(v)}"></option>`).join('');
+}
+
+function registerBeneficiary(x){
+  if(!x.payee_name?.trim()||!x.address?.trim()||!x.account_no?.trim()||!x.bank?.trim())return;
   const existing=findBeneficiary(x.payee_name);
   if(existing){x.beneficiary_id=existing.id;x.payee_name=existing.name;return}
   let nextId=Math.max(0,...DB.beneficiaries.map(b=>Number(b.id)||0))+1;
-  DB.beneficiaries.push({id:nextId,name:x.payee_name.trim(),short_name:'',address:x.address.trim(),account_no:String(x.account_no).trim(),bank:x.bank.trim()});x.beneficiary_id=nextId;
-  refreshLists();message('Đã thêm NCC mới vào danh mục: '+x.payee_name.trim());
+  DB.beneficiaries.push({id:nextId,name:x.payee_name.trim(),short_name:'',address:x.address.trim(),account_no:String(x.account_no).trim(),bank:x.bank.trim()});
+  x.beneficiary_id=nextId;
+  refreshLists();
+  message('Đã thêm NCC mới vào danh mục: '+x.payee_name.trim());
 }
-function setField(id,k,v){let x=request(id);if(!x)return;active=id;x[k]=v;
-if(k==='payee_name'){let b=findBeneficiary(v);if(b){Object.assign(x,{payee_name:b.name,beneficiary_id:b.id,address:b.address,account_no:b.account_no,bank:b.bank})}else{x.beneficiary_id=null;x.address='';x.account_no='';x.bank=''}}
-if(k==='request_date'){x.raw_date=v?`${v.slice(8,10)}/${v.slice(5,7)}/${v.slice(0,4)}`:''}
-// Khi sửa trực tiếp bảng DATA, đồng bộ dòng chi tiết để phần in không dùng giá trị cũ.
-if(k==='item_name'||k==='invoice_no'){
- if(!Array.isArray(x.lines))x.lines=[];
- if(x.lines.length===0)x.lines.push({description:'',invoice_no:'',amount:String(x.amount||'0')});
- if(x.lines.length===1){
-  if(k==='item_name')x.lines[0].description=v;
-  if(k==='invoice_no')x.lines[0].invoice_no=v;
- }
+
+function setField(id,k,v){
+  let x=request(id);if(!x)return;
+  // Role permission check
+  if(currentUser?.role==='requester'){
+    if(PAID_STATUSES.includes(x.status)){
+      alert('Phiếu này đã thanh toán/hoàn tất. Người đề nghị không thể thay đổi thông tin.');
+      renderTable();
+      return;
+    }
+    if(k==='status'&&PAID_STATUSES.includes(v)){
+      alert('Người đề nghị không có quyền chuyển trạng thái sang hoàn tất hoặc đã thanh toán. Cần Người duyệt phê duyệt.');
+      renderTable();
+      return;
+    }
+  }
+
+  active=id;
+  x[k]=v;
+  if(k==='payee_name'){
+    let b=findBeneficiary(v);
+    if(b){Object.assign(x,{payee_name:b.name,beneficiary_id:b.id,address:b.address,account_no:b.account_no,bank:b.bank})}
+    else{x.beneficiary_id=null;x.address='';x.account_no='';x.bank=''}
+  }
+  if(k==='request_date'){x.raw_date=v?`${v.slice(8,10)}/${v.slice(5,7)}/${v.slice(0,4)}`:''}
+  if(k==='item_name'||k==='invoice_no'){
+   if(!Array.isArray(x.lines))x.lines=[];
+   if(x.lines.length===0)x.lines.push({description:'',invoice_no:'',amount:String(x.amount||'0')});
+   if(x.lines.length===1){
+    if(k==='item_name')x.lines[0].description=v;
+    if(k==='invoice_no')x.lines[0].invoice_no=v;
+   }
+  }
+  if(['payee_name','address','account_no','bank'].includes(k))registerBeneficiary(x);
+  if(k==='currency'&&x.group_id){
+    let g=groupById(x.group_id);
+    if(g&&g.currency!==v){alert('Tiền tệ khác nhóm '+g.code);x[k]=g.currency;}
+  }
+  if(k==='bank')refreshLists();
+  save();
+  renderTable();
+  if(active===id)renderDetail();
 }
-if(['payee_name','address','account_no','bank'].includes(k))registerBeneficiary(x);
-if(k==='currency'&&x.group_id){let g=groupById(x.group_id);if(g&&g.currency!==v){alert('Tiền tệ khác nhóm '+g.code);x[k]=g.currency;}}if(k==='bank')refreshLists();save();renderTable();if(active===id)renderDetail()}
-function setAmount(id,v){active=id;let x=request(id),n=Number(plainAmount(v));if(!Number.isFinite(n)||n<0)return message('Số tiền không hợp lệ');x.amount=String(n);if((x.lines||[]).length===1)x.lines[0].amount=String(n);save();renderTable();if(active===id)renderDetail()}
+
+function setAmount(id,v){
+  active=id;
+  let x=request(id);
+  if(!x)return;
+  if(currentUser?.role==='requester'&&PAID_STATUSES.includes(x.status)){
+    alert('Phiếu đã duyệt/thanh toán, không thể sửa số tiền.');
+    renderTable();
+    return;
+  }
+  let n=Number(plainAmount(v));
+  if(!Number.isFinite(n)||n<0)return message('Số tiền không hợp lệ');
+  x.amount=String(n);
+  if((x.lines||[]).length===1)x.lines[0].amount=String(n);
+  save();
+  renderTable();
+  if(active===id)renderDetail();
+}
+
 function localToday(){let d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
-function newRow(){let id=Math.max(0,...DB.requests.map(x=>x.id))+1;DB.requests.push({id,legacy_stt:null,payee_name:'',beneficiary_id:null,address:'',account_no:'',bank:'',description:'',item_name:'',invoice_no:'',amount:'0',currency:'VND',group_id:null,request_date:localToday(),raw_date:new Date().toLocaleDateString('vi-VN'),payment_type:'',status:'',followup:'',documents:[],lines:[{description:'',invoice_no:'',amount:'0'}]});save();el('search').value='';el('statusFilter').value='';activate(id);message('Đã thêm dòng mới. Nhập dữ liệu ngay trong bảng DATA.')}
-function activate(id){active=id;renderTable();renderDetail()}
-function deleteSelected(){
- const ids=checked.size?[...checked].map(Number).filter(id=>DB.requests.some(x=>Number(x.id)===id)):(active==null?[]:[Number(active)]);
- if(!ids.length){alert('Hãy tích chọn dòng cần xóa hoặc bấm vào STT để chọn dòng.');return}
- const names=ids.slice(0,4).map(id=>{let x=DB.requests.find(z=>Number(z.id)===id);return '• '+(x?.legacy_stt??'Mới '+id)+' — '+(x?.payee_name||'Chưa nhập NCC')}).join('\n');
- const msg='Bạn có chắc muốn xóa '+ids.length+' đề nghị thanh toán?\n'+names+(ids.length>4?'\n...':'')+'\n\nThao tác không thể hoàn tác. Hãy sao lưu dữ liệu JSON trước khi xóa.';
- if(!confirm(msg))return;
- const keys=new Set(ids);DB.requests=DB.requests.filter(x=>!keys.has(Number(x.id)));
- checked.clear();active=DB.requests.length?[...DB.requests].sort((a,b)=>Number(b.id)-Number(a.id))[0].id:null;
- save();renderTable();renderDetail();message('Đã xóa '+ids.length+' đề nghị thanh toán.');
+
+function newRow(){
+  let id=Math.max(0,...DB.requests.map(x=>x.id))+1;
+  DB.requests.push({
+    id,
+    legacy_stt:null,
+    payee_name:'',
+    beneficiary_id:null,
+    address:'',
+    account_no:'',
+    bank:'',
+    description:'',
+    item_name:'',
+    invoice_no:'',
+    amount:'0',
+    currency:'VND',
+    group_id:null,
+    request_date:localToday(),
+    raw_date:new Date().toLocaleDateString('vi-VN'),
+    payment_type:'',
+    status:'Đã giao KT, chờ đi tiền',
+    followup:'',
+    documents:[],
+    lines:[{description:'',invoice_no:'',amount:'0'}],
+    created_by:currentUser?.username||'nhanvien',
+    created_by_name:currentUser?.full_name||'Người đề nghị',
+    created_at:new Date().toISOString()
+  });
+  save();
+  el('search').value='';
+  el('statusFilter').value='';
+  activate(id);
+  message('Đã thêm dòng mới. Nhập dữ liệu ngay trong bảng DATA.');
 }
+
+function activate(id){active=id;renderTable();renderDetail()}
+
+function deleteSelected(){
+  const ids=checked.size?[...checked].map(Number).filter(id=>DB.requests.some(x=>Number(x.id)===id)):(active==null?[]:[Number(active)]);
+  if(!ids.length){alert('Hãy tích chọn dòng cần xóa hoặc bấm vào STT để chọn dòng.');return}
+
+  // Requester cannot delete paid requests
+  if(currentUser?.role==='requester'){
+    const hasPaid=ids.some(id=>{
+      const x=DB.requests.find(z=>Number(z.id)===id);
+      return x&&PAID_STATUSES.includes(x.status);
+    });
+    if(hasPaid){
+      alert('Bạn không thể xóa phiếu đã hoàn tất hoặc đã thanh toán. Chỉ Người duyệt hoặc Admin mới có quyền xóa.');
+      return;
+    }
+  }
+
+  const names=ids.slice(0,4).map(id=>{let x=DB.requests.find(z=>Number(z.id)===id);return '• '+(x?.legacy_stt??'Mới '+id)+' — '+(x?.payee_name||'Chưa nhập NCC')}).join('\n');
+  const msg='Bạn có chắc muốn xóa '+ids.length+' đề nghị thanh toán?\n'+names+(ids.length>4?'\n...':'')+'\n\nThao tác không thể hoàn tác. Hãy sao lưu dữ liệu JSON trước khi xóa.';
+  if(!confirm(msg))return;
+
+  const keys=new Set(ids);
+  DB.requests=DB.requests.filter(x=>!keys.has(Number(x.id)));
+  checked.clear();
+  active=DB.requests.length?[...DB.requests].sort((a,b)=>Number(b.id)-Number(a.id))[0].id:null;
+  save();
+  renderTable();
+  renderDetail();
+  message('Đã xóa '+ids.length+' đề nghị thanh toán.');
+}
+
 function docChanged(doc,on){let x=request(active);if(!x)return;x.documents=x.documents||[];x.documents=on?[...new Set([...x.documents,doc])]:x.documents.filter(d=>d!==doc);save();renderTable();renderDetail()}
 function docTypes(){if(!Array.isArray(DB.document_types))DB.document_types=[...DOCS];for(const x of DB.requests)for(const d of x.documents||[])if(d&&!DB.document_types.includes(d))DB.document_types.push(d);return DB.document_types}
 function openDocModal(id){docModalId=id;active=id;renderTable();renderDetail();renderDocModal();el('docOverlay').hidden=false;el('newDocType').focus()}
@@ -134,14 +1097,16 @@ function closeDocModal(){el('docOverlay').hidden=true;docModalId=null}
 function renderDocModal(){let x=request(docModalId);if(!x)return;el('docRequestName').textContent=(x.payee_name||'Đề nghị mới')+' · STT '+(x.legacy_stt??'mới '+x.id);el('modalDocs').innerHTML=docTypes().map((d,i)=>`<label><input type="checkbox" data-doc-index="${i}" ${x.documents?.includes(d)?'checked':''} onchange="toggleModalDoc(${i},this.checked)"><span>${esc(d)}</span></label>`).join('');el('docCount').textContent=(x.documents||[]).length}
 function toggleModalDoc(i,on){let x=request(docModalId),d=docTypes()[i];if(!x||!d)return;x.documents=x.documents||[];x.documents=on?[...new Set([...x.documents,d])]:x.documents.filter(z=>z!==d);save();renderTable();renderDetail();renderDocModal()}
 function addDocType(){let d=el('newDocType').value.trim().replace(/\s+/g,' ');if(!d)return;let exists=docTypes().find(x=>x.toLocaleLowerCase('vi')===d.toLocaleLowerCase('vi'));if(exists)d=exists;else DB.document_types.push(d);let x=request(docModalId);if(x&&!x.documents.includes(d))x.documents.push(d);el('newDocType').value='';save();renderTable();renderDetail();renderDocModal();el('newDocType').focus()}
-function tableTab(e){if(e.key!=='Tab'||!e.target.matches('.cell-editor'))return;let editors=[...el('tbody').querySelectorAll('.cell-editor')];let i=editors.indexOf(e.target);if(i<0)return;e.preventDefault();let step=e.shiftKey?-1:1;let dest=Math.max(0,Math.min(editors.length-1,i+step));if(e.target.matches('input,select'))e.target.dispatchEvent(new Event('change',{bubbles:true}));let updated=el('tbody').querySelectorAll('.cell-editor');let next=updated[dest];if(next){next.focus();if(next.matches('input:not([type=date])'))next.select()}}
+
+function tableTab(e){if(e.key!=='Tab'||!e.target.matches('.cell-editor'))return;let editors=[...el('tbody').querySelectorAll('.cell-editor:not([disabled])')];let i=editors.indexOf(e.target);if(i<0)return;e.preventDefault();let step=e.shiftKey?-1:1;let dest=Math.max(0,Math.min(editors.length-1,i+step));if(e.target.matches('input,select'))e.target.dispatchEvent(new Event('change',{bubbles:true}));let updated=el('tbody').querySelectorAll('.cell-editor:not([disabled])');let next=updated[dest];if(next){next.focus();if(next.matches('input:not([type=date])'))next.select()}}
+
 function lineChanged(i,k,v){let x=request(active);if(!x)return;x.lines[i][k]=v;if(k==='amount'){let n=Number(plainAmount(v));if(!Number.isFinite(n)||n<0)return message('Số tiền dòng không hợp lệ');x.lines[i][k]=String(n);x.amount=String(x.lines.reduce((s,l)=>s+Number(l.amount||0),0))}if(i===0){x.item_name=x.lines[0].description;x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ')}save();renderTable();renderDetail()}
 function addLine(){let x=request(active);if(!x)return;x.lines=x.lines||[];x.lines.push({description:'',invoice_no:'',amount:'0'});save();renderDetail()}
 function delLine(i){let x=request(active);if(x.lines.length<=1)return message('Cần ít nhất 1 dòng chi tiết');x.lines.splice(i,1);x.amount=String(x.lines.reduce((s,l)=>s+Number(l.amount||0),0));x.item_name=x.lines[0]?.description||'';x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ');save();renderTable();renderDetail()}
+
 function moneyWords(x){let n=Number(x.amount);if(!Number.isFinite(n))return 'Chưa có số tiền hợp lệ';const digits=['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];function group(num,full){let h=Math.floor(num/100),t=Math.floor(num%100/10),u=num%10,out=[];if(h||full){out.push(digits[h]+' trăm')}if(t>1){out.push(digits[t]+' mươi');if(u)out.push(u===1?'mốt':u===5?'lăm':digits[u])}else if(t===1){out.push('mười');if(u)out.push(u===5?'lăm':digits[u])}else if(u){if(h||full)out.push('lẻ');out.push(digits[u])}return out.join(' ')}function whole(num){if(num===0)return 'không';let parts=[],units=['','nghìn','triệu','tỷ','nghìn tỷ'];let i=0;while(num>0&&i<units.length){let v=num%1000;if(v)parts.unshift(group(v,i>0&&num>=1000)+' '+units[i]);num=Math.floor(num/1000);i++}return parts.join(' ').replace(/\s+/g,' ').trim()}let main=whole(Math.floor(n));let decimals=Math.round((n-Math.floor(n))*100);let end=x.currency==='USD'?'đô la Mỹ':x.currency==='EUR'?'euro':x.currency==='VND'?'đồng':'(chưa xác nhận loại tiền)';let w=main+(decimals?' phẩy '+whole(decimals):'')+' '+end;return w.charAt(0).toUpperCase()+w.slice(1)}
 function printDate(raw){let s=raw||'';let m=s.match(/^(\d{4})-(\d\d)-(\d\d)$/);return m?{d:+m[3],m:+m[2],y:+m[1]}:(s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/)?(()=>{let a=s.split(/[\/.-]/);return {d:+a[0],m:+a[1],y:+(a[2].length===2?'20'+a[2]:a[2])}})():null)}
-// Ưu tiên chi tiết nếu có; với phiếu được nhập trên DATA, dùng các cột DATA làm dự phòng.
-// Không ghi đè dữ liệu D1 trong quá trình in.
+
 function printEntries(x){
  let arr=Array.isArray(x.lines)?x.lines:[];
  if(!arr.length)return [{description:x.item_name||'',invoice_no:x.invoice_no||'',amount:x.amount||0}];
@@ -152,18 +1117,126 @@ function printEntries(x){
   amount:(arr.length===1&&(!l.amount||Number(l.amount)===0)&&Number(x.amount)>0)?x.amount:l.amount
  }));
 }
-function paper(x){let date=printDate(x.request_date||x.raw_date)||printDate(new Date().toISOString().slice(0,10));let entries=printEntries(x);return `<div class="paper"><div class="upper">CÔNG TY CỔ PHẦN DƯỢC PHẨM PHENIKAA</div><div class="model">Mẫu số 01 – TT</div><h1>GIẤY ĐỀ NGHỊ THANH TOÁN BẰNG CHUYỂN KHOẢN</h1><div class="recipients"><strong>Kính gửi:</strong><div>- BAN LÃNH ĐẠO CÔNG TY<br>- PHÒNG TÀI CHÍNH - KẾ TOÁN</div></div><div class="person"><span>Họ tên người đề nghị:</span><span>Trần Hải Hà</span><span>Bộ phận:</span><span>Phòng Cung Ứng</span></div><div class="intro">Đề nghị xét duyệt và chuyển tiền cho đơn vị đã cung cấp hàng hóa, dịch vụ dưới đây:</div><div class="details"><span>Đơn vị hưởng lợi:</span><span class="val"><b>${esc(x.payee_name)}</b></span><span>Địa chỉ:</span><span class="val">${esc(x.address)}</span><span>Tài khoản:</span><span class="val">${esc(x.account_no)}</span><span>Ngân hàng:</span><span class="val">${esc(x.bank)}</span><span class="transfer">Nội dung chuyển tiền:</span><span class="val transfer">${esc(x.description)}</span></div><div class="time">Thời hạn chuyển tiền: &nbsp; Trong vòng 3 ngày kể từ ngày đề nghị</div><div class="moneytitle">Số tiền chuyển theo bảng kê dưới đây:</div><table><colgroup><col style="width:4%"><col style="width:19%"><col style="width:35%"><col style="width:20%"><col style="width:22%"></colgroup><thead><tr><th>TT</th><th>Số hóa đơn (nếu có)</th><th>Tên hàng hóa/dịch vụ</th><th>Số tiền</th><th>Ghi chú</th></tr></thead><tbody>${entries.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.invoice_no||'')}</td><td style="text-align:left">${esc(l.description||'')}</td><td>${fmt(l.amount)}</td><td></td></tr>`).join('')}<tr class="sum"><td colspan="3">Tổng cộng</td><td>${fmt(x.amount)}</td><td style="text-align:left">${esc(x.currency||'CHƯA RÕ')}</td></tr></tbody></table><div class="words"><span>Số tiền bằng chữ:</span><span>${esc(moneyWords(x))}</span></div><div class="doclabel">Chứng từ đi kèm</div><div class="docs">${esc((x.documents||[]).join(', '))}</div><div class="date">Hà Nội, ngày ${date.d} &nbsp; tháng ${date.m} &nbsp; năm ${date.y}</div><div class="sign"><div>Lãnh đạo phê duyệt<span>Đinh Anh Hào</span></div><div>Kế toán trưởng<span>Nguyễn Thị Nga</span></div><div>Trưởng bộ phận<span>Lưu Thị Thanh Xuân</span></div><div>Người đề nghị TT<span>Trần Hải Hà</span></div></div>${!x.currency?'<p style="font-size:10px;text-align:center;color:red">BẢN NHÁP – CHƯA XÁC NHẬN TIỀN TỆ</p>':''}</div>`}
+
+function paper(x){
+  let date=printDate(x.request_date||x.raw_date)||printDate(new Date().toISOString().slice(0,10));
+  let entries=printEntries(x);
+  const requesterName=x.created_by_name||'Trần Hải Hà';
+  return `<div class="paper">
+    <div class="upper">CÔNG TY CỔ PHẦN DƯỢC PHẨM PHENIKAA</div>
+    <div class="model">Mẫu số 01 – TT</div>
+    <h1>GIẤY ĐỀ NGHỊ THANH TOÁN BẰNG CHUYỂN KHOẢN</h1>
+    <div class="recipients"><strong>Kính gửi:</strong><div>- BAN LÃNH ĐẠO CÔNG TY<br>- PHÒNG TÀI CHÍNH - KẾ TOÁN</div></div>
+    <div class="person"><span>Họ tên người đề nghị:</span><span>${esc(requesterName)}</span><span>Bộ phận:</span><span>Phòng Cung Ứng</span></div>
+    <div class="intro">Đề nghị xét duyệt và chuyển tiền cho đơn vị đã cung cấp hàng hóa, dịch vụ dưới đây:</div>
+    <div class="details">
+      <span>Đơn vị hưởng lợi:</span><span class="val"><b>${esc(x.payee_name)}</b></span>
+      <span>Địa chỉ:</span><span class="val">${esc(x.address)}</span>
+      <span>Tài khoản:</span><span class="val">${esc(x.account_no)}</span>
+      <span>Ngân hàng:</span><span class="val">${esc(x.bank)}</span>
+      <span class="transfer">Nội dung chuyển tiền:</span><span class="val transfer">${esc(x.description)}</span>
+    </div>
+    <div class="time">Thời hạn chuyển tiền: &nbsp; Trong vòng 3 ngày kể từ ngày đề nghị</div>
+    <div class="moneytitle">Số tiền chuyển theo bảng kê dưới đây:</div>
+    <table>
+      <colgroup><col style="width:4%"><col style="width:19%"><col style="width:35%"><col style="width:20%"><col style="width:22%"></colgroup>
+      <thead><tr><th>TT</th><th>Số hóa đơn (nếu có)</th><th>Tên hàng hóa/dịch vụ</th><th>Số tiền</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+        ${entries.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.invoice_no||'')}</td><td style="text-align:left">${esc(l.description||'')}</td><td>${fmt(l.amount)}</td><td></td></tr>`).join('')}
+        <tr class="sum"><td colspan="3">Tổng cộng</td><td>${fmt(x.amount)}</td><td style="text-align:left">${esc(x.currency||'CHƯA RÕ')}</td></tr>
+      </tbody>
+    </table>
+    <div class="words"><span>Số tiền bằng chữ:</span><span>${esc(moneyWords(x))}</span></div>
+    <div class="doclabel">Chứng từ đi kèm</div>
+    <div class="docs">${esc((x.documents||[]).join(', '))}</div>
+    <div class="date">Hà Nội, ngày ${date.d} &nbsp; tháng ${date.m} &nbsp; năm ${date.y}</div>
+    <div class="sign">
+      <div>Lãnh đạo phê duyệt<span>Đinh Anh Hào</span></div>
+      <div>Kế toán trưởng<span>Nguyễn Thị Nga</span></div>
+      <div>Trưởng bộ phận<span>Lưu Thị Thanh Xuân</span></div>
+      <div>Người đề nghị TT<span>${esc(requesterName)}</span></div>
+    </div>
+    ${!x.currency?'<p style="font-size:10px;text-align:center;color:red">BẢN NHÁP – CHƯA XÁC NHẬN TIỀN TỆ</p>':''}
+  </div>`;
+}
+
 function renderDetail(){let x=request(active);if(!x){el('lines').innerHTML='';return}el('lines').innerHTML=(x.lines||[]).map((l,i)=>`<div class="lineitem"><input title="Tên hàng hóa" value="${esc(l.description)}" onchange="lineChanged(${i},'description',this.value)"><input title="Hóa đơn" value="${esc(l.invoice_no)}" onchange="lineChanged(${i},'invoice_no',this.value)"><input title="Số tiền" value="${esc(l.amount)}" onchange="lineChanged(${i},'amount',this.value)"><button title="Xóa dòng" onclick="delLine(${i})">×</button></div>`).join('')}
 function switchPage(page){for(const p of ['data','ncc','groups']){el(p==='data'?'dataPage':p==='ncc'?'nccPage':'groupsPage').classList.toggle('hidden-view',page!==p);el(p==='data'?'tabData':p==='ncc'?'tabNcc':'tabGroups').classList.toggle('active',page===p)}if(page==='ncc')renderNcc();if(page==='groups')renderGroups()}
-function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('')}
+
+function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn btn-danger" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('')}
 function addNcc(){let id=Math.max(0,...DB.beneficiaries.map(b=>Number(b.id)||0))+1;DB.beneficiaries.push({id,name:'',short_name:'',address:'',account_no:'',bank:''});save();el('nccSearch').value='';renderNcc();const first=el('nccBody').querySelector('.ncc-cell');if(first)first.focus()}
-function editNcc(id,k,v){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;v=String(v).trim();if((k==='name'||k==='short_name')&&v&&DB.beneficiaries.some(z=>Number(z.id)!==id&&(normName(z.name)===normName(v)||normName(z.short_name)===normName(v)))){alert('Tên này đã được một NCC khác sử dụng (tên đầy đủ hoặc tên viết tắt). Vui lòng nhập tên khác.');renderNcc();return}if(k==='short_name'&&v&&normName(b.name)===normName(v)){alert('Tên viết tắt trùng tên đầy đủ; hãy để trống hoặc chọn tên ngắn khác.');renderNcc();return}b[k]=v;save();refreshLists();/* Giữ lại input focus cho Tab và sửa liên tục */}
-function deleteNcc(id){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;if(DB.requests.some(x=>Number(x.beneficiary_id)===id)){alert('NCC đã được dùng trong đề nghị thanh toán. Không thể xóa để bảo toàn liên kết; bạn có thể chỉnh sửa danh mục.');return}if(!confirm('Xóa NCC '+(b.name||id)+' khỏi danh mục?'))return;DB.beneficiaries=DB.beneficiaries.filter(z=>Number(z.id)!==id);save();refreshLists();renderNcc()}
+function editNcc(id,k,v){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;v=String(v).trim();if((k==='name'||k==='short_name')&&v&&DB.beneficiaries.some(z=>Number(z.id)!==id&&(normName(z.name)===normName(v)||normName(z.short_name)===normName(v)))){alert('Tên này đã được một NCC khác sử dụng (tên đầy đủ hoặc tên viết tắt). Vui lòng nhập tên khác.');renderNcc();return}if(k==='short_name'&&v&&normName(b.name)===normName(v)){alert('Tên viết tắt trùng tên đầy đủ; hãy để trống hoặc chọn tên ngắn khác.');renderNcc();return}b[k]=v;save();refreshLists();}
+function deleteNcc(id){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;if(DB.requests.some(x=>Number(x.beneficiary_id)===id)){alert('NCC đã được dùng trong đề nghị thanh toán. Không thể xóa để bảo toàn liên kết.');return}if(!confirm('Xóa NCC '+(b.name||id)+' khỏi danh mục?'))return;DB.beneficiaries=DB.beneficiaries.filter(z=>Number(z.id)!==id);save();refreshLists();renderNcc()}
 
 function doPrint(ids){let rows=ids.map(request).filter(Boolean);if(!rows.length)return message('Hãy chọn ít nhất một dòng');if(rows.some(x=>!x.currency)&&!confirm('Có phiếu chưa xác nhận loại tiền. Tiếp tục in bản NHÁP?'))return;el('printArea').innerHTML=rows.map(paper).join('');window.print()}
 function printSelection(){if(active!==null)doPrint([active])}function printChecked(){doPrint([...checked])}
-function exportData(){let blob=new Blob([JSON.stringify({format:'phenikaa-payment-offline-v1',exported_at:new Date().toISOString(),data:DB},null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='Sao_luu_thanh_toan_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
-async function restoreData(e){let f=e.target.files[0];if(!f)return;try{let a=JSON.parse(await f.text());if(a.format!=='phenikaa-payment-offline-v1'||!Array.isArray(a.data?.requests)||!Array.isArray(a.data?.beneficiaries))throw Error('Sai cấu trúc file JSON');if(!confirm('Thay thế toàn bộ dữ liệu đang lưu bằng bản sao lưu này?'))return;DB=a.data;save();checked.clear();init();message('Đã khôi phục '+DB.requests.length+' đề nghị')}catch(err){alert(err.message)}e.target.value=''}
-function init(){docTypes();groups();refreshLists();refreshGroupOptions();el('statusFilter').innerHTML='<option value="">Tất cả trạng thái</option>'+STATUSES.map(s=>`<option>${esc(s)}</option>`).join('');active=DB.requests.find(x=>x.legacy_stt===99)?.id||DB.requests[0]?.id||null;renderTable();renderDetail();renderNcc();renderGroups()}
-el('tbody').addEventListener('keydown',tableTab);el('docOverlay').addEventListener('click',e=>{if(e.target===el('docOverlay'))closeDocModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el('docOverlay').hidden)closeDocModal()});loadCloud();
+
+function exportData(){
+  let blob=new Blob([JSON.stringify({format:'phenikaa-payment-offline-v1',exported_at:new Date().toISOString(),exported_by:currentUser?.username||'system',data:DB},null,2)],{type:'application/json'});
+  let a=document.createElement('a'),url=URL.createObjectURL(blob);
+  a.href=url;
+  a.download='Sao_luu_thanh_toan_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+
+async function restoreData(e){
+  if(currentUser?.role==='requester'){
+    alert('Người đề nghị không có quyền khôi phục toàn bộ cơ sở dữ liệu. Vui lòng liên hệ Admin.');
+    e.target.value='';
+    return;
+  }
+  let f=e.target.files[0];if(!f)return;
+  try{
+    let a=JSON.parse(await f.text());
+    if(a.format!=='phenikaa-payment-offline-v1'||!Array.isArray(a.data?.requests)||!Array.isArray(a.data?.beneficiaries))throw Error('Sai cấu trúc file JSON');
+    if(!confirm('Thay thế toàn bộ dữ liệu đang lưu bằng bản sao lưu này? Thao tác không thể hoàn tác.'))return;
+    DB=a.data;save();checked.clear();init();
+    message('Đã khôi phục '+DB.requests.length+' đề nghị');
+  }catch(err){alert(err.message)}
+  e.target.value='';
+}
+
+function init(){
+  docTypes();
+  groups();
+  refreshLists();
+  refreshGroupOptions();
+  el('statusFilter').innerHTML='<option value="">Tất cả trạng thái</option>'+STATUSES.map(s=>`<option>${esc(s)}</option>`).join('');
+  active=DB.requests.find(x=>x.legacy_stt===99)?.id||DB.requests[0]?.id||null;
+  renderTable();
+  renderDetail();
+  renderNcc();
+  renderGroups();
+}
+
+el('tbody').addEventListener('keydown',tableTab);
+el('docOverlay').addEventListener('click',e=>{if(e.target===el('docOverlay'))closeDocModal()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(!el('docOverlay').hidden)closeDocModal();
+    if(!el('changePassOverlay').hidden)closeChangePassModal();
+    if(!el('userModalOverlay').hidden)closeUserModal();
+  }
+});
+
+// Check auth on startup
+if(authToken){
+  fetch(authUrl+'?action=me',{headers:getAuthHeaders()})
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.ok&&res.user){
+        currentUser=res.user;
+        updateUserUI();
+        loadCloud();
+      } else {
+        showLoginModal();
+      }
+    })
+    .catch(()=>{
+      showLoginModal();
+    });
+} else {
+  showLoginModal();
+}
 </script></body></html>
