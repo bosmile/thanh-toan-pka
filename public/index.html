@@ -309,6 +309,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="primary" style="background:#0284c7;border-color:#0369a1" onclick="loadAllExcelData(true)" title="Cập nhật toàn bộ 85 vật tư từ file Excel Phenikaa vào bảng">📥 Nạp 85 vật tư từ Excel gốc</button>
         <button class="primary" style="background:#107c41;border-color:#0b5c30" onclick="openPasteModal()">📋 Dán từ Excel (Ctrl+V)</button>
         <button class="primary" style="background:#0f766e;border-color:#0d5e56" onclick="printHandoverSelected()">🖨️ In biên bản đã chọn (2 bản)</button>
       </div>
@@ -1386,7 +1387,7 @@ async function flushSave(){
 window.addEventListener('beforeunload',e=>{if(saving||savePending||saveFailed){e.preventDefault();e.returnValue='Dữ liệu có thể chưa được lưu';}});
 
 function message(s){el('notice').textContent=s;el('notice').style.display='block';setTimeout(()=>el('notice').style.display='none',5500)}
-function fmt(x){let n=Number(x||0);return Number.isFinite(n)?n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'}
+function fmt(x){let n=Math.round(Number(x||0));return Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:0}):'0'}
 function plainAmount(x){return String(x??'').replace(/[\.,\s]/g,'').trim()}
 function formatMoneyDisplay(val){
   if(val===undefined||val===null||val==='')return '0';
@@ -2102,6 +2103,43 @@ function applyExcelPaste(){
   message(`Đã thêm thành công ${rows.length} vật tư vào danh sách bàn giao!`);
 }
 
+async function loadAllExcelData(force=false){
+  try{
+    const res = await fetch('handovers-data.json').catch(()=>fetch('/handovers-data.json')).catch(()=>null);
+    let items = [];
+    if(res && res.ok){
+      items = await res.json().catch(()=>[]);
+    }
+    if(!Array.isArray(items) || !items.length) return;
+    if(force && !confirm(`Cập nhật ${items.length} vật tư từ file Excel Phenikaa vào danh sách bàn giao?`)) return;
+
+    const existingKeys = new Set((force ? [] : handovers()).map(x => `${normName(x.department)}|${normName(x.item_name)}`));
+    let addedCount = 0;
+    if(force){
+      DB.handovers = [];
+    }
+    let maxId = Math.max(0, ...handovers().map(h=>Number(h.id)||0));
+    for(const it of items){
+      const key = `${normName(it.department)}|${normName(it.item_name)}`;
+      if(!existingKeys.has(key)){
+        maxId++;
+        it.id = maxId;
+        DB.handovers.push(it);
+        existingKeys.add(key);
+        addedCount++;
+      }
+    }
+    if(addedCount > 0){
+      save();
+      refreshHandoverDeptOptions();
+      renderHandovers();
+      message(`Đã cập nhật thành công ${addedCount} vật tư từ file Excel Phenikaa!`);
+    }
+  }catch(err){
+    console.warn('Lỗi loadAllExcelData:', err);
+  }
+}
+
 function generateHandoverPaperHtml(dept, items){
   const rowsHtml = items.map((it, idx) => `
     <tr>
@@ -2268,6 +2306,9 @@ async function restoreData(e){
 
 function init(){
   DB.handovers = Array.isArray(DB.handovers) ? DB.handovers : [];
+  if(DB.handovers.length < 80){
+    loadAllExcelData(false);
+  }
   docTypes();
   groups();
   refreshLists();
