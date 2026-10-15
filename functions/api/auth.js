@@ -73,10 +73,10 @@ export async function onRequest(context) {
         sub: username,
         role: 'admin',
         name: full_name,
-        exp: Math.floor(Date.now() / 1000) + 7 * 86400
+        iat: Math.floor(Date.now() / 1000)
       }, secret);
 
-      const cookie = `pka_session=${encodeURIComponent(token)}; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax`;
+      const cookie = `pka_session=${encodeURIComponent(token)}; Path=/; Max-Age=315360000; HttpOnly; SameSite=Lax`;
 
       return reply({
         ok: true,
@@ -128,10 +128,10 @@ export async function onRequest(context) {
         sub: user.username,
         role: user.role,
         name: user.full_name,
-        exp: Math.floor(Date.now() / 1000) + 7 * 86400
+        iat: Math.floor(Date.now() / 1000)
       }, secret);
 
-      const cookie = `pka_session=${encodeURIComponent(token)}; Path=/; Max-Age=604800; HttpOnly; SameSite=Lax`;
+      const cookie = `pka_session=${encodeURIComponent(token)}; Path=/; Max-Age=315360000; HttpOnly; SameSite=Lax`;
 
       return reply({
         ok: true,

@@ -787,6 +787,7 @@ const authUrl='/api/auth';
 
 // AUTH STATE
 let currentUser=null;
+try{const savedUser=localStorage.getItem('pka_user');if(savedUser)currentUser=JSON.parse(savedUser);}catch{}
 let authToken=localStorage.getItem('pka_token')||'';
 
 function getAuthHeaders(){
@@ -887,6 +888,7 @@ async function doInitialSetup(e){
     authToken=result.token;
     currentUser=result.user;
     localStorage.setItem('pka_token',authToken);
+    try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
     hideLoginModal();
     updateUserUI();
     message('Đã thiết lập tài khoản Quản trị viên thành công!');
@@ -922,6 +924,7 @@ async function doLogin(e){
     authToken=result.token;
     currentUser=result.user;
     localStorage.setItem('pka_token',authToken);
+    try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
     hideLoginModal();
     updateUserUI();
     message('Đăng nhập thành công với vai trò: '+roleLabel(currentUser.role));
@@ -932,6 +935,7 @@ async function doLogin(e){
       if(confirm('Không thể kết nối máy chủ API D1. Bạn có muốn đăng nhập chế độ Thử nghiệm ngoại tuyến (Demo) với tài khoản này không?')){
         const role = u==='admin'?'admin':u==='approver'?'approver':'requester';
         currentUser={id:1,username:u,full_name:u==='admin'?'Quản trị viên':u==='approver'?'Người duyệt (Kế toán)':'Trần Hải Hà (Cung ứng)',role};
+        try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
         hideLoginModal();
         updateUserUI();
         init();
@@ -954,6 +958,7 @@ async function logout(){
   authToken='';
   currentUser=null;
   localStorage.removeItem('pka_token');
+  localStorage.removeItem('pka_user');
   updateUserUI();
   showLoginModal('Đã đăng xuất thành công.');
 }
@@ -1146,8 +1151,11 @@ async function loadCloud(){
     let response=await fetch(apiUrl,{headers:getAuthHeaders(),cache:'no-store'});
     if(response.status===401){
       authToken='';
+      currentUser=null;
       localStorage.removeItem('pka_token');
-      showLoginModal('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
+      localStorage.removeItem('pka_user');
+      updateUserUI();
+      showLoginModal('Phiên làm việc không hợp lệ hoặc đã đăng xuất. Vui lòng đăng nhập lại.');
       return;
     }
     if(!response.ok)throw Error('HTTP '+response.status);
@@ -1158,6 +1166,7 @@ async function loadCloud(){
     loaded=true;
     if(result.currentUser){
       currentUser=result.currentUser;
+      try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
       updateUserUI();
     }
     init();
@@ -1166,8 +1175,8 @@ async function loadCloud(){
   }catch(err){
     loaded=false;
     syncStatus('⚠ Không kết nối D1','#ffcccc');
-    // If not logged in, show login modal
-    if(!currentUser)showLoginModal('Chưa kết nối Cloudflare D1. Đăng nhập để sử dụng.');
+    // Only show login modal if not logged in at all
+    if(!currentUser&&!authToken)showLoginModal('Chưa kết nối Cloudflare D1. Đăng nhập để sử dụng.');
   }
 }
 
@@ -1707,19 +1716,40 @@ document.addEventListener('keydown',e=>{
 
 // Check auth on startup
 if(authToken){
+  if(currentUser){
+    updateUserUI();
+    init();
+  }
   fetch(authUrl+'?action=me',{headers:getAuthHeaders()})
-    .then(r=>r.json())
+    .then(r=>{
+      if(r.status===401){
+        authToken='';
+        currentUser=null;
+        localStorage.removeItem('pka_token');
+        localStorage.removeItem('pka_user');
+        updateUserUI();
+        checkSystemSetup().then(needed=>{if(!needed)showLoginModal('Phiên làm việc đã hết hạn hoặc đã đăng xuất.')});
+        return null;
+      }
+      return r.json().catch(()=>({}));
+    })
     .then(res=>{
+      if(!res)return;
       if(res.ok&&res.user){
         currentUser=res.user;
+        try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
         updateUserUI();
         loadCloud();
-      } else {
+      } else if(!currentUser){
         checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
       }
     })
     .catch(()=>{
-      checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
+      if(currentUser){
+        loadCloud();
+      } else {
+        checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
+      }
     });
 } else {
   checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
