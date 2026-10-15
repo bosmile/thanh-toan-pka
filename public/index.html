@@ -75,7 +75,7 @@ table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nu
 .selected-info{font-size:12px;color:#395474}
 datalist{display:none}
 @media(max-width:1060px){.workspace{display:block}.preview-panel{margin-top:12px}.preview-scroll{max-height:460px}.sheet-scroll{max-height:65vh}}
-@media print{body{background:white;color:#000}header,main,.preview-panel,.sheet-panel,.tools,.modal-overlay,.doc-overlay{display:none!important}#printArea{display:block!important;color:#000}#printArea, #printArea *{color:#000!important}#printArea .paper{box-shadow:none;width:190mm;min-height:273mm;padding:5mm 3mm;font-size:13px;break-after:page;page-break-after:always;color:#000}#printArea .paper:last-child{break-after:auto;page-break-after:auto}@page{size:A4 portrait;margin:9mm 10mm}}
+@media print{body{background:white;color:#000}header,main,.preview-panel,.sheet-panel,.tools,.modal-overlay,.doc-overlay{display:none!important}#printArea{display:block!important;color:#000}#printArea, #printArea *{color:#000!important}#printArea .paper{box-shadow:none;width:190mm;min-height:273mm;padding:5mm 3mm;font-size:13px;break-after:page;page-break-after:always;color:#000}#printArea .handover-paper{box-shadow:none;width:190mm;min-height:auto;padding:8mm 8mm 6mm;font-size:13px;break-after:page;page-break-after:always;color:#000}#printArea .paper:last-child{break-after:auto;page-break-after:auto}@page{size:A4 portrait;margin:9mm 10mm}}
 #printArea{display:none}
 
 .doc-overlay:not([hidden]),.modal-overlay:not([hidden]){position:fixed;inset:0;background:rgba(13,30,51,.65);backdrop-filter:blur(2px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
@@ -150,26 +150,32 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 .user-table td{padding:8px;border-bottom:1px solid #e2e8f0}
 
 /* Phân hệ Bàn giao nội bộ */
-.handover-paper{padding:22px 28px;font:13px 'Times New Roman',serif;line-height:1.22;box-sizing:border-box}
-.handover-paper .hb-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.handover-paper .hb-left{font-weight:bold;font-size:13.5px}
-.handover-paper .hb-right{text-align:right;font-size:11px;font-style:italic}
-.handover-paper .hb-badge{display:inline-block;border:1px solid #000;padding:2px 7px;font-size:11px;font-style:italic;margin-bottom:4px}
-.handover-paper .hb-title{text-align:center;margin:8px 0 14px}
-.handover-paper .hb-title h2{font:bold 16px 'Times New Roman';margin:0 0 4px;text-transform:uppercase}
-.handover-paper .hb-title div{font-style:italic;font-size:13px}
-.handover-paper .hb-info{margin:5px 0;line-height:1.35}
-.handover-paper .hb-info-row{display:flex;justify-content:space-between;margin:4px 0}
-.handover-paper table{border-collapse:collapse;width:100%;margin:10px 0 6px;table-layout:fixed}
-.handover-paper th, .handover-paper td{border:1px solid #000;padding:5px 4px;font-size:12px;vertical-align:middle}
-.handover-paper th{text-align:center;font-weight:bold}
-.handover-paper td.center{text-align:center}
-.handover-paper td.right{text-align:right}
-.handover-paper td.left{text-align:left}
-.handover-paper .hb-conclusion{margin-top:8px;font-style:italic}
-.handover-paper .hb-sign{display:grid;grid-template-columns:1fr 1fr;text-align:center;margin-top:14px;padding:0 30px}
-.handover-paper .hb-sign .sign-col{display:flex;flex-direction:column;justify-content:space-between;height:115px;font-weight:bold}
-.handover-paper .hb-sign span{font-style:italic;font-weight:normal;font-size:12px}
+.handover-paper{font-family:'Times New Roman',serif;font-size:13px;line-height:1.45;color:#000;box-sizing:border-box;background:#fff;padding:20px 24px}
+.handover-paper .hb-box{width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:12px;table-layout:fixed}
+.handover-paper .hb-box td{border:1.5px solid #000;vertical-align:middle}
+.handover-paper .hb-box-left{width:41%;padding:8px 10px 6px;box-sizing:border-box}
+.handover-paper .hb-logo{text-align:center;margin-bottom:6px}
+.handover-paper .hb-logo img{max-height:42px;max-width:195px;width:auto;display:block;margin:0 auto}
+.handover-paper .hb-sender-dept{font-weight:bold;font-size:13px;color:#000;padding-left:2px}
+.handover-paper .hb-box-right{width:59%;padding:10px 8px;text-align:center;box-sizing:border-box}
+.handover-paper .hb-title-main{font-size:13.5px;font-weight:bold;text-transform:uppercase;line-height:1.35;color:#000}
+.handover-paper .hb-title-sub{font-size:13px;font-weight:bold;line-height:1.35;color:#000;margin-top:2px}
+.handover-paper .hb-info{margin:10px 0 8px;font-size:13px;line-height:1.5;color:#000}
+.handover-paper .hb-line{margin:2px 0}
+.handover-paper .hb-two-col{display:flex;justify-content:space-between;margin:2px 0}
+.handover-paper .hb-two-col > div:first-child{flex:1}
+.handover-paper .hb-two-col > div:last-child{width:36%;text-align:left}
+.handover-paper .hb-table{width:100%;border-collapse:collapse;border:1.5px solid #000;margin:8px 0;table-layout:fixed}
+.handover-paper .hb-table th, .handover-paper .hb-table td{border:1px solid #000;padding:5px 4px;font-size:11.5px;line-height:1.25;vertical-align:middle;color:#000}
+.handover-paper .hb-table th{font-weight:bold;text-align:center;background:#fff}
+.handover-paper .hb-table td.center{text-align:center}
+.handover-paper .hb-table td.left{text-align:left;padding-left:6px}
+.handover-paper .hb-table td.right{text-align:right;padding-right:6px}
+.handover-paper .hb-footer{margin-top:6px;font-size:13px;line-height:1.45;color:#000}
+.handover-paper .hb-conclusion-title{font-weight:bold;margin-bottom:2px}
+.handover-paper .hb-conclusion-body{margin-bottom:14px}
+.handover-paper .hb-sign-row{display:flex;justify-content:space-between;text-align:center;padding:0 40px;margin-top:10px}
+.handover-paper .hb-sign-col{width:42%;font-weight:bold;font-size:13px;text-align:center;min-height:75px}
 
 .paste-preview-table th, .paste-preview-table td{border:1px solid #cbd5e1;padding:5px 8px;text-align:left}
 .paste-preview-table th{background:#f1f5f9;font-weight:600}
@@ -1866,7 +1872,7 @@ function addHandoverRow(){
     item_name: '',
     unit: 'Cái',
     quantity_doc: '1',
-    quantity_pass: '1',
+    quantity_pass: '',
     quantity_fail: '',
     note: '',
     handover_date: today,
@@ -1884,9 +1890,6 @@ function editHandover(id, key, val){
   const h = handovers().find(x => Number(x.id) === Number(id));
   if(!h) return;
   h[key] = val;
-  if(key === 'quantity_doc' && (!h.quantity_pass || h.quantity_pass === '0' || h.quantity_pass === h.quantity_doc)){
-    h.quantity_pass = val;
-  }
   save();
 }
 
@@ -2003,17 +2006,27 @@ function parseExcelText(rawText, defaultDept, defaultDate){
       item_name = cols[0];
       unit = cols[1] || 'Cái';
       qty_doc = cols[2] || '1';
-    } else if(cols.length >= 4){
+    } else if(cols.length === 4){
       item_name = cols[0];
       unit = cols[1] || 'Cái';
       qty_doc = cols[2] || '1';
-      if(cols.length >= 5 && cols[3]) qty_pass = cols[3];
-      if(cols.length >= 6 && cols[4]) qty_fail = cols[4];
-      note = cols[cols.length - 1] !== qty_doc ? cols[cols.length - 1] : '';
+      note = cols[3] || '';
+    } else if(cols.length === 5){
+      item_name = cols[0];
+      unit = cols[1] || 'Cái';
+      qty_doc = cols[2] || '1';
+      qty_pass = cols[3] || '';
+      note = cols[4] || '';
+    } else if(cols.length >= 6){
+      item_name = cols[0];
+      unit = cols[1] || 'Cái';
+      qty_doc = cols[2] || '1';
+      qty_pass = cols[3] || '';
+      qty_fail = cols[4] || '';
+      note = cols[5] || '';
     }
 
     if(!item_name || item_name.startsWith('Biên bản') || item_name.startsWith('Tại Công ty')) continue;
-    if(!qty_pass) qty_pass = qty_doc;
 
     rows.push({
       department: activeDept,
@@ -2089,12 +2102,7 @@ function applyExcelPaste(){
   message(`Đã thêm thành công ${rows.length} vật tư vào danh sách bàn giao!`);
 }
 
-function generateHandoverPaperHtml(dept, items, copyTitle){
-  const now = new Date();
-  const d = String(now.getDate()).padStart(2, '0');
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const y = now.getFullYear();
-
+function generateHandoverPaperHtml(dept, items){
   const rowsHtml = items.map((it, idx) => `
     <tr>
       <td class="center">${idx + 1}</td>
@@ -2103,58 +2111,64 @@ function generateHandoverPaperHtml(dept, items, copyTitle){
       <td class="center">${esc(it.quantity_doc || '')}</td>
       <td class="center">${esc(it.quantity_pass || '')}</td>
       <td class="center">${esc(it.quantity_fail || '')}</td>
-      <td class="left">${esc(it.note || '')}</td>
+      <td class="center">${esc(it.note || '')}</td>
     </tr>
   `).join('');
 
   return `
   <div class="paper handover-paper">
-    <div class="hb-top">
-      <div class="hb-left">Bộ phận: ${esc(dept || '…………………')}</div>
-      <div class="hb-right">
-        <span class="hb-badge">${esc(copyTitle)}</span>
-      </div>
-    </div>
-
-    <div class="hb-title">
-      <h2>BIÊN BẢN BÀN GIAO, NGHIỆM THU VẬT TƯ, HÀNG HÓA</h2>
-      <div>(Không qua kho)</div>
-    </div>
+    <table class="hb-box">
+      <tbody>
+        <tr>
+          <td class="hb-box-left">
+            <div class="hb-logo">
+              <img src="/phenikaa-pharma-logo.png" onerror="this.onerror=null;this.src='phenikaa-pharma-logo.png'" alt="PHENIKAA PHARMA">
+            </div>
+            <div class="hb-sender-dept">Bộ phận: Phòng Cung ứng</div>
+          </td>
+          <td class="hb-box-right">
+            <div class="hb-title-main">BIÊN BẢN BÀN GIAO, NGHIỆM THU VẬT TƯ,</div>
+            <div class="hb-title-main">HÀNG HÓA</div>
+            <div class="hb-title-sub">(Không qua kho)</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="hb-info">
-      <div>Hôm nay, ngày ${d} tháng ${m} năm ${y}</div>
-      <div>Tại Công ty CP Dược phẩm Phenikaa</div>
-      <div>Địa chỉ: Lô đất CN2-10, Khu Công nghiệp Công nghệ cao 2, Khu Công nghệ cao Hòa Lạc, Xã Hòa Lạc, TP Hà Nội</div>
-      <div style="margin-top:6px">Chúng tôi gồm:</div>
-      <div class="hb-info-row">
-        <div>Ông (bà): <b>Trần Hải Hà</b> - Người giao hàng</div>
-        <div>Địa chỉ: <b>Phòng KHCU</b></div>
+      <div class="hb-line">Hôm nay, ngày&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tháng&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;năm</div>
+      <div class="hb-line">Tại Công ty CP Dược phẩm Phenikaa</div>
+      <div class="hb-line">Địa chỉ: Lô đất CN2-10, Khu Công nghiệp Công nghệ cao 2, Khu Công nghệ cao Hòa Lạc, Xã Hòa Lạc, TP Hà Nội</div>
+      <div class="hb-line">Chúng tôi gồm:</div>
+      <div class="hb-two-col">
+        <div>Ông (bà): Trần Hải Hà - Người giao hàng</div>
+        <div>Địa chỉ: Phòng KHCU</div>
       </div>
-      <div class="hb-info-row">
-        <div>Ông (bà): …………...........…………. Người nhận hàng</div>
-        <div>Địa chỉ: <b>${esc(dept || '…………………')}</b></div>
+      <div class="hb-two-col">
+        <div>Ông (bà): .................................................... Người nhận hàng</div>
+        <div>Địa chỉ: ${esc(dept || '…………………')}</div>
       </div>
-      <div style="margin-top:6px">Cùng nhau tiến hành giao nhận và nghiệm thu số lượng vật tư sau:</div>
+      <div class="hb-line">Cùng nhau tiến hành giao nhận và nghiệm thu số lượng vật tư sau:</div>
     </div>
 
-    <table>
+    <table class="hb-table">
       <colgroup>
-        <col style="width:5%">
-        <col style="width:41%">
-        <col style="width:10%">
-        <col style="width:12%">
-        <col style="width:11%">
-        <col style="width:11%">
-        <col style="width:10%">
+        <col style="width:50px">
+        <col>
+        <col style="width:60px">
+        <col style="width:95px">
+        <col style="width:85px">
+        <col style="width:85px">
+        <col style="width:75px">
       </colgroup>
       <thead>
         <tr>
-          <th>TT</th>
+          <th>STT</th>
           <th>Tên hàng hóa - Quy cách</th>
           <th>ĐVT</th>
-          <th>Số lượng theo chứng từ</th>
-          <th>Số lượng kiểm tra - Đạt</th>
-          <th>Số lượng kiểm tra - Không đạt</th>
+          <th>Số lượng theo<br>chứng từ</th>
+          <th>Số lượng<br>kiểm tra -<br>Đạt</th>
+          <th>Số lượng<br>kiểm tra -<br>Không đạt</th>
           <th>Ghi chú</th>
         </tr>
       </thead>
@@ -2163,19 +2177,12 @@ function generateHandoverPaperHtml(dept, items, copyTitle){
       </tbody>
     </table>
 
-    <div class="hb-conclusion">
-      <div><b>Kết luận:</b></div>
-      <div>Biên bản này được lập thành 02 bản, 01 bản giao cho người giao hàng; 01 bản giao cho người nhận hàng.</div>
-    </div>
-
-    <div class="hb-sign">
-      <div class="sign-col">
-        <div>Người giao hàng<br><span>(Ký, ghi rõ họ tên)</span></div>
-        <div style="margin-top:70px">Trần Hải Hà</div>
-      </div>
-      <div class="sign-col">
-        <div>Người nhận hàng<br><span>(Ký, ghi rõ họ tên)</span></div>
-        <div style="margin-top:70px">&nbsp;</div>
+    <div class="hb-footer">
+      <div class="hb-conclusion-title">Kết luận:</div>
+      <div class="hb-conclusion-body">Biên bản này được lập thành 02 bản, 01 bản giao cho người giao hàng; 01 bản giao cho người nhận hàng</div>
+      <div class="hb-sign-row">
+        <div class="hb-sign-col">Người giao hàng</div>
+        <div class="hb-sign-col">Người nhận hàng</div>
       </div>
     </div>
   </div>`;
@@ -2205,10 +2212,9 @@ function printHandoverSelected(){
 
   let printHtml = '';
   for(const [deptName, deptItems] of Object.entries(groupsByDept)){
-    // Bản 1: Lưu người nhận hàng
-    printHtml += generateHandoverPaperHtml(deptName, deptItems, 'Bản 1: Lưu Người nhận hàng');
-    // Bản 2: Lưu người giao hàng
-    printHtml += generateHandoverPaperHtml(deptName, deptItems, 'Bản 2: Lưu Người giao hàng');
+    // In 02 bản giao nhận giống hệt nhau theo đúng mẫu
+    printHtml += generateHandoverPaperHtml(deptName, deptItems);
+    printHtml += generateHandoverPaperHtml(deptName, deptItems);
   }
 
   el('printArea').innerHTML = printHtml;
