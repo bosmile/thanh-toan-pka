@@ -5,7 +5,7 @@ const PAID_STATUSES = ['Done', 'Đã thanh toán (chờ chứng từ)', 'Đã th
 
 async function ensure(db) {
   await db.prepare('CREATE TABLE IF NOT EXISTS app_state (id INTEGER PRIMARY KEY CHECK(id=1), revision INTEGER NOT NULL DEFAULT 0, payload TEXT NOT NULL, updated_at TEXT NOT NULL)').run();
-  await db.prepare("INSERT OR IGNORE INTO app_state(id,revision,payload,updated_at) VALUES(1,0,'{\"beneficiaries\":[],\"requests\":[],\"payment_groups\":[]}',CURRENT_TIMESTAMP)").run();
+  await db.prepare("INSERT OR IGNORE INTO app_state(id,revision,payload,updated_at) VALUES(1,0,'{\"beneficiaries\":[],\"requests\":[],\"payment_groups\":[],\"handovers\":[]}',CURRENT_TIMESTAMP)").run();
 }
 
 export async function onRequest(context) {

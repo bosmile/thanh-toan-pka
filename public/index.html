@@ -148,6 +148,31 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 .user-table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
 .user-table th{background:#f1f5f9;padding:8px;text-align:left;border-bottom:1px solid #cbd5e1}
 .user-table td{padding:8px;border-bottom:1px solid #e2e8f0}
+
+/* Phân hệ Bàn giao nội bộ */
+.handover-paper{padding:22px 28px;font:13px 'Times New Roman',serif;line-height:1.22;box-sizing:border-box}
+.handover-paper .hb-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.handover-paper .hb-left{font-weight:bold;font-size:13.5px}
+.handover-paper .hb-right{text-align:right;font-size:11px;font-style:italic}
+.handover-paper .hb-badge{display:inline-block;border:1px solid #000;padding:2px 7px;font-size:11px;font-style:italic;margin-bottom:4px}
+.handover-paper .hb-title{text-align:center;margin:8px 0 14px}
+.handover-paper .hb-title h2{font:bold 16px 'Times New Roman';margin:0 0 4px;text-transform:uppercase}
+.handover-paper .hb-title div{font-style:italic;font-size:13px}
+.handover-paper .hb-info{margin:5px 0;line-height:1.35}
+.handover-paper .hb-info-row{display:flex;justify-content:space-between;margin:4px 0}
+.handover-paper table{border-collapse:collapse;width:100%;margin:10px 0 6px;table-layout:fixed}
+.handover-paper th, .handover-paper td{border:1px solid #000;padding:5px 4px;font-size:12px;vertical-align:middle}
+.handover-paper th{text-align:center;font-weight:bold}
+.handover-paper td.center{text-align:center}
+.handover-paper td.right{text-align:right}
+.handover-paper td.left{text-align:left}
+.handover-paper .hb-conclusion{margin-top:8px;font-style:italic}
+.handover-paper .hb-sign{display:grid;grid-template-columns:1fr 1fr;text-align:center;margin-top:14px;padding:0 30px}
+.handover-paper .hb-sign .sign-col{display:flex;flex-direction:column;justify-content:space-between;height:115px;font-weight:bold}
+.handover-paper .hb-sign span{font-style:italic;font-weight:normal;font-size:12px}
+
+.paste-preview-table th, .paste-preview-table td{border:1px solid #cbd5e1;padding:5px 8px;text-align:left}
+.paste-preview-table th{background:#f1f5f9;font-weight:600}
 </style></head><body>
 <header>
   <div>
@@ -172,6 +197,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     <button id="tabData" class="active" onclick="switchPage('data')">Bảng DATA · Thanh toán</button>
     <button id="tabNcc" onclick="switchPage('ncc')">Danh mục NCC</button>
     <button id="tabGroups" onclick="switchPage('groups')">Nhóm hợp đồng / Đơn hàng</button>
+    <button id="tabHandover" onclick="switchPage('handover')">📦 Bàn giao nội bộ</button>
     <button id="tabTemplate" onclick="switchPage('template')">📄 Mẫu phiếu thanh toán</button>
     <button id="tabSettings" onclick="switchPage('settings')">⚙️ Cài đặt & Quản trị</button>
   </nav>
@@ -266,6 +292,58 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
       </div>
     </div>
     <div class="group-note">Số còn lại = giá trị hợp đồng − các phiếu xác nhận đã thanh toán.</div>
+  </div>
+
+  <div id="handoverPage" class="hidden-view">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2 style="margin:0 0 4px">📦 Bàn giao nội bộ hàng hóa cho các phòng ban</h2>
+        <div class="desc" style="margin-bottom:0">
+          Lập và quản lý danh sách vật tư bàn giao cho các bộ phận. Đơn vị giao mặc định: <b>Phòng Cung ứng (KHCU)</b>. Hỗ trợ sao chép dán nhiều ô/cột từ file Excel và in 02 bản biên bản giao nhận.
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="primary" style="background:#107c41;border-color:#0b5c30" onclick="openPasteModal()">📋 Dán từ Excel (Ctrl+V)</button>
+        <button class="primary" style="background:#0f766e;border-color:#0d5e56" onclick="printHandoverSelected()">🖨️ In biên bản đã chọn (2 bản)</button>
+      </div>
+    </div>
+
+    <div class="tools">
+      <button class="primary" onclick="addHandoverRow()">＋ Thêm dòng vật tư</button>
+      <select id="handoverDeptFilter" onchange="renderHandovers()" style="font-weight:600;min-width:190px">
+        <option value="">-- Tất cả phòng ban nhận --</option>
+      </select>
+      <input id="handoverSearch" placeholder="Tìm tên vật tư, quy cách, ĐVT, ghi chú..." oninput="renderHandovers()" style="width:280px">
+      <button class="btn-danger" onclick="deleteSelectedHandovers()">🗑️ Xóa dòng đã chọn</button>
+      <span class="count" id="handoverCount">0 vật tư</span>
+    </div>
+
+    <div class="sheet-panel">
+      <div class="panelhead">
+        <span>DANH SÁCH VẬT TƯ BÀN GIAO NỘI BỘ</span>
+        <span id="handoverSelectedInfo" style="font-size:12px;color:#2563eb;font-weight:normal">Đã chọn: 0 vật tư</span>
+      </div>
+      <div class="sheet-scroll" id="handoverScroll">
+        <table class="grid" id="handoverTable">
+          <thead>
+            <tr>
+              <th style="width:40px;text-align:center"><input type="checkbox" id="chkAllHandovers" onchange="toggleSelectAllHandovers(this.checked)" title="Chọn tất cả"></th>
+              <th style="width:50px;text-align:center">STT</th>
+              <th style="min-width:140px">Bộ phận nhận</th>
+              <th style="min-width:280px">Tên hàng hóa - Quy cách</th>
+              <th style="min-width:90px">ĐVT</th>
+              <th style="min-width:95px;text-align:right">SL chứng từ</th>
+              <th style="min-width:85px;text-align:right">SL Đạt</th>
+              <th style="min-width:85px;text-align:right">SL K.Đạt</th>
+              <th style="min-width:140px">Ghi chú</th>
+              <th style="min-width:110px">Ngày giao</th>
+              <th style="width:55px;text-align:center">Xóa</th>
+            </tr>
+          </thead>
+          <tbody id="handoverBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div id="nccPage" class="hidden-view">
@@ -719,10 +797,79 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
   </div>
 </div>
 
+<!-- Modal Dán nhanh từ Excel -->
+<div id="pasteModal" class="modal-overlay" hidden>
+  <div class="modal-card" style="width:min(820px, 95vw)">
+    <div class="modal-top">
+      <strong style="color:#107c41">📋 Dán danh sách vật tư từ file Excel</strong>
+      <button type="button" onclick="closePasteModal()" aria-label="Đóng">✕</button>
+    </div>
+    <div style="font-size:12px;color:#475569;margin:8px 0 12px;line-height:1.5">
+      <b>Hướng dẫn:</b> Copy các ô hoặc cột từ file Excel (Ctrl+C), sau đó dán vào ô bên dưới (Ctrl+V).<br>
+      • Hệ thống tự nhận diện các cột: <i>Tên hàng hóa - quy cách, ĐVT, Số lượng, Ghi chú</i>.<br>
+      • Cột <b>SL kiểm tra - Đạt</b> sẽ mặc định bằng <b>SL chứng từ</b>.
+    </div>
 
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px">
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Bộ phận nhận (áp dụng cho đợt dán này):</label>
+        <input id="pasteTargetDept" list="deptSuggestions" placeholder="Chọn hoặc nhập tên phòng ban (vd: Cơ điện, QC, RD...)" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;box-sizing:border-box">
+      </div>
+      <div style="width:160px">
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Ngày bàn giao:</label>
+        <input id="pasteTargetDate" type="date" style="width:100%;padding:7px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;box-sizing:border-box">
+      </div>
+    </div>
+
+    <textarea id="pasteRawText" rows="8" placeholder="Dán nội dung copy từ Excel vào đây (Ctrl+V)..." style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:10px;font-family:Consolas, monospace;font-size:12px;box-sizing:border-box;white-space:pre" oninput="previewPasteData()"></textarea>
+
+    <div id="pastePreviewBox" style="margin-top:10px;max-height:160px;overflow:auto;border:1px solid #e2e8f0;border-radius:6px;display:none;background:#f8fafc;padding:6px">
+      <div style="font-weight:600;font-size:11px;color:#334155;margin-bottom:4px" id="pastePreviewTitle">Xem trước dữ liệu</div>
+      <table class="paste-preview-table" style="width:100%;font-size:11px;border-collapse:collapse" id="pastePreviewTable"></table>
+    </div>
+
+    <div class="modal-foot" style="margin-top:14px">
+      <button type="button" onclick="closePasteModal()">Hủy bỏ</button>
+      <button type="button" class="primary" id="btnApplyPaste" onclick="applyExcelPaste()" style="background:#107c41;border-color:#0b5c30">✓ Chèn vào danh sách bàn giao</button>
+    </div>
+  </div>
+</div>
+
+<datalist id="deptSuggestions">
+  <option value="Cơ điện"></option>
+  <option value="QC"></option>
+  <option value="RD"></option>
+  <option value="Sản xuất"></option>
+  <option value="TT TĐSH"></option>
+  <option value="Phòng Kế toán"></option>
+  <option value="Phòng Cung ứng"></option>
+  <option value="Kho"></option>
+  <option value="Đảm bảo chất lượng (QA)"></option>
+  <option value="Hành chính nhân sự"></option>
+</datalist>
+
+<datalist id="unitSuggestions">
+  <option value="Cái"></option>
+  <option value="Chiếc"></option>
+  <option value="Bộ"></option>
+  <option value="Cuộn"></option>
+  <option value="Mét"></option>
+  <option value="Hộp"></option>
+  <option value="Thùng"></option>
+  <option value="Lít"></option>
+  <option value="Chai"></option>
+  <option value="Chai 25g"></option>
+  <option value="Chai 500g"></option>
+  <option value="Túi"></option>
+  <option value="Túi 500 cái"></option>
+  <option value="Túi 500c"></option>
+  <option value="Túi 1000c"></option>
+  <option value="Hộp 100 cái"></option>
+  <option value="Hộp 100 tờ"></option>
+</datalist>
 
 <script>
-const ORIGINAL={beneficiaries:[],requests:[]};
+const ORIGINAL={beneficiaries:[],requests:[],handovers:[]};
 const KEY='phenikaa-payment-offline-v1';
 const TYPES=['TT trước 100%','TT sau 100%','TT lần 1','TT lần 2','TT lần 3','TT lần 4'];
 const STATUSES=['Done','Đã thanh toán (chờ chứng từ)','Đã thanh toán (chờ giao hàng)','Đã giao KT, chờ đi tiền'];
@@ -1162,6 +1309,7 @@ async function loadCloud(){
     let result=await response.json();
     if(!result.ok)throw Error(result.error||'Không đọc được dữ liệu');
     DB=result.data&&Array.isArray(result.data.requests)&&Array.isArray(result.data.beneficiaries)?result.data:structuredClone(ORIGINAL);
+    DB.handovers = Array.isArray(DB.handovers) ? DB.handovers : [];
     serverRevision=result.revision||0;
     loaded=true;
     if(result.currentUser){
@@ -1648,15 +1796,435 @@ function printTemplateSample(){
 
 function renderDetail(){let x=request(active);if(!x){el('lines').innerHTML='';return}el('lines').innerHTML=(x.lines||[]).map((l,i)=>`<div class="lineitem"><input title="Tên hàng hóa" value="${esc(l.description)}" onchange="lineChanged(${i},'description',this.value)"><input title="Hóa đơn" value="${esc(l.invoice_no)}" onchange="lineChanged(${i},'invoice_no',this.value)"><input title="Số tiền" value="${esc(formatMoneyDisplay(l.amount))}" onfocus="this.value=plainAmount(this.value)" onblur="this.value=formatMoneyDisplay(this.value)" onchange="lineChanged(${i},'amount',this.value)"><button title="Xóa dòng" onclick="delLine(${i})">×</button></div>`).join('')}
 
+// ==========================================
+// PHÂN HỆ: BÀN GIAO NỘI BỘ HÀNG HÓA
+// ==========================================
+let checkedHandovers = new Set();
+const DEFAULT_DEPTS = ['Cơ điện', 'QC', 'RD', 'Sản xuất', 'TT TĐSH', 'Phòng Kế toán', 'Phòng Cung ứng', 'Kho', 'Đảm bảo chất lượng (QA)', 'Hành chính nhân sự'];
+
+function handovers(){
+  if(!DB.handovers || !Array.isArray(DB.handovers)) DB.handovers = [];
+  return DB.handovers;
+}
+
+function refreshHandoverDeptOptions(){
+  const depts = [...new Set(DEFAULT_DEPTS.concat(handovers().map(h=>String(h.department||'').trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
+  const filter = el('handoverDeptFilter');
+  if(filter){
+    const current = filter.value;
+    filter.innerHTML = '<option value="">-- Tất cả phòng ban nhận --</option>' + depts.map(d=>`<option value="${esc(d)}" ${current===d?'selected':''}>${esc(d)}</option>`).join('');
+  }
+  const dl = el('deptSuggestions');
+  if(dl){
+    dl.innerHTML = depts.map(d=>`<option value="${esc(d)}"></option>`).join('');
+  }
+}
+
+function renderHandovers(){
+  const tbody = el('handoverBody');
+  if(!tbody) return;
+  refreshHandoverDeptOptions();
+  const deptFilter = el('handoverDeptFilter')?.value || '';
+  const q = normName(el('handoverSearch')?.value || '');
+
+  let list = handovers().filter(h => {
+    if(deptFilter && String(h.department||'').trim() !== deptFilter) return false;
+    if(q && !normName([h.department, h.item_name, h.unit, h.note, h.receiver_name, h.handover_date].join(' ')).includes(q)) return false;
+    return true;
+  });
+
+  const countEl = el('handoverCount');
+  if(countEl) countEl.textContent = list.length + ' / ' + handovers().length + ' vật tư';
+  const selInfo = el('handoverSelectedInfo');
+  if(selInfo) selInfo.textContent = 'Đã chọn: ' + checkedHandovers.size + ' vật tư';
+
+  tbody.innerHTML = list.map((h, idx) => {
+    const isChecked = checkedHandovers.has(Number(h.id));
+    return `<tr class="${isChecked?'chosen':''}" id="hrow_${h.id}">
+      <td style="text-align:center"><input type="checkbox" ${isChecked?'checked':''} onchange="toggleHandoverCheck(${h.id}, this.checked)"></td>
+      <td class="rownum" style="position:static;min-width:auto;text-align:center">${idx+1}</td>
+      <td><input class="ncc-cell" list="deptSuggestions" value="${esc(h.department||'')}" placeholder="Phòng ban nhận" onchange="editHandover(${h.id},'department',this.value)"></td>
+      <td><input class="ncc-cell" value="${esc(h.item_name||'')}" placeholder="Tên hàng hóa - Quy cách" onchange="editHandover(${h.id},'item_name',this.value)"></td>
+      <td><input class="ncc-cell" list="unitSuggestions" value="${esc(h.unit||'')}" placeholder="ĐVT" onchange="editHandover(${h.id},'unit',this.value)"></td>
+      <td><input class="ncc-cell" style="text-align:right" value="${esc(h.quantity_doc??'')}" onchange="editHandover(${h.id},'quantity_doc',this.value)"></td>
+      <td><input class="ncc-cell" style="text-align:right" value="${esc(h.quantity_pass??'')}" onchange="editHandover(${h.id},'quantity_pass',this.value)"></td>
+      <td><input class="ncc-cell" style="text-align:right" value="${esc(h.quantity_fail??'')}" onchange="editHandover(${h.id},'quantity_fail',this.value)"></td>
+      <td><input class="ncc-cell" value="${esc(h.note||'')}" placeholder="Ghi chú" onchange="editHandover(${h.id},'note',this.value)"></td>
+      <td><input class="ncc-cell" type="date" value="${esc(h.handover_date||'')}" onchange="editHandover(${h.id},'handover_date',this.value)"></td>
+      <td style="text-align:center"><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="deleteHandover(${h.id})">×</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function addHandoverRow(){
+  const currentDept = el('handoverDeptFilter')?.value || '';
+  const today = new Date().toISOString().slice(0, 10);
+  const nextId = Math.max(0, ...handovers().map(h=>Number(h.id)||0)) + 1;
+  handovers().unshift({
+    id: nextId,
+    department: currentDept,
+    item_name: '',
+    unit: 'Cái',
+    quantity_doc: '1',
+    quantity_pass: '1',
+    quantity_fail: '',
+    note: '',
+    handover_date: today,
+    sender_name: 'Trần Hải Hà',
+    sender_dept: 'Phòng KHCU',
+    receiver_name: ''
+  });
+  save();
+  renderHandovers();
+  const firstInput = el('handoverBody')?.querySelector('input.ncc-cell');
+  if(firstInput) firstInput.focus();
+}
+
+function editHandover(id, key, val){
+  const h = handovers().find(x => Number(x.id) === Number(id));
+  if(!h) return;
+  h[key] = val;
+  if(key === 'quantity_doc' && (!h.quantity_pass || h.quantity_pass === '0' || h.quantity_pass === h.quantity_doc)){
+    h.quantity_pass = val;
+  }
+  save();
+}
+
+function deleteHandover(id){
+  const h = handovers().find(x => Number(x.id) === Number(id));
+  if(!h) return;
+  if(!confirm('Xóa vật tư "' + (h.item_name || 'này') + '" khỏi danh sách bàn giao?')) return;
+  DB.handovers = handovers().filter(x => Number(x.id) !== Number(id));
+  checkedHandovers.delete(Number(id));
+  save();
+  renderHandovers();
+}
+
+function deleteSelectedHandovers(){
+  if(!checkedHandovers.size) return alert('Hãy chọn ít nhất một dòng cần xóa.');
+  if(!confirm('Xóa ' + checkedHandovers.size + ' vật tư đã chọn khỏi danh sách bàn giao?')) return;
+  DB.handovers = handovers().filter(x => !checkedHandovers.has(Number(x.id)));
+  checkedHandovers.clear();
+  save();
+  renderHandovers();
+  message('Đã xóa các vật tư đã chọn.');
+}
+
+function toggleHandoverCheck(id, isChecked){
+  if(isChecked) checkedHandovers.add(Number(id));
+  else checkedHandovers.delete(Number(id));
+  const selInfo = el('handoverSelectedInfo');
+  if(selInfo) selInfo.textContent = 'Đã chọn: ' + checkedHandovers.size + ' vật tư';
+  const row = el('hrow_' + id);
+  if(row) row.classList.toggle('chosen', isChecked);
+}
+
+function toggleSelectAllHandovers(isChecked){
+  const tbody = el('handoverBody');
+  if(!tbody) return;
+  const checkboxes = tbody.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = isChecked;
+    const match = cb.closest('tr')?.id?.match(/hrow_(\d+)/);
+    if(match){
+      const id = Number(match[1]);
+      if(isChecked) checkedHandovers.add(id);
+      else checkedHandovers.delete(id);
+      cb.closest('tr')?.classList.toggle('chosen', isChecked);
+    }
+  });
+  const selInfo = el('handoverSelectedInfo');
+  if(selInfo) selInfo.textContent = 'Đã chọn: ' + checkedHandovers.size + ' vật tư';
+}
+
+function splitCsvOrTsvLine(line){
+  if(line.includes('\t')) return line.split('\t').map(p => p.trim());
+  const parts = [];
+  let cur = '', inQuotes = false;
+  for(let i = 0; i < line.length; i++){
+    const c = line[i];
+    if(c === '"' && (i === 0 || line[i-1] !== '\\')){
+      inQuotes = !inQuotes;
+    } else if(c === ',' && !inQuotes){
+      parts.push(cur.trim().replace(/^"|"$/g, ''));
+      cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  parts.push(cur.trim().replace(/^"|"$/g, ''));
+  return parts;
+}
+
+function parseExcelText(rawText, defaultDept, defaultDate){
+  if(!rawText || !rawText.trim()) return [];
+  const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const rows = [];
+  const today = defaultDate || new Date().toISOString().slice(0, 10);
+  let activeDept = defaultDept || '';
+
+  for(const line of lines){
+    // Phát hiện đổi phòng ban nhận nếu có trong văn bản dán vào (vd: "Bộ phận: Cơ điện" hoặc "Địa chỉ: QC")
+    const deptMatch = line.match(/bộ phận:\s*([^\t,\r\n]+)/i);
+    if(deptMatch && deptMatch[1].trim() && !deptMatch[1].includes('…') && !deptMatch[1].toLowerCase().includes('cung ứng') && !deptMatch[1].toLowerCase().includes('khcu')){
+      activeDept = deptMatch[1].trim();
+      continue;
+    }
+    if(line.toLowerCase().includes('người nhận hàng')){
+      const addrMatch = line.match(/địa chỉ:\s*([^\t,\r\n]+)/i);
+      if(addrMatch && addrMatch[1].trim() && !addrMatch[1].includes('…') && !addrMatch[1].toLowerCase().includes('khcu')){
+        activeDept = addrMatch[1].trim();
+      }
+      continue;
+    }
+
+    const parts = splitCsvOrTsvLine(line);
+    if(!parts.length) continue;
+
+    const firstLower = parts[0].toLowerCase();
+    if(firstLower === 'stt' || firstLower === 'tt' || firstLower.startsWith('bộ phận:') || firstLower.includes('tên hàng hóa') || firstLower.includes('biên bản bàn giao') || firstLower.includes('chúng tôi gồm') || firstLower.includes('hôm nay') || firstLower.includes('kết luận') || firstLower.includes('tại công ty') || firstLower.includes('người giao hàng')) continue;
+    if(parts.every(p => !p)) continue;
+
+    let item_name = '', unit = 'Cái', qty_doc = '1', qty_pass = '', qty_fail = '', note = '';
+
+    let startIndex = 0;
+    if(/^\d+$/.test(parts[0]) && parts.length > 1){
+      startIndex = 1;
+    }
+
+    const cols = parts.slice(startIndex);
+    if(cols.length === 1){
+      item_name = cols[0];
+    } else if(cols.length === 2){
+      item_name = cols[0];
+      if(/^[0-9.,]+$/.test(cols[1])) qty_doc = cols[1];
+      else unit = cols[1];
+    } else if(cols.length === 3){
+      item_name = cols[0];
+      unit = cols[1] || 'Cái';
+      qty_doc = cols[2] || '1';
+    } else if(cols.length >= 4){
+      item_name = cols[0];
+      unit = cols[1] || 'Cái';
+      qty_doc = cols[2] || '1';
+      if(cols.length >= 5 && cols[3]) qty_pass = cols[3];
+      if(cols.length >= 6 && cols[4]) qty_fail = cols[4];
+      note = cols[cols.length - 1] !== qty_doc ? cols[cols.length - 1] : '';
+    }
+
+    if(!item_name || item_name.startsWith('Biên bản') || item_name.startsWith('Tại Công ty')) continue;
+    if(!qty_pass) qty_pass = qty_doc;
+
+    rows.push({
+      department: activeDept,
+      item_name,
+      unit,
+      quantity_doc: qty_doc,
+      quantity_pass: qty_pass,
+      quantity_fail: qty_fail,
+      note,
+      handover_date: today,
+      sender_name: 'Trần Hải Hà',
+      sender_dept: 'Phòng KHCU',
+      receiver_name: ''
+    });
+  }
+  return rows;
+}
+
+function openPasteModal(){
+  const filterDept = el('handoverDeptFilter')?.value || '';
+  el('pasteTargetDept').value = filterDept;
+  el('pasteTargetDate').value = new Date().toISOString().slice(0, 10);
+  el('pasteRawText').value = '';
+  el('pastePreviewBox').style.display = 'none';
+  el('pastePreviewTable').innerHTML = '';
+  el('pasteModal').hidden = false;
+  setTimeout(() => el('pasteRawText').focus(), 50);
+}
+
+function closePasteModal(){
+  el('pasteModal').hidden = true;
+}
+
+function previewPasteData(){
+  const raw = el('pasteRawText').value;
+  const dept = el('pasteTargetDept').value.trim();
+  const date = el('pasteTargetDate').value;
+  const rows = parseExcelText(raw, dept, date);
+  const pBox = el('pastePreviewBox');
+  const pTable = el('pastePreviewTable');
+  const pTitle = el('pastePreviewTitle');
+
+  if(!rows.length){
+    pBox.style.display = 'none';
+    return;
+  }
+  pBox.style.display = 'block';
+  pTitle.textContent = `Xem trước: Nhận diện ${rows.length} dòng vật tư`;
+  pTable.innerHTML = `<thead><tr><th>STT</th><th>Bộ phận</th><th>Tên vật tư</th><th>ĐVT</th><th>SL chứng từ</th><th>Ghi chú</th></tr></thead><tbody>`
+    + rows.slice(0, 8).map((r, i) => `<tr><td>${i+1}</td><td>${esc(r.department||'Chưa gán')}</td><td>${esc(r.item_name)}</td><td>${esc(r.unit)}</td><td>${esc(r.quantity_doc)}</td><td>${esc(r.note)}</td></tr>`).join('')
+    + (rows.length > 8 ? `<tr><td colspan="6" style="text-align:center;font-style:italic">... và ${rows.length - 8} dòng khác</td></tr>` : '')
+    + `</tbody>`;
+}
+
+function applyExcelPaste(){
+  const raw = el('pasteRawText').value;
+  const dept = el('pasteTargetDept').value.trim();
+  const date = el('pasteTargetDate').value;
+  const rows = parseExcelText(raw, dept, date);
+  if(!rows.length){
+    return alert('Chưa có dữ liệu hợp lệ để chèn. Vui lòng copy và dán nội dung từ Excel.');
+  }
+  let maxId = Math.max(0, ...handovers().map(h=>Number(h.id)||0));
+  for(const r of rows){
+    maxId++;
+    r.id = maxId;
+    handovers().unshift(r);
+  }
+  save();
+  closePasteModal();
+  if(dept) el('handoverDeptFilter').value = dept;
+  renderHandovers();
+  message(`Đã thêm thành công ${rows.length} vật tư vào danh sách bàn giao!`);
+}
+
+function generateHandoverPaperHtml(dept, items, copyTitle){
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2, '0');
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const y = now.getFullYear();
+
+  const rowsHtml = items.map((it, idx) => `
+    <tr>
+      <td class="center">${idx + 1}</td>
+      <td class="left">${esc(it.item_name || '')}</td>
+      <td class="center">${esc(it.unit || '')}</td>
+      <td class="center">${esc(it.quantity_doc || '')}</td>
+      <td class="center">${esc(it.quantity_pass || '')}</td>
+      <td class="center">${esc(it.quantity_fail || '')}</td>
+      <td class="left">${esc(it.note || '')}</td>
+    </tr>
+  `).join('');
+
+  return `
+  <div class="paper handover-paper">
+    <div class="hb-top">
+      <div class="hb-left">Bộ phận: ${esc(dept || '…………………')}</div>
+      <div class="hb-right">
+        <span class="hb-badge">${esc(copyTitle)}</span>
+      </div>
+    </div>
+
+    <div class="hb-title">
+      <h2>BIÊN BẢN BÀN GIAO, NGHIỆM THU VẬT TƯ, HÀNG HÓA</h2>
+      <div>(Không qua kho)</div>
+    </div>
+
+    <div class="hb-info">
+      <div>Hôm nay, ngày ${d} tháng ${m} năm ${y}</div>
+      <div>Tại Công ty CP Dược phẩm Phenikaa</div>
+      <div>Địa chỉ: Lô đất CN2-10, Khu Công nghiệp Công nghệ cao 2, Khu Công nghệ cao Hòa Lạc, Xã Hòa Lạc, TP Hà Nội</div>
+      <div style="margin-top:6px">Chúng tôi gồm:</div>
+      <div class="hb-info-row">
+        <div>Ông (bà): <b>Trần Hải Hà</b> - Người giao hàng</div>
+        <div>Địa chỉ: <b>Phòng KHCU</b></div>
+      </div>
+      <div class="hb-info-row">
+        <div>Ông (bà): …………...........…………. Người nhận hàng</div>
+        <div>Địa chỉ: <b>${esc(dept || '…………………')}</b></div>
+      </div>
+      <div style="margin-top:6px">Cùng nhau tiến hành giao nhận và nghiệm thu số lượng vật tư sau:</div>
+    </div>
+
+    <table>
+      <colgroup>
+        <col style="width:5%">
+        <col style="width:41%">
+        <col style="width:10%">
+        <col style="width:12%">
+        <col style="width:11%">
+        <col style="width:11%">
+        <col style="width:10%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>TT</th>
+          <th>Tên hàng hóa - Quy cách</th>
+          <th>ĐVT</th>
+          <th>Số lượng theo chứng từ</th>
+          <th>Số lượng kiểm tra - Đạt</th>
+          <th>Số lượng kiểm tra - Không đạt</th>
+          <th>Ghi chú</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+    </table>
+
+    <div class="hb-conclusion">
+      <div><b>Kết luận:</b></div>
+      <div>Biên bản này được lập thành 02 bản, 01 bản giao cho người giao hàng; 01 bản giao cho người nhận hàng.</div>
+    </div>
+
+    <div class="hb-sign">
+      <div class="sign-col">
+        <div>Người giao hàng<br><span>(Ký, ghi rõ họ tên)</span></div>
+        <div style="margin-top:70px">Trần Hải Hà</div>
+      </div>
+      <div class="sign-col">
+        <div>Người nhận hàng<br><span>(Ký, ghi rõ họ tên)</span></div>
+        <div style="margin-top:70px">&nbsp;</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function printHandoverSelected(){
+  let itemsToPrint = [];
+  if(checkedHandovers.size > 0){
+    itemsToPrint = handovers().filter(h => checkedHandovers.has(Number(h.id)));
+  } else {
+    const dept = el('handoverDeptFilter')?.value || '';
+    if(dept){
+      itemsToPrint = handovers().filter(h => String(h.department||'').trim() === dept);
+    }
+  }
+
+  if(!itemsToPrint.length){
+    return alert('Vui lòng tích chọn các dòng vật tư cần in, hoặc chọn một Bộ phận nhận để in toàn bộ vật tư của bộ phận đó.');
+  }
+
+  const groupsByDept = {};
+  for(const it of itemsToPrint){
+    const d = String(it.department || 'Chưa phân loại').trim();
+    if(!groupsByDept[d]) groupsByDept[d] = [];
+    groupsByDept[d].push(it);
+  }
+
+  let printHtml = '';
+  for(const [deptName, deptItems] of Object.entries(groupsByDept)){
+    // Bản 1: Lưu người nhận hàng
+    printHtml += generateHandoverPaperHtml(deptName, deptItems, 'Bản 1: Lưu Người nhận hàng');
+    // Bản 2: Lưu người giao hàng
+    printHtml += generateHandoverPaperHtml(deptName, deptItems, 'Bản 2: Lưu Người giao hàng');
+  }
+
+  el('printArea').innerHTML = printHtml;
+  window.print();
+}
+
 function switchPage(page){
-  for(const p of ['data','ncc','groups','template','settings']){
-    const node=el(p==='data'?'dataPage':p==='ncc'?'nccPage':p==='groups'?'groupsPage':p==='template'?'templatePage':'settingsPage');
+  for(const p of ['data','ncc','groups','handover','template','settings']){
+    const node=el(p==='data'?'dataPage':p==='ncc'?'nccPage':p==='groups'?'groupsPage':p==='handover'?'handoverPage':p==='template'?'templatePage':'settingsPage');
     if(node)node.classList.toggle('hidden-view',page!==p);
-    const tabBtn=el(p==='data'?'tabData':p==='ncc'?'tabNcc':p==='groups'?'tabGroups':p==='template'?'tabTemplate':'tabSettings');
+    const tabBtn=el(p==='data'?'tabData':p==='ncc'?'tabNcc':p==='groups'?'tabGroups':p==='handover'?'tabHandover':p==='template'?'tabTemplate':'tabSettings');
     if(tabBtn)tabBtn.classList.toggle('active',page===p);
   }
   if(page==='ncc')renderNcc();
   if(page==='groups')renderGroups();
+  if(page==='handover')renderHandovers();
   if(page==='template')renderTemplatePage();
   if(page==='settings')renderSettings();
 }
@@ -1684,17 +2252,21 @@ async function restoreData(e){
     let a=JSON.parse(await f.text());
     if(a.format!=='phenikaa-payment-offline-v1'||!Array.isArray(a.data?.requests)||!Array.isArray(a.data?.beneficiaries))throw Error('Sai cấu trúc file JSON');
     if(!confirm('Thay thế toàn bộ dữ liệu đang lưu bằng bản sao lưu này? Thao tác không thể hoàn tác.'))return;
-    DB=a.data;save();checked.clear();init();
-    message('Đã khôi phục '+DB.requests.length+' đề nghị');
+    DB=a.data;
+    DB.handovers = Array.isArray(DB.handovers) ? DB.handovers : [];
+    save();checked.clear();init();
+    message('Đã khôi phục '+DB.requests.length+' đề nghị và '+DB.handovers.length+' vật tư bàn giao');
   }catch(err){alert(err.message)}
   e.target.value='';
 }
 
 function init(){
+  DB.handovers = Array.isArray(DB.handovers) ? DB.handovers : [];
   docTypes();
   groups();
   refreshLists();
   refreshGroupOptions();
+  refreshHandoverDeptOptions();
   getPrintTemplate();
   el('statusFilter').innerHTML='<option value="">Tất cả trạng thái</option>'+STATUSES.map(s=>`<option>${esc(s)}</option>`).join('');
   active=DB.requests.find(x=>x.legacy_stt===99)?.id||DB.requests[0]?.id||null;
@@ -1702,15 +2274,43 @@ function init(){
   renderDetail();
   renderNcc();
   renderGroups();
+  renderHandovers();
 }
 
 el('tbody').addEventListener('keydown',tableTab);
 el('docOverlay').addEventListener('click',e=>{if(e.target===el('docOverlay'))closeDocModal()});
+el('pasteModal').addEventListener('click',e=>{if(e.target===el('pasteModal'))closePasteModal()});
+
+// Lắng nghe phím dán trực tiếp trên bảng bàn giao nội bộ
+const ht = el('handoverTable');
+if(ht){
+  ht.addEventListener('paste', e => {
+    const clipText = e.clipboardData?.getData('text') || '';
+    if(clipText.includes('\t') || clipText.includes('\n')){
+      e.preventDefault();
+      const filterDept = el('handoverDeptFilter')?.value || '';
+      const rows = parseExcelText(clipText, filterDept, new Date().toISOString().slice(0, 10));
+      if(rows.length){
+        let maxId = Math.max(0, ...handovers().map(h=>Number(h.id)||0));
+        for(const r of rows){
+          maxId++;
+          r.id = maxId;
+          handovers().unshift(r);
+        }
+        save();
+        renderHandovers();
+        message(`Đã dán trực tiếp ${rows.length} vật tư từ Excel!`);
+      }
+    }
+  });
+}
+
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(!el('docOverlay').hidden)closeDocModal();
     if(!el('changePassOverlay').hidden)closeChangePassModal();
     if(!el('userModalOverlay').hidden)closeUserModal();
+    if(!el('pasteModal').hidden)closePasteModal();
   }
 });
 
