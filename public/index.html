@@ -94,7 +94,7 @@ table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nu
 .selected-info{font-size:12px;color:#395474}
 datalist{display:none}
 @media(max-width:1060px){.workspace{display:block}.preview-panel{margin-top:12px}.preview-scroll{max-height:460px}.sheet-scroll{max-height:65vh}}
-@media print{body{background:white;color:#000}header,main,.preview-panel,.sheet-panel,.tools,.modal-overlay,.doc-overlay{display:none!important}#printArea{display:block!important;color:#000}#printArea, #printArea *{color:#000!important}#printArea .paper{box-shadow:none;width:190mm;min-height:273mm;padding:5mm 3mm;font-size:13px;break-after:page;page-break-after:always;color:#000}#printArea .handover-paper{box-shadow:none;width:190mm;min-height:auto;padding:8mm 8mm 6mm;font-size:13px;break-after:page;page-break-after:always;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}#printArea .paper:last-child{break-after:auto;page-break-after:auto}@page{size:A4 portrait;margin:9mm 10mm}}
+@media print{body{background:white;color:#000}header,main,.preview-panel,.sheet-panel,.tools,.modal-overlay,.doc-overlay{display:none!important}#printArea{display:block!important;color:#000}#printArea, #printArea *{color:#000!important}#printArea .paper{box-shadow:none;width:190mm;min-height:273mm;padding:5mm 3mm;font-size:13px;break-after:page;page-break-after:always;color:#000}#printArea .handover-paper{box-shadow:none;width:190mm;min-height:auto;padding:5mm 6mm 4mm;font-size:12px;break-after:page;page-break-after:always;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}#printArea .paper:last-child{break-after:auto;page-break-after:auto}@page{size:A4 portrait;margin:9mm 10mm}}
 #printArea{display:none}
 
 .doc-overlay:not([hidden]),.modal-overlay:not([hidden]){position:fixed;inset:0;background:rgba(13,30,51,.65);backdrop-filter:blur(2px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
@@ -440,32 +440,33 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 .user-table td{padding:8px;border-bottom:1px solid #e2e8f0}
 
 /* Phân hệ Bàn giao nội bộ */
-.handover-paper{font-family:'Times New Roman',serif;font-size:13px;line-height:1.45;color:#000;box-sizing:border-box;background:#fff;padding:20px 24px}
-.handover-paper .hb-box{width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:12px;table-layout:fixed}
-.handover-paper .hb-box td{border:1.5px solid #000;vertical-align:middle}
-.handover-paper .hb-box-left{width:41%;padding:8px 10px 6px;box-sizing:border-box}
-.handover-paper .hb-logo{text-align:center;margin-bottom:6px}
-.handover-paper .hb-logo img{height:38px;width:170px;max-width:100%;object-fit:contain;display:block;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact;image-rendering:-webkit-optimize-contrast}
-.handover-paper .hb-sender-dept{font-weight:bold;font-size:13px;color:#000;padding-left:2px}
-.handover-paper .hb-box-right{width:59%;padding:10px 8px;text-align:center;box-sizing:border-box}
-.handover-paper .hb-title-main{font-size:13.5px;font-weight:bold;text-transform:uppercase;line-height:1.35;color:#000}
-.handover-paper .hb-title-sub{font-size:13px;font-weight:bold;line-height:1.35;color:#000;margin-top:2px}
-.handover-paper .hb-info{margin:10px 0 8px;font-size:13px;line-height:1.5;color:#000}
-.handover-paper .hb-line{margin:2px 0}
-.handover-paper .hb-two-col{display:flex;justify-content:space-between;margin:2px 0}
+.handover-paper{font-family:'Times New Roman',serif;font-size:12.5px;line-height:1.35;color:#000;box-sizing:border-box;background:#fff;padding:16px 20px}
+.handover-paper .hb-box{width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:8px;table-layout:fixed}
+.handover-paper td, .handover-paper th{height:auto!important;min-height:0!important}
+.handover-paper .hb-box td{border:1.5px solid #000;vertical-align:middle;height:auto!important}
+.handover-paper .hb-box-left{width:41%;padding:4px 8px 3px;box-sizing:border-box}
+.handover-paper .hb-logo{text-align:center;margin-bottom:2px}
+.handover-paper .hb-logo img{height:36px;width:160px;max-width:100%;object-fit:contain;display:block;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact;image-rendering:-webkit-optimize-contrast}
+.handover-paper .hb-sender-dept{font-weight:bold;font-size:12.5px;color:#000;padding-left:2px}
+.handover-paper .hb-box-right{width:59%;padding:6px 6px;text-align:center;box-sizing:border-box}
+.handover-paper .hb-title-main{font-size:13px;font-weight:bold;text-transform:uppercase;line-height:1.25;color:#000}
+.handover-paper .hb-title-sub{font-size:12.5px;font-weight:bold;line-height:1.25;color:#000;margin-top:2px}
+.handover-paper .hb-info{margin:6px 0 5px;font-size:12.5px;line-height:1.35;color:#000}
+.handover-paper .hb-line{margin:1.5px 0}
+.handover-paper .hb-two-col{display:flex;justify-content:space-between;margin:1.5px 0}
 .handover-paper .hb-two-col > div:first-child{flex:1}
 .handover-paper .hb-two-col > div:last-child{width:36%;text-align:left}
-.handover-paper .hb-table{width:100%;border-collapse:collapse;border:1.5px solid #000;margin:8px 0;table-layout:fixed}
-.handover-paper .hb-table th, .handover-paper .hb-table td{border:1px solid #000;padding:5px 4px;font-size:11.5px;line-height:1.25;vertical-align:middle;color:#000}
-.handover-paper .hb-table th{font-weight:bold;text-align:center;background:#fff}
+.handover-paper .hb-table{width:100%;border-collapse:collapse;border:1.5px solid #000;margin:6px 0 5px;table-layout:fixed}
+.handover-paper .hb-table th{border:1px solid #000;padding:3px 3px;font-size:11px;line-height:1.15;vertical-align:middle;color:#000;font-weight:bold;text-align:center;background:#fff;height:auto!important}
+.handover-paper .hb-table td{border:1px solid #000;padding:2px 3px;font-size:11px;line-height:1.15;vertical-align:middle;color:#000;height:auto!important}
 .handover-paper .hb-table td.center{text-align:center}
-.handover-paper .hb-table td.left{text-align:left;padding-left:6px}
-.handover-paper .hb-table td.right{text-align:right;padding-right:6px}
-.handover-paper .hb-footer{margin-top:6px;font-size:13px;line-height:1.45;color:#000}
-.handover-paper .hb-conclusion-title{font-weight:bold;margin-bottom:2px}
-.handover-paper .hb-conclusion-body{margin-bottom:14px}
-.handover-paper .hb-sign-row{display:flex;justify-content:space-between;text-align:center;padding:0 40px;margin-top:10px}
-.handover-paper .hb-sign-col{width:42%;font-weight:bold;font-size:13px;text-align:center;min-height:75px}
+.handover-paper .hb-table td.left{text-align:left;padding-left:5px}
+.handover-paper .hb-table td.right{text-align:right;padding-right:5px}
+.handover-paper .hb-footer{margin-top:5px;font-size:12.5px;line-height:1.35;color:#000}
+.handover-paper .hb-conclusion-title{font-weight:bold;margin-bottom:1px}
+.handover-paper .hb-conclusion-body{margin-bottom:8px}
+.handover-paper .hb-sign-row{display:flex;justify-content:space-between;text-align:center;padding:0 30px;margin-top:6px}
+.handover-paper .hb-sign-col{width:42%;font-weight:bold;font-size:12.5px;text-align:center;min-height:55px}
 
 .paste-preview-table th, .paste-preview-table td{border:1px solid #cbd5e1;padding:5px 8px;text-align:left}
 .paste-preview-table th{background:#f1f5f9;font-weight:600}
@@ -3174,13 +3175,13 @@ function generateHandoverPaperHtml(dept, items){
 
     <table class="hb-table">
       <colgroup>
-        <col style="width:50px">
+        <col style="width:40px">
         <col>
-        <col style="width:60px">
-        <col style="width:95px">
-        <col style="width:85px">
+        <col style="width:52px">
         <col style="width:85px">
         <col style="width:75px">
+        <col style="width:75px">
+        <col style="width:70px">
       </colgroup>
       <thead>
         <tr>
@@ -3188,8 +3189,8 @@ function generateHandoverPaperHtml(dept, items){
           <th>Tên hàng hóa - Quy cách</th>
           <th>ĐVT</th>
           <th>Số lượng theo<br>chứng từ</th>
-          <th>Số lượng<br>kiểm tra -<br>Đạt</th>
-          <th>Số lượng<br>kiểm tra -<br>Không đạt</th>
+          <th>Số lượng kiểm tra<br>Đạt</th>
+          <th>Số lượng kiểm tra<br>Không đạt</th>
           <th>Ghi chú</th>
         </tr>
       </thead>
