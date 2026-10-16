@@ -26,10 +26,10 @@ main{padding:16px 18px}h2{font-size:19px;margin:0 0 7px}.desc{font-size:12px;col
 .panelhead{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #e3e9ef;background:#fafcff;font-size:13px;font-weight:700}
 .sheet-scroll{overflow:auto;max-height:calc(100vh - 250px);min-height:530px}
 table.grid{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12px}
-table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;font-weight:600;text-align:left;padding:8px 10px 8px 7px;border-right:1px solid #c9d3de;border-bottom:1px solid #9eafc2;white-space:nowrap;position:relative;user-select:none}
+table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;font-weight:600;text-align:left;padding:7px 8px;border-right:1px solid #c9d3de;border-bottom:1px solid #9eafc2;white-space:normal;word-break:break-word;position:relative;user-select:none;line-height:1.3}
 .th-resizer{position:absolute;top:0;right:0;width:6px;height:100%;cursor:col-resize;user-select:none;z-index:10}
 .th-resizer:hover,.th-resizer.resizing{background:var(--primary)}
-table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;min-height:46px;height:46px;background:#fff;vertical-align:middle}
+table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;min-height:42px;height:auto;background:#fff;vertical-align:top;white-space:normal;word-break:break-word}
 table.grid tr:nth-child(even) td{background:#f9fbfe}table.grid tr.chosen td{background:#e6f2ff}
 table.grid tr.row-done td{background:#e8f5e9}
 table.grid tr.row-done:nth-child(even) td{background:#def0df}
@@ -38,13 +38,21 @@ table.grid tr.row-done.chosen td{background:#bcebc5}
 table.grid tr.row-done .rownum{background:#c8e6c9!important;border-right:2px solid #81c784!important}
 table.grid tr.row-done .rownum button{color:#1b5e20}
 table.grid tr.row-done .doc-cell-btn{background:#d4edd9;border-color:#a3d9b0;color:#1b5e20}
-table.grid td input,table.grid td select{width:100%;height:44px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e}
+table.grid td input,table.grid td select{width:100%;min-height:38px;border:0;outline:0;padding:4px 6px;background:transparent;font-size:12px;color:#202d3e;box-sizing:border-box}
 table.grid td input:focus,table.grid td select:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
-.cell-multiline{width:100%;height:44px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e;resize:none;line-height:1.35;white-space:pre-wrap;word-break:break-word;overflow-y:auto;font-family:inherit;box-sizing:border-box;display:block}
+.cell-multiline{width:100%;min-height:38px;height:auto;border:0;outline:0;padding:5px 6px;background:transparent;font-size:12px;color:#202d3e;resize:none;line-height:1.35;white-space:pre-wrap;word-break:break-word;overflow:hidden;font-family:inherit;box-sizing:border-box;display:block}
 .cell-multiline:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
 table.grid td.cell-disabled input,table.grid td.cell-disabled select,table.grid td.cell-disabled textarea{background:#f3f4f6;color:#6b7280;cursor:not-allowed}
 table.grid .rownum{position:sticky;left:0;z-index:1;background:#ecf2f9!important;font-weight:600;text-align:center;min-width:56px;border-right:2px solid #a9bacd}
-table.grid .rownum button{border:0;background:transparent;color:#164c7e;font-weight:700;width:100%;height:44px}
+table.grid .rownum button{border:0;background:transparent;color:#164c7e;font-weight:700;width:100%;min-height:38px;height:100%}
+.col-frozen{position:sticky!important;background-color:#fff!important}
+table.grid tr:nth-child(even) .col-frozen{background-color:#f9fbfe!important}
+table.grid tr.chosen .col-frozen{background-color:#e6f2ff!important}
+table.grid tr.row-done .col-frozen{background-color:#e8f5e9!important}
+table.grid tr.row-done:nth-child(even) .col-frozen{background-color:#def0df!important}
+table.grid tr.row-done.chosen .col-frozen{background-color:#bcebc5!important}
+table.grid th.col-frozen{background-color:#e7edf5!important;z-index:6!important}
+table.grid .col-frozen-last{border-right:2.5px solid #0284c7!important;box-shadow:3px 0 6px -2px rgba(0,0,0,0.18)}
 .review{color:#c06600!important;background:#fff3dc!important}.warn{color:#b93a30;font-weight:600}.status{color:#136443!important}
 table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nums}
 .preview-scroll{max-height:calc(100vh - 243px);min-height:530px;overflow:auto;background:#e7ebf1;padding:12px}
@@ -75,7 +83,7 @@ table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nu
 .chips label{font-size:11px;display:flex;gap:4px;align-items:center;padding:6px;border:1px solid #d5dce6;border-radius:5px;cursor:pointer}
 .linebox{margin:8px 12px;font-size:12px}
 .linebox input{border:1px solid #c8d3e0;border-radius:4px;padding:7px;width:100%;min-width:0}
-.lineitem{display:grid;grid-template-columns:1fr 105px 100px 22px;gap:4px;margin:5px 0}
+.lineitem{display:grid;grid-template-columns:1.5fr 115px 130px 120px 26px;gap:6px;margin:5px 0}
 .subnote{font-size:11px;color:#738294}
 .alert{padding:9px;background:#fff3d8;color:#865000;font-size:12px;display:none}
 .role-banner{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:8px 14px;border-radius:6px;margin-bottom:12px;font-size:12px;display:flex;align-items:center;justify-content:space-between}
@@ -389,7 +397,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 .ncc-wrapper{overflow:auto;max-height:calc(100vh - 268px)}
 .detail-inline{background:white;border:1px solid #d9e1eb;border-radius:7px;margin-top:10px;padding:12px}
 .detail-inline summary{cursor:pointer;font-weight:600;color:#264a72}
-.detail-inline .lineitem{max-width:880px}
+.detail-inline .lineitem{max-width:960px}
 .ncc-help{font-size:12px;color:#5e7086;margin:8px 0 12px}
 .hidden-view{display:none!important}
 @media print{.page-tabs,#nccPage,#groupsPage,#settingsPage,#templatePage,.detail-inline,.role-banner{display:none!important}}
@@ -493,6 +501,17 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
       <input id="search" placeholder="Tìm NCC, STT, nội dung, hóa đơn..." oninput="renderTable()">
       <select id="statusFilter" onchange="renderTable()"><option value="">Tất cả trạng thái</option></select>
       <select id="groupFilter" onchange="renderTable()"><option value="">Tất cả nhóm</option></select>
+      <div style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#1e3a5f;font-weight:600;background:#f0f4f9;padding:3px 9px;border-radius:6px;border:1px solid #cbd5e1">
+        <span>📌 Cố định:</span>
+        <select id="freezeColSelect" onchange="setFreezeColumns(this.value)" style="padding:4px 6px;border-radius:5px;border:1px solid #cbd5e1;font-size:12px;background:#fff;cursor:pointer">
+          <option value="2">Cột STT (Mặc định)</option>
+          <option value="3">Đến NCC (Cột B)</option>
+          <option value="4">Đến Nhóm PO (Cột C)</option>
+          <option value="7">Đến Số HĐ (Cột F)</option>
+          <option value="8">Đến Ngày HĐ</option>
+          <option value="0">Không cố định cột</option>
+        </select>
+      </div>
       <button onclick="printSelection()">⎙ In phiếu đang xem</button>
       <button onclick="printChecked()">⎙ In các dòng đã tích</button>
       <button class="btn-danger" id="btnDeleteSelected" onclick="deleteSelected()">Xóa dòng đã chọn</button>
@@ -504,31 +523,32 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     <div class="workspace">
       <section class="sheet-panel">
         <div class="panelhead">
-          <span>DATA · Sửa trực tiếp từng ô</span>
+          <span>DATA · Sửa trực tiếp từng ô (Cho phép co ngắn & xuống dòng)</span>
           <span class="selected-info">Chọn STT → chọn dòng · Tự lưu sau khi sửa</span>
         </div>
         <div class="sheet-scroll">
           <table class="grid">
             <thead>
               <tr>
-                <th>✓</th>
-                <th>A · STT</th>
-                <th>B · Đơn vị hưởng lợi (viết tắt)</th>
-                <th>Nhóm hợp đồng / Đơn hàng (gõ để tạo)</th>
-                <th>C · Nội dung chuyển tiền</th>
-                <th>D · Hàng hóa / dịch vụ</th>
-                <th>E · Số hóa đơn</th>
-                <th>F · Số tiền</th>
-                <th>G · Tiền tệ</th>
-                <th>H · Hồ sơ đi kèm</th>
-                <th>I · Ngày</th>
-                <th>J · Loại thanh toán</th>
-                <th>K · Trạng thái ▾</th>
-                <th>L · Bổ sung hồ sơ</th>
-                <th>M · Địa chỉ</th>
-                <th>N · Tài khoản</th>
-                <th>O · Ngân hàng ▾</th>
-                <th>Người tạo</th>
+                <th style="width:36px;text-align:center">✓</th>
+                <th style="width:55px;text-align:center">A · STT</th>
+                <th style="min-width:180px">B · NCC</th>
+                <th style="min-width:160px">C · Nhóm PO</th>
+                <th style="min-width:240px">D · Nội dung TT</th>
+                <th style="min-width:180px">E · Hàng hóa/DV</th>
+                <th style="min-width:120px">F · Số HĐ</th>
+                <th style="min-width:115px">Ngày HĐ</th>
+                <th style="min-width:130px;text-align:right">G · Số tiền</th>
+                <th style="min-width:80px">Tiền tệ</th>
+                <th style="min-width:140px">H · Hồ sơ</th>
+                <th style="min-width:115px">I · Ngày ĐNTT</th>
+                <th style="min-width:125px">J · Loại TT</th>
+                <th style="min-width:160px">K · Trạng thái</th>
+                <th style="min-width:140px">L · Bổ sung HS</th>
+                <th style="min-width:180px">M · Địa chỉ</th>
+                <th style="min-width:130px">N · Số TK</th>
+                <th style="min-width:160px">O · Ngân hàng</th>
+                <th style="min-width:110px">Người tạo</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -540,9 +560,16 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 
     <details class="detail-inline">
       <summary>Chi tiết nhiều hóa đơn / hàng hóa của dòng đang chọn (bấm để mở)</summary>
-      <p class="subnote">Chọn STT trong bảng rồi chỉnh sửa các dòng chi tiết tại đây.</p>
+      <p class="subnote">Chọn STT trong bảng rồi chỉnh sửa các dòng chi tiết tại đây (Tên hàng hóa, Số hóa đơn, Ngày hóa đơn, Số tiền).</p>
+      <div class="lineheader" style="display:grid;grid-template-columns:1.5fr 115px 130px 120px 26px;gap:6px;max-width:960px;margin:8px 0 4px;font-size:11px;font-weight:600;color:#475569">
+        <div>Tên hàng hóa / dịch vụ</div>
+        <div>Số hóa đơn</div>
+        <div>Ngày hóa đơn</div>
+        <div style="text-align:right">Số tiền</div>
+        <div></div>
+      </div>
       <div id="lines"></div>
-      <button class="btn" id="btnAddLine" onclick="addLine()">＋ Thêm dòng hàng hóa</button>
+      <button class="btn" id="btnAddLine" onclick="addLine()" style="margin-top:6px">＋ Thêm dòng hàng hóa</button>
     </details>
   </div>
 
@@ -1835,6 +1862,78 @@ function formatMoneyDisplay(val){
   return n.toLocaleString('vi-VN');
 }
 
+function autoExpandTextarea(el){
+  if(!el) return;
+  el.style.height = 'auto';
+  el.style.height = Math.max(38, el.scrollHeight) + 'px';
+}
+
+function getFreezeCount(){
+  const saved = localStorage.getItem('pka_freeze_cols');
+  return saved !== null ? parseInt(saved, 10) : 2;
+}
+
+function setFreezeColumns(count){
+  count = parseInt(count, 10);
+  if(isNaN(count) || count < 0) count = 0;
+  localStorage.setItem('pka_freeze_cols', count);
+  const sel = el('freezeColSelect');
+  if(sel) sel.value = String(count);
+  applyFreezeColumns();
+}
+
+function applyFreezeColumns(){
+  const table = document.querySelector('table.grid');
+  if(!table) return;
+  const freezeCount = getFreezeCount();
+  const sel = el('freezeColSelect');
+  if(sel && sel.value !== String(freezeCount)) sel.value = String(freezeCount);
+
+  const ths = Array.from(table.querySelectorAll('thead th'));
+  const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+  // Reset previously frozen styles
+  ths.forEach(th => {
+    th.classList.remove('col-frozen', 'col-frozen-last');
+    th.style.left = '';
+  });
+  rows.forEach(r => {
+    Array.from(r.children).forEach(td => {
+      td.classList.remove('col-frozen', 'col-frozen-last');
+      td.style.left = '';
+    });
+  });
+
+  if(freezeCount <= 0) return;
+
+  // Calculate cumulative left offsets
+  let leftOffsets = [];
+  let cum = 0;
+  for(let i = 0; i < freezeCount && i < ths.length; i++){
+    leftOffsets[i] = cum;
+    cum += ths[i].offsetWidth;
+  }
+
+  // Freeze thead th
+  for(let i = 0; i < freezeCount && i < ths.length; i++){
+    const th = ths[i];
+    th.classList.add('col-frozen');
+    if(i === freezeCount - 1) th.classList.add('col-frozen-last');
+    th.style.left = leftOffsets[i] + 'px';
+  }
+
+  // Freeze tbody td
+  rows.forEach(r => {
+    const cells = r.children;
+    for(let i = 0; i < freezeCount && i < cells.length; i++){
+      const td = cells[i];
+      td.classList.add('col-frozen');
+      if(i === freezeCount - 1) td.classList.add('col-frozen-last');
+      td.style.left = leftOffsets[i] + 'px';
+    }
+  });
+}
+
 function initColumnResizers(){
   const ths=document.querySelectorAll('table.grid th');
   ths.forEach((th,index)=>{
@@ -1851,21 +1950,24 @@ function initColumnResizers(){
       resizer.classList.add('resizing');
       const onMouseMove=moveEvent=>{
         const diff=moveEvent.pageX-startX;
-        const newWidth=Math.max(45,startWidth+diff);
+        const newWidth=Math.max(35,startWidth+diff);
         th.style.width=newWidth+'px';th.style.minWidth=newWidth+'px';
         localStorage.setItem('pka_col_w_'+index,newWidth);
+        applyFreezeColumns();
       };
       const onMouseUp=()=>{
         resizer.classList.remove('resizing');
         document.removeEventListener('mousemove',onMouseMove);
         document.removeEventListener('mouseup',onMouseUp);
         document.body.style.cursor='';document.body.style.userSelect='';
+        applyFreezeColumns();
       };
       document.addEventListener('mousemove',onMouseMove);
       document.addEventListener('mouseup',onMouseUp);
       document.body.style.cursor='col-resize';document.body.style.userSelect='none';
     });
   });
+  applyFreezeColumns();
 }
 
 function opts(a,v){return '<option value=""></option>'+a.map(s=>`<option value="${esc(s)}" ${v===s?'selected':''}>${esc(s)}</option>`).join('')}
@@ -1875,23 +1977,19 @@ function findBeneficiary(v){let k=normName(v);return DB.beneficiaries.find(b=>no
 
 function renderTable(){
   let q=el('search').value.toLocaleLowerCase('vi'),st=el('statusFilter').value,gf=el('groupFilter').value;
-  let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.item_name,x.created_by_name].join(' ').toLocaleLowerCase('vi').includes(q)));
+  let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.invoice_date,x.item_name,x.created_by_name].join(' ').toLocaleLowerCase('vi').includes(q)));
   el('count').textContent=list.length+' / '+DB.requests.length+' đề nghị';
 
   el('tbody').innerHTML=list.map(x=>{
-    let field=(k,w=150)=>{
+    let multilineField=(k,w=150,list='',placeholder='')=>{
+      let val = k==='payee_name' ? beneficiaryDisplay(x) : (x[k]||'');
       return `<td style="min-width:${w}px">
-        <input class="cell-editor" aria-label="${k}" value="${esc(k==='payee_name'?beneficiaryDisplay(x):x[k])}" 
-        onchange="setField(${x.id},'${k}',this.value)" ${k==='payee_name'?'list="beneficiaryList"':k==='bank'?'list="bankList"':''}>
-      </td>`;
-    };
-
-    let multilineField=(k,w=160)=>{
-      return `<td style="min-width:${w}px">
-        <textarea class="cell-editor cell-multiline" rows="2" aria-label="${k}" 
+        <textarea class="cell-editor cell-multiline" rows="1" aria-label="${k}" placeholder="${esc(placeholder)}"
+          ${list ? `list="${list}"` : ''}
+          oninput="autoExpandTextarea(this)"
           onchange="setField(${x.id},'${k}',this.value)"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}"
-        >${esc(x[k]||'')}</textarea>
+        >${esc(val)}</textarea>
       </td>`;
     };
 
@@ -1906,41 +2004,46 @@ function renderTable(){
     const isDone = String(x.status || '').trim().toLowerCase() === 'done';
     const rowClass = [x.id===active?'chosen':'', isDone?'row-done':''].filter(Boolean).join(' ');
     return `<tr class="${rowClass}">
-      <td><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td>
+      <td style="text-align:center"><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td>
       <td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>
-      ${field('payee_name',255)}
-      <td style="min-width:200px">
-        <input class="cell-editor group-entry" list="groupList" aria-label="Nhóm hợp đồng, gõ mã mới để tạo" title="Chọn nhóm hoặc gõ mã mới, nhấn Tab/Enter để tạo và liên kết" placeholder="Chọn / gõ mã nhóm mới" value="${esc(groupById(x.group_id)?.code||'')}" 
-        onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      ${multilineField('payee_name',180,'beneficiaryList','Nhập NCC')}
+      <td style="min-width:160px">
+        <textarea class="cell-editor cell-multiline group-entry" rows="1" list="groupList" aria-label="Nhóm PO" title="Chọn nhóm hoặc gõ mã mới, nhấn Enter để tạo" placeholder="Chọn / gõ mã nhóm" oninput="autoExpandTextarea(this)" onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}">${esc(groupById(x.group_id)?.code||'')}</textarea>
       </td>
-      ${multilineField('description',320)}
-      ${field('item_name',230)}
-      ${multilineField('invoice_no',150)}
-      <td class="edit-amount" style="min-width:145px">
+      ${multilineField('description',240,'','Nội dung chuyển tiền')}
+      ${multilineField('item_name',180,'','Hàng hóa / Dịch vụ')}
+      ${multilineField('invoice_no',120,'','Số hóa đơn')}
+      <td style="min-width:115px">
+        <input class="cell-editor" type="date" aria-label="Ngày hóa đơn" value="${esc(x.invoice_date||'')}" onchange="setInvoiceDate(${x.id},this.value)">
+      </td>
+      <td class="edit-amount" style="min-width:130px">
         <input class="cell-editor" value="${esc(formatMoneyDisplay(x.amount))}" 
           onfocus="this.value=plainAmount(this.value)" 
           onblur="this.value=formatMoneyDisplay(this.value)" 
           onchange="setAmount(${x.id},this.value)">
       </td>
-      ${sl('currency',['VND','USD','EUR'],100)}
-      <td style="min-width:170px">
+      ${sl('currency',['VND','USD','EUR'],80)}
+      <td style="min-width:140px">
         <button class="doc-cell-btn cell-editor" title="Chọn hồ sơ đi kèm" onclick="openDocModal(${x.id})">📎 ${(x.documents||[]).length} hồ sơ ▾</button>
       </td>
-      <td style="min-width:145px">
+      <td style="min-width:115px">
         <input class="cell-editor" type="date" aria-label="Ngày đề nghị" value="${esc(x.request_date||'')}" onchange="setField(${x.id},'request_date',this.value)">
       </td>
-      ${sl('payment_type',TYPES,155)}
-      ${sl('status',STATUSES,220)}
-      ${field('followup',190)}
-      ${field('address',280)}
-      ${field('account_no',170)}
-      ${field('bank',240)}
-      <td style="min-width:130px;font-size:11px;color:#64748b;padding:0 8px;vertical-align:middle;white-space:nowrap">
+      ${sl('payment_type',TYPES,125)}
+      ${sl('status',STATUSES,160)}
+      ${multilineField('followup',140,'','Bổ sung HS')}
+      ${multilineField('address',180,'','Địa chỉ NCC')}
+      ${multilineField('account_no',130,'','Số tài khoản')}
+      ${multilineField('bank',160,'bankList','Ngân hàng')}
+      <td style="min-width:110px;font-size:11px;color:#64748b;padding:6px 8px;vertical-align:middle;white-space:normal">
         ${esc(x.created_by_name||x.created_by||'Chưa rõ')}
       </td>
     </tr>`;
   }).join('');
+
+  document.querySelectorAll('table.grid textarea.cell-multiline').forEach(ta => autoExpandTextarea(ta));
   initColumnResizers();
+  applyFreezeColumns();
 
   const mc = el('mobileDataCards');
   if(mc){
@@ -1971,7 +2074,7 @@ function renderTable(){
         <div class="m-card-meta">
           ${x.request_date ? `<div>📅 Ngày: <b>${esc(x.request_date)}</b></div>` : ''}
           ${grp ? `<div>📁 Nhóm HĐ: <b>${esc(grp.code)}</b></div>` : ''}
-          ${x.invoice_no ? `<div>🧾 HĐ: <b>${esc(x.invoice_no)}</b></div>` : ''}
+          ${(x.invoice_no || x.invoice_date) ? `<div>🧾 HĐ: <b>${esc(x.invoice_no || '---')}</b> ${x.invoice_date ? `<span style="color:#64748b">(${esc(x.invoice_date)})</span>` : ''}</div>` : ''}
           ${x.bank ? `<div>🏦 ${esc(x.bank)} - TK: <b>${esc(x.account_no || '---')}</b></div>` : ''}
         </div>
 
@@ -1989,7 +2092,7 @@ function renderTable(){
                 <div class="m-line-item">
                   <div>${li+1}. ${esc(l.description || 'Hàng hóa')}</div>
                   <div style="white-space:nowrap;margin-left:8px">
-                    ${l.invoice_no ? `<span style="color:#64748b;margin-right:6px">HĐ: ${esc(l.invoice_no)}</span>` : ''}
+                    ${(l.invoice_no || l.invoice_date) ? `<span style="color:#64748b;margin-right:6px">HĐ: ${esc(l.invoice_no || '---')}${l.invoice_date ? ` (${esc(l.invoice_date)})` : ''}</span>` : ''}
                     <b>${formatMoneyDisplay(l.amount)}</b>
                   </div>
                 </div>
@@ -2065,6 +2168,19 @@ function setAmount(id,v){
   if(active===id)renderDetail();
 }
 
+function setInvoiceDate(id, v){
+  active=id;
+  let x=request(id);
+  if(!x)return;
+  x.invoice_date=String(v||'').trim();
+  if((x.lines||[]).length===1){
+    x.lines[0].invoice_date=x.invoice_date;
+  }
+  save();
+  renderTable();
+  if(active===id)renderDetail();
+}
+
 function localToday(){let d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 
 function newRow(){
@@ -2080,6 +2196,7 @@ function newRow(){
     description:'',
     item_name:'',
     invoice_no:'',
+    invoice_date:'',
     amount:'0',
     currency:'VND',
     group_id:null,
@@ -2089,7 +2206,7 @@ function newRow(){
     status:'Đã giao KT, chờ đi tiền',
     followup:'',
     documents:[],
-    lines:[{description:'',invoice_no:'',amount:'0'}],
+    lines:[{description:'',invoice_no:'',invoice_date:'',amount:'0'}],
     created_by:currentUser?.username||'admin',
     created_by_name:currentUser?.full_name||'Quản lý',
     created_at:new Date().toISOString()
@@ -2131,22 +2248,80 @@ function addDocType(){let d=el('newDocType').value.trim().replace(/\s+/g,' ');if
 
 function tableTab(e){if(e.key!=='Tab'||!e.target.matches('.cell-editor'))return;let editors=[...el('tbody').querySelectorAll('.cell-editor:not([disabled])')];let i=editors.indexOf(e.target);if(i<0)return;e.preventDefault();let step=e.shiftKey?-1:1;let dest=Math.max(0,Math.min(editors.length-1,i+step));if(e.target.matches('input,select'))e.target.dispatchEvent(new Event('change',{bubbles:true}));let updated=el('tbody').querySelectorAll('.cell-editor:not([disabled])');let next=updated[dest];if(next){next.focus();if(next.matches('input:not([type=date])'))next.select()}}
 
-function lineChanged(i,k,v){let x=request(active);if(!x)return;x.lines[i][k]=v;if(k==='amount'){let n=Number(plainAmount(v));if(!Number.isFinite(n)||n<0)return message('Số tiền dòng không hợp lệ');x.lines[i][k]=String(n);x.amount=String(x.lines.reduce((s,l)=>s+Number(l.amount||0),0))}if(i===0){x.item_name=x.lines[0].description;x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ')}save();renderTable();renderDetail()}
-function addLine(){let x=request(active);if(!x)return;x.lines=x.lines||[];x.lines.push({description:'',invoice_no:'',amount:'0'});save();renderDetail()}
-function delLine(i){let x=request(active);if(x.lines.length<=1)return message('Cần ít nhất 1 dòng chi tiết');x.lines.splice(i,1);x.amount=String(x.lines.reduce((s,l)=>s+Number(l.amount||0),0));x.item_name=x.lines[0]?.description||'';x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ');save();renderTable();renderDetail()}
+function lineChanged(i,k,v){
+  let x=request(active);if(!x)return;
+  x.lines[i][k]=v;
+  if(k==='amount'){
+    let n=Number(plainAmount(v));
+    if(!Number.isFinite(n)||n<0)return message('Số tiền dòng không hợp lệ');
+    x.lines[i][k]=String(n);
+    x.amount=String(x.lines.reduce((s,l)=>s+Number(l.amount||0),0));
+  }
+  if(i===0){
+    if(k==='description') x.item_name=x.lines[0].description;
+    if(k==='invoice_no') x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ');
+    if(k==='invoice_date') x.invoice_date=x.lines[0].invoice_date||'';
+  } else {
+    if(k==='invoice_no') x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ');
+  }
+  save();
+  renderTable();
+  renderDetail();
+}
+function addLine(){
+  let x=request(active);if(!x)return;
+  x.lines=x.lines||[];
+  x.lines.push({description:'',invoice_no:'',invoice_date:x.invoice_date||'',amount:'0'});
+  save();
+  renderDetail();
+}
+function delLine(i){
+  let x=request(active);if(x.lines.length<=1)return message('Cần ít nhất 1 dòng chi tiết');
+  x.lines.splice(i,1);
+  x.amount=String(x.lines.reduce((s,l)=>s+Number(l.amount||0),0));
+  x.item_name=x.lines[0]?.description||'';
+  x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ');
+  x.invoice_date=x.lines[0]?.invoice_date||'';
+  save();
+  renderTable();
+  renderDetail();
+}
 
 function moneyWords(x){let n=Number(x.amount);if(!Number.isFinite(n))return 'Chưa có số tiền hợp lệ';const digits=['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];function group(num,full){let h=Math.floor(num/100),t=Math.floor(num%100/10),u=num%10,out=[];if(h||full){out.push(digits[h]+' trăm')}if(t>1){out.push(digits[t]+' mươi');if(u)out.push(u===1?'mốt':u===5?'lăm':digits[u])}else if(t===1){out.push('mười');if(u)out.push(u===5?'lăm':digits[u])}else if(u){if(h||full)out.push('lẻ');out.push(digits[u])}return out.join(' ')}function whole(num){if(num===0)return 'không';let parts=[],units=['','nghìn','triệu','tỷ','nghìn tỷ'];let i=0;while(num>0&&i<units.length){let v=num%1000;if(v)parts.unshift(group(v,i>0&&num>=1000)+' '+units[i]);num=Math.floor(num/1000);i++}return parts.join(' ').replace(/\s+/g,' ').trim()}let main=whole(Math.floor(n));let decimals=Math.round((n-Math.floor(n))*100);let end=x.currency==='USD'?'đô la Mỹ':x.currency==='EUR'?'euro':x.currency==='VND'?'đồng':'(chưa xác nhận loại tiền)';let w=main+(decimals?' phẩy '+whole(decimals):'')+' '+end;return w.charAt(0).toUpperCase()+w.slice(1)}
 function printDate(raw){let s=raw||'';let m=s.match(/^(\d{4})-(\d\d)-(\d\d)$/);return m?{d:+m[3],m:+m[2],y:+m[1]}:(s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/)?(()=>{let a=s.split(/[\/.-]/);return {d:+a[0],m:+a[1],y:+(a[2].length===2?'20'+a[2]:a[2])}})():null)}
 
 function printEntries(x){
  let arr=Array.isArray(x.lines)?x.lines:[];
- if(!arr.length)return [{description:x.item_name||'',invoice_no:x.invoice_no||'',amount:x.amount||0}];
+ if(!arr.length)return [{description:x.item_name||'',invoice_no:x.invoice_no||'',invoice_date:x.invoice_date||'',amount:x.amount||0}];
  return arr.map((l,i)=>({
   ...l,
   description:String(l.description||'').trim()||((i===0)?(x.item_name||''):''),
-  invoice_no:String(l.invoice_no||'').trim()||((arr.length===1)?(x.invoice_no||''):''),
+  invoice_no:String(l.invoice_no||'').trim()||((i===0||arr.length===1)?(x.invoice_no||''):''),
+  invoice_date:String(l.invoice_date||'').trim()||((i===0||arr.length===1)?(x.invoice_date||''):''),
   amount:(arr.length===1&&(!l.amount||Number(l.amount)===0)&&Number(x.amount)>0)?x.amount:l.amount
  }));
+}
+
+function formatPrintInvoice(invNo, invDate){
+  let no = String(invNo || '').trim();
+  let d = String(invDate || '').trim();
+  let dateFormatted = '';
+  if(d){
+    let p = printDate(d);
+    if(p){
+      let dd = String(p.d).padStart(2, '0');
+      let mm = String(p.m).padStart(2, '0');
+      dateFormatted = `${dd}/${mm}/${p.y}`;
+    }else{
+      dateFormatted = d;
+    }
+  }
+  if(no && dateFormatted){
+    return `<div style="font-weight:bold">${esc(no)}</div><div style="font-size:12px;margin-top:4px">Ngày: ${esc(dateFormatted)}</div>`;
+  }
+  if(no) return `<b>${esc(no)}</b>`;
+  if(dateFormatted) return `<div style="font-size:12px">Ngày: ${esc(dateFormatted)}</div>`;
+  return '';
 }
 
 function paper(x, customTpl=null){
@@ -2191,7 +2366,7 @@ function paper(x, customTpl=null){
         <th>${esc(tpl.col_note)}</th>
       </tr></thead>
       <tbody>
-        ${entries.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.invoice_no||'')}</td><td style="text-align:left">${esc(l.description||'')}</td><td>${fmt(l.amount)}</td><td></td></tr>`).join('')}
+        ${entries.map((l,i)=>`<tr><td>${i+1}</td><td>${formatPrintInvoice(l.invoice_no, l.invoice_date)}</td><td style="text-align:left">${esc(l.description||'')}</td><td>${fmt(l.amount)}</td><td></td></tr>`).join('')}
         <tr class="sum"><td colspan="3">${esc(tpl.col_total)}</td><td>${fmt(x.amount)}</td><td style="text-align:left">${esc(x.currency||'CHƯA RÕ')}</td></tr>
       </tbody>
     </table>
@@ -2256,8 +2431,8 @@ function getSampleRequest(){
     currency: 'VND',
     documents: ['Hóa đơn điện tử GTGT', 'Biên bản nghiệm thu bàn giao', 'Hợp đồng mua bán', 'Bảng kê chi tiết'],
     lines: [
-      {description: 'Nguyên phụ liệu dược phẩm lô A-01', invoice_no: 'HD-001289', amount: '25000000'},
-      {description: 'Bao bì và tá dược tiêu chuẩn GMP', invoice_no: 'HD-001290', amount: '20000000'}
+      {description: 'Nguyên phụ liệu dược phẩm lô A-01', invoice_no: 'HD-001289', invoice_date: '2026-10-15', amount: '25000000'},
+      {description: 'Bao bì và tá dược tiêu chuẩn GMP', invoice_no: 'HD-001290', invoice_date: '2026-10-16', amount: '20000000'}
     ],
     created_by_name: 'Trần Hải Hà'
   };
@@ -2300,7 +2475,19 @@ function printTemplateSample(){
   window.print();
 }
 
-function renderDetail(){let x=request(active);if(!x){el('lines').innerHTML='';return}el('lines').innerHTML=(x.lines||[]).map((l,i)=>`<div class="lineitem"><input title="Tên hàng hóa" value="${esc(l.description)}" onchange="lineChanged(${i},'description',this.value)"><input title="Hóa đơn" value="${esc(l.invoice_no)}" onchange="lineChanged(${i},'invoice_no',this.value)"><input title="Số tiền" value="${esc(formatMoneyDisplay(l.amount))}" onfocus="this.value=plainAmount(this.value)" onblur="this.value=formatMoneyDisplay(this.value)" onchange="lineChanged(${i},'amount',this.value)"><button title="Xóa dòng" onclick="delLine(${i})">×</button></div>`).join('')}
+function renderDetail(){
+  let x=request(active);
+  if(!x){el('lines').innerHTML='';return}
+  el('lines').innerHTML=(x.lines||[]).map((l,i)=>`
+    <div class="lineitem">
+      <input title="Tên hàng hóa" placeholder="Tên hàng hóa / dịch vụ" value="${esc(l.description||'')}" onchange="lineChanged(${i},'description',this.value)">
+      <input title="Số hóa đơn" placeholder="Số HĐ" value="${esc(l.invoice_no||'')}" onchange="lineChanged(${i},'invoice_no',this.value)">
+      <input type="date" title="Ngày hóa đơn" value="${esc(l.invoice_date||'')}" onchange="lineChanged(${i},'invoice_date',this.value)">
+      <input title="Số tiền" placeholder="Số tiền" value="${esc(formatMoneyDisplay(l.amount))}" onfocus="this.value=plainAmount(this.value)" onblur="this.value=formatMoneyDisplay(this.value)" onchange="lineChanged(${i},'amount',this.value)">
+      <button title="Xóa dòng" onclick="delLine(${i})">×</button>
+    </div>`
+  ).join('');
+}
 
 // ==========================================
 // PHÂN HỆ: BÀN GIAO NỘI BỘ HÀNG HÓA
