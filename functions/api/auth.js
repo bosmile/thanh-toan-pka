@@ -120,7 +120,7 @@ export async function onRequest(context) {
             INSERT INTO app_users (username, password_hash, salt, full_name, role, is_active, created_at, updated_at)
             VALUES ('admin', ?, ?, 'Quản trị hệ thống', 'admin', 1, ?, ?)
           `).bind(hash, salt, now, now).run();
-          user = await db.prepare('SELECT * FROM app_users WHERE LOWER(username) = "admin"').first();
+          user = await db.prepare("SELECT * FROM app_users WHERE LOWER(username) = 'admin'").first();
         } else {
           await db.prepare(`
             UPDATE app_users SET password_hash = ?, salt = ?, is_active = 1, updated_at = ?

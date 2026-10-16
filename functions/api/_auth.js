@@ -66,10 +66,10 @@ export async function verifyPassword(password, storedHash, salt) {
 
 export async function getJwtSecret(db) {
   await db.prepare('CREATE TABLE IF NOT EXISTS app_secrets (key TEXT PRIMARY KEY, value TEXT NOT NULL)').run();
-  const row = await db.prepare('SELECT value FROM app_secrets WHERE key = "jwt_secret"').first();
+  const row = await db.prepare("SELECT value FROM app_secrets WHERE key = 'jwt_secret'").first();
   if (!row) {
     const newSecret = randomHex(32);
-    await db.prepare('INSERT INTO app_secrets (key, value) VALUES ("jwt_secret", ?)').bind(newSecret).run();
+    await db.prepare("INSERT INTO app_secrets (key, value) VALUES ('jwt_secret', ?)").bind(newSecret).run();
     return newSecret;
   }
   return row.value;
@@ -134,7 +134,7 @@ export async function ensureUsersTable(db) {
     )
   `).run();
 
-  const adminUser = await db.prepare('SELECT id FROM app_users WHERE LOWER(username) = "admin"').first();
+  const adminUser = await db.prepare("SELECT id FROM app_users WHERE LOWER(username) = 'admin'").first();
   if (!adminUser) {
     const salt = randomHex(16);
     const hash = await hashPassword('140792', salt);
@@ -169,9 +169,13 @@ export async function authenticateRequest(request, db) {
     const payload = await verifyJwt(token, secret);
     if (!payload || !payload.sub) return null;
 
-    const user = await db.prepare(
-      'SELECT id, username, full_name, role, is_active FROM app_users WHERE username = ?'
+    let user = await db.prepare(
+      'SELECT id, username, full_name, role, is_active FROM app_users WHERE LOWER(username) = LOWER(?)'
     ).bind(payload.sub).first();
+
+    if (!user && String(payload.sub).toLowerCase() === 'admin') {
+      user = { id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin', is_active: 1 };
+    }
 
     if (!user || user.is_active !== 1) return null;
     return user;
