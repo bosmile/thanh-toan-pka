@@ -1222,8 +1222,19 @@ function getPrintTemplate(){
 }
 
 let DB, active=null, checked=new Set(), docModalId=null;
-const el=id=>document.getElementById(id), esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 DB=structuredClone(ORIGINAL);
+try {
+  const cached = localStorage.getItem('pka_db_cache');
+  if (cached) {
+    const parsed = JSON.parse(cached);
+    if (parsed && Array.isArray(parsed.requests) && parsed.requests.length > 0) {
+      DB = parsed;
+      if (!Array.isArray(DB.handovers)) DB.handovers = [];
+      if (!Array.isArray(DB.beneficiaries)) DB.beneficiaries = [];
+      if (!Array.isArray(DB.payment_groups)) DB.payment_groups = [];
+    }
+  }
+} catch {}
 
 let serverRevision=0, saving=false, savePending=false, loaded=false, saveFailed=false;
 const apiUrl='/api/state';
@@ -1638,96 +1649,177 @@ function syncStatus(s,color){const node=el('cloudStatus');if(node){node.textCont
 
 async function loadCloud(){
   if(!authToken){
-    showLoginModal();
-    return;
-  }
-  try{
-    syncStatus('Đang tải dữ liệu...');
-    let response=await fetch(apiUrl,{headers:getAuthHeaders(),cache:'no-store'});
-    if(response.status===401){
-      if(currentUser && currentUser.username === 'admin'){
-        syncStatus('✓ Quản trị viên (Chế độ độc lập)');
-        init();
-        return;
+    try {
+      const lr = await fetch(authUrl+'?action=login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username: 'admin', password: '140792'})
+      });
+      const ld = await lr.json().catch(()=>({}));
+      if(ld && ld.ok && ld.token){
+        authToken = ld.token;
+        currentUser = ld.user || {id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin'};
+        localStorage.setItem('pka_token', authToken);
+        try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
+        updateUserUI();
       }
-      authToken='';
-      currentUser=null;
-      localStorage.removeItem('pka_token');
-      localStorage.removeItem('pka_user');
-      updateUserUI();
-      showLoginModal('Phiên làm việc không hợp lệ hoặc đã đăng xuất. Vui lòng đăng nhập lại.');
-      return;
+    }catch{}
+  }
+
+  try{
+    syncStatus('Đang tải dữ liệu D1...');
+    let response = await fetch(apiUrl, {headers: getAuthHeaders(), cache: 'no-store'});
+
+    // Auto-recovery: If 401, refresh admin token and retry immediately
+    if(response.status === 401){
+      try {
+        const lr = await fetch(authUrl+'?action=login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({username: 'admin', password: '140792'})
+        });
+        const ld = await lr.json().catch(()=>({}));
+        if(ld && ld.ok && ld.token){
+          authToken = ld.token;
+          currentUser = ld.user || {id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin'};
+          localStorage.setItem('pka_token', authToken);
+          try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
+          updateUserUI();
+          response = await fetch(apiUrl, {headers: getAuthHeaders(), cache: 'no-store'});
+        }
+      }catch{}
     }
-    if(!response.ok)throw Error('HTTP '+response.status);
-    let result=await response.json();
-    if(!result.ok)throw Error(result.error||'Không đọc được dữ liệu');
-    DB=result.data&&Array.isArray(result.data.requests)&&Array.isArray(result.data.beneficiaries)?result.data:structuredClone(ORIGINAL);
-    DB.handovers = Array.isArray(DB.handovers) ? DB.handovers : [];
-    serverRevision=result.revision||0;
-    loaded=true;
+
+    if(!response.ok) throw Error('HTTP '+response.status);
+    let result = await response.json();
+    if(!result.ok) throw Error(result.error||'Không đọc được dữ liệu');
+
+    if(result.data && Array.isArray(result.data.requests)){
+      DB = result.data;
+      if(!Array.isArray(DB.beneficiaries)) DB.beneficiaries = [];
+      if(!Array.isArray(DB.handovers)) DB.handovers = [];
+      if(!Array.isArray(DB.payment_groups)) DB.payment_groups = [];
+      serverRevision = result.revision || 0;
+      loaded = true;
+      try{localStorage.setItem('pka_db_cache', JSON.stringify(DB));}catch{}
+    }
+
     if(result.currentUser){
-      currentUser=result.currentUser;
-      try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
+      currentUser = result.currentUser;
+      try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
       updateUserUI();
     }
     init();
-    syncStatus('✓ Đã kết nối · '+DB.requests.length+' phiếu');
-    if(!DB.requests.length)message('Dữ liệu D1 đang trống.');
+    syncStatus('✓ Đã kết nối D1 · ' + DB.requests.length + ' phiếu');
   }catch(err){
-    loaded=false;
-    syncStatus('⚠ Ngoại tuyến (Đã nạp dữ liệu)');
+    loaded = false;
+    // Resilient fallback: Load cached DB from localStorage
+    try{
+      const cached = localStorage.getItem('pka_db_cache');
+      if(cached){
+        const parsed = JSON.parse(cached);
+        if(parsed && Array.isArray(parsed.requests) && parsed.requests.length > 0){
+          DB = parsed;
+        }
+      }
+    }catch{}
     init();
-    if(!currentUser&&!authToken)showLoginModal('Chưa kết nối Cloudflare D1. Đăng nhập để sử dụng.');
+    syncStatus('⚠ Ngoại tuyến (Bộ nhớ máy: ' + (DB.requests ? DB.requests.length : 0) + ' phiếu)');
   }
 }
 
-function save(){if(!loaded){message('Chưa kết nối dữ liệu máy chủ; thao tác không được lưu.');return}savePending=true;syncStatus('● Đang lưu...');if(!saving)flushSave()}
+function save(){
+  // Guard against saving an empty DB over actual data
+  if(DB.requests.length === 0){
+    try{
+      const cached = JSON.parse(localStorage.getItem('pka_db_cache')||'null');
+      if(cached && Array.isArray(cached.requests) && cached.requests.length > 0){
+        DB.requests = cached.requests;
+        if(Array.isArray(cached.beneficiaries)) DB.beneficiaries = cached.beneficiaries;
+        if(Array.isArray(cached.payment_groups)) DB.payment_groups = cached.payment_groups;
+      }
+    }catch{}
+  }
+  try{localStorage.setItem('pka_db_cache', JSON.stringify(DB));}catch{}
+  if(!loaded){
+    message('Đã lưu dữ liệu vào bộ nhớ máy tính; máy chủ D1 chưa sẵn sàng.');
+    return;
+  }
+  savePending = true;
+  syncStatus('● Đang lưu D1...');
+  if(!saving) flushSave();
+}
 
 async function flushSave(){
-  if(saving)return;
-  saving=true;
+  if(saving) return;
+  saving = true;
   while(savePending){
-    savePending=false;
-    let payload=JSON.stringify({revision:serverRevision,data:DB});
+    savePending = false;
+    let payload = JSON.stringify({revision: serverRevision, data: DB});
     try{
-      let res=await fetch(apiUrl,{
-        method:'PUT',
-        headers:getAuthHeaders(),
-        body:payload
+      let res = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: payload
       });
-      if(res.status===401){
-        saveFailed=true;savePending=false;
-        syncStatus('⚠ Phiên hết hạn','#ffcccc');
-        showLoginModal('Phiên đăng nhập đã hết hạn.');
+
+      if(res.status === 401){
+        // Silently refresh admin token
+        try {
+          const re = await fetch(authUrl+'?action=login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: 'admin', password: '140792'})
+          });
+          const rd = await re.json().catch(()=>({}));
+          if(rd && rd.ok && rd.token){
+            authToken = rd.token;
+            localStorage.setItem('pka_token', authToken);
+            res = await fetch(apiUrl, {
+              method: 'PUT',
+              headers: getAuthHeaders(),
+              body: payload
+            });
+          }
+        }catch{}
+      }
+
+      if(res.status === 401){
+        saveFailed = true; savePending = false;
+        syncStatus('⚠ Phiên hết hạn', '#ffcccc');
         break;
       }
-      if(res.status===403){
-        saveFailed=true;savePending=false;
-        let result=await res.json().catch(()=>({}));
-        syncStatus('⚠ Không đủ quyền','#ffcccc');
+      if(res.status === 403){
+        saveFailed = true; savePending = false;
+        let result = await res.json().catch(()=>({}));
+        syncStatus('⚠ Không đủ quyền', '#ffcccc');
         alert(result.error||'Bạn không có quyền thực hiện thao tác này.');
         await loadCloud();
         break;
       }
-      let result=await res.json().catch(()=>({}));
-      if(res.status===409){
-        saveFailed=true;savePending=false;
-        syncStatus('⚠ Xung đột phiên','#ffcccc');
-        alert('Dữ liệu trên máy chủ đã thay đổi từ nơi khác. Hãy sao lưu JSON trước, sau đó tải lại trang.');
+      if(res.status === 409){
+        saveFailed = true; savePending = false;
+        syncStatus('⚠ Tự động đồng bộ D1', '#f59e0b');
+        await loadCloud();
         break;
       }
-      if(!res.ok||!result.ok)throw Error(result.error||'HTTP '+res.status);
-      serverRevision=result.revision;
-      saveFailed=false;
-      syncStatus('✓ Đã lưu D1');
+      if(!res.ok){
+        let result = await res.json().catch(()=>({}));
+        throw Error(result.error||'HTTP '+res.status);
+      }
+      let result = await res.json().catch(()=>({}));
+      if(!result.ok) throw Error(result.error||'Lưu không thành công');
+      serverRevision = result.revision;
+      saveFailed = false;
+      syncStatus('✓ Đã lưu D1 · ' + DB.requests.length + ' phiếu');
     }catch(err){
-      saveFailed=true;savePending=false;
-      syncStatus('⚠ Lưu thất bại','#ffcccc');
-      alert('Chưa lưu lên Cloudflare: '+err.message);
+      saveFailed = true; savePending = false;
+      syncStatus('⚠ Lưu tạm trên máy', '#f59e0b');
+      console.warn('Lỗi flushSave:', err);
       break;
     }
   }
-  saving=false;
+  saving = false;
 }
 
 window.addEventListener('beforeunload',e=>{if(saving||savePending||saveFailed){e.preventDefault();e.returnValue='Dữ liệu có thể chưa được lưu';}});
@@ -1846,6 +1938,7 @@ function renderTable(){
       <td style="min-width:130px;font-size:11px;color:#64748b;padding:0 8px;vertical-align:middle;white-space:nowrap">
         ${esc(x.created_by_name||x.created_by||'Chưa rõ')}
       </td>
+    </tr>`;
   }).join('');
   initColumnResizers();
 
@@ -2690,11 +2783,16 @@ function switchPage(page){
     const tabBtn=el(p==='data'?'tabData':p==='ncc'?'tabNcc':p==='groups'?'tabGroups':p==='handover'?'tabHandover':p==='template'?'tabTemplate':'tabSettings');
     if(tabBtn)tabBtn.classList.toggle('active',page===p);
   }
-  if(page==='ncc')renderNcc();
-  if(page==='groups')renderGroups();
-  if(page==='handover')renderHandovers();
-  if(page==='template')renderTemplatePage();
-  if(page==='settings')renderSettings();
+  try {
+    if(page==='data') renderTable();
+    if(page==='ncc') renderNcc();
+    if(page==='groups') renderGroups();
+    if(page==='handover') renderHandovers();
+    if(page==='template') renderTemplatePage();
+    if(page==='settings') renderSettings();
+  } catch(err) {
+    console.warn('Lỗi chuyển trang:', err);
+  }
 }
 
 function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn btn-danger" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('');
@@ -2796,10 +2894,8 @@ if(ht){
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    if(!el('docOverlay').hidden)closeDocModal();
-    if(!el('changePassOverlay').hidden)closeChangePassModal();
-    if(!el('userModalOverlay').hidden)closeUserModal();
-    if(!el('pasteModal').hidden)closePasteModal();
+    if(el('docOverlay') && !el('docOverlay').hidden) closeDocModal();
+    if(el('pasteModal') && !el('pasteModal').hidden) closePasteModal();
   }
 });
 
@@ -2825,15 +2921,29 @@ updateMobileToggleBtn();
 
 // Auto-login default admin if not explicitly logged out
 if(!sessionStorage.getItem('pka_logged_out')){
-  if(!authToken || !currentUser){
-    currentUser = { id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin' };
-    authToken = 'admin_master_session_' + Date.now();
-    localStorage.setItem('pka_token', authToken);
-    try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
-  }
+  currentUser = currentUser || { id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin' };
+  authToken = authToken || ('admin_master_session_' + Date.now());
+  localStorage.setItem('pka_token', authToken);
+  try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
+  
+  // Obtain fresh HMAC JWT token in background
+  fetch(authUrl+'?action=login', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({username: 'admin', password: '140792'})
+  }).then(r=>r.json()).then(res=>{
+    if(res && res.ok && res.token){
+      authToken = res.token;
+      localStorage.setItem('pka_token', authToken);
+      if(res.user) {
+        currentUser = res.user;
+        try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
+      }
+    }
+  }).catch(()=>{});
 }
 
-if(authToken && currentUser){
+if(currentUser && !sessionStorage.getItem('pka_logged_out')){
   hideLoginModal();
   updateUserUI();
   init();

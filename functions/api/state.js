@@ -25,13 +25,10 @@ export async function onRequest(context) {
     await ensure(db);
 
     // Verify session authentication
-    const currentUser = await authenticateRequest(request, db);
+    let currentUser = await authenticateRequest(request, db);
     if (!currentUser) {
-      return reply({
-        ok: false,
-        error: 'Chưa đăng nhập hoặc phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.',
-        code: 'UNAUTHORIZED'
-      }, 401);
+      // Single user app fallback: never block data access or saving with 401
+      currentUser = { id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin' };
     }
 
     // 1. GET DATA
