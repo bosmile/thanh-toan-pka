@@ -55,6 +55,10 @@ table.grid th.col-frozen{background-color:#e7edf5!important;z-index:6!important}
 table.grid .col-frozen-last{border-right:2.5px solid #0284c7!important;box-shadow:3px 0 6px -2px rgba(0,0,0,0.18)}
 .review{color:#c06600!important;background:#fff3dc!important}.warn{color:#b93a30;font-weight:600}.status{color:#136443!important}
 table.grid td.edit-amount input{text-align:right;font-variant-numeric:tabular-nums}
+.cell-date-wrap{display:flex;align-items:center;width:100%;height:100%;min-height:38px;position:relative}
+.cell-date-wrap input{flex:1;min-width:0;height:100%!important}
+.cell-date-btn{border:0;background:transparent;cursor:pointer;padding:0 5px;font-size:13px;opacity:0.4;transition:opacity .15s;line-height:1;height:100%;display:flex;align-items:center;flex-shrink:0}
+.cell-date-btn:hover{opacity:1;background:#e2e8f0;border-radius:3px}
 .preview-scroll{max-height:calc(100vh - 243px);min-height:530px;overflow:auto;background:#e7ebf1;padding:12px}
 .preview-scale{width:735px;transform:scale(.52);transform-origin:top left;margin-bottom:-460px}
 .paper{font:14px 'Times New Roman',serif;width:735px;min-height:1040px;background:white;color:#000;padding:26px 14px 28px;line-height:1.18;box-shadow:0 3px 12px #aeb8c5}
@@ -1970,6 +1974,135 @@ function initColumnResizers(){
   applyFreezeColumns();
 }
 
+function printDate(raw){
+  let s=String(raw||'').trim();
+  let m=s.match(/^(\d{4})-(\d\d)-(\d\d)$/);
+  return m?{d:+m[3],m:+m[2],y:+m[1]}:(s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/)?(()=>{let a=s.split(/[\/.-]/);return {d:+a[0],m:+a[1],y:+(a[2].length===2?'20'+a[2]:a[2])}})():null);
+}
+
+function parseFlexibleDate(val){
+  let s = String(val || '').trim().replace(/[\/.\-\s]+$/, '');
+  if(!s) return '';
+  const currentYear = new Date().getFullYear();
+
+  // 1. ISO format YYYY-MM-DD
+  let iso = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if(iso){
+    let y = parseInt(iso[1], 10);
+    let m = parseInt(iso[2], 10);
+    let d = parseInt(iso[3], 10);
+    if(m >= 1 && m <= 12 && d >= 1 && d <= 31){
+      let maxDays = new Date(y, m, 0).getDate();
+      if(d > maxDays) d = maxDays;
+      return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+    }
+  }
+
+  // 2. DD/MM or DD/MM/YYYY or DD/MM/YY with / . - or space
+  let dmy = s.match(/^(\d{1,2})\s*[\/.\-]\s*(\d{1,2})(?:\s*[\/.\-]\s*(\d{2,4}))?$/);
+  if(!dmy) dmy = s.match(/^(\d{1,2})\s+(\d{1,2})(?:\s+(\d{2,4}))?$/);
+  if(dmy){
+    let d = parseInt(dmy[1], 10);
+    let m = parseInt(dmy[2], 10);
+    let yStr = dmy[3];
+    let y = currentYear;
+    if(yStr){
+      y = yStr.length === 2 ? parseInt('20' + yStr, 10) : parseInt(yStr, 10);
+    }
+    if(m >= 1 && m <= 12 && d >= 1 && d <= 31){
+      let maxDays = new Date(y, m, 0).getDate();
+      if(d > maxDays) d = maxDays;
+      return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+    }
+  }
+
+  // 3. Continuous digits: 4 digits (DDMM), 6 digits (DDMMYY), 8 digits (DDMMYYYY)
+  let digits = s.replace(/\D/g, '');
+  if(digits.length === 4){
+    let d = parseInt(digits.slice(0, 2), 10);
+    let m = parseInt(digits.slice(2, 4), 10);
+    if(m >= 1 && m <= 12 && d >= 1 && d <= 31){
+      let maxDays = new Date(currentYear, m, 0).getDate();
+      if(d > maxDays) d = maxDays;
+      return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${currentYear}`;
+    }
+  } else if(digits.length === 6){
+    let d = parseInt(digits.slice(0, 2), 10);
+    let m = parseInt(digits.slice(2, 4), 10);
+    let y = parseInt('20' + digits.slice(4, 6), 10);
+    if(m >= 1 && m <= 12 && d >= 1 && d <= 31){
+      let maxDays = new Date(y, m, 0).getDate();
+      if(d > maxDays) d = maxDays;
+      return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+    }
+  } else if(digits.length === 8){
+    let d = parseInt(digits.slice(0, 2), 10);
+    let m = parseInt(digits.slice(2, 4), 10);
+    let y = parseInt(digits.slice(4, 8), 10);
+    if(m >= 1 && m <= 12 && d >= 1 && d <= 31){
+      let maxDays = new Date(y, m, 0).getDate();
+      if(d > maxDays) d = maxDays;
+      return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+    }
+  }
+
+  // 4. Try printDate fallback
+  let p = printDate(s);
+  if(p){
+    return `${String(p.d).padStart(2,'0')}/${String(p.m).padStart(2,'0')}/${p.y}`;
+  }
+
+  return s;
+}
+
+function formatDisplayDate(val){
+  if(!val) return '';
+  let p = printDate(val);
+  if(p){
+    let dd = String(p.d).padStart(2, '0');
+    let mm = String(p.m).padStart(2, '0');
+    return `${dd}/${mm}/${p.y}`;
+  }
+  return String(val).trim();
+}
+
+let activeDatePickerCb = null;
+function pickDateWithCalendar(currentVal, cb){
+  activeDatePickerCb = cb;
+  let p = el('appGlobalDatePicker');
+  if(!p){
+    p = document.createElement('input');
+    p.type = 'date';
+    p.id = 'appGlobalDatePicker';
+    p.style.position = 'fixed';
+    p.style.top = '-1000px';
+    p.style.left = '-1000px';
+    p.style.opacity = '0';
+    p.style.pointerEvents = 'none';
+    p.onchange = function(){
+      if(activeDatePickerCb && this.value){
+        activeDatePickerCb(this.value);
+      }
+    };
+    document.body.appendChild(p);
+  }
+  let parsed = printDate(currentVal);
+  if(parsed){
+    p.value = `${parsed.y}-${String(parsed.m).padStart(2,'0')}-${String(parsed.d).padStart(2,'0')}`;
+  } else {
+    p.value = new Date().toISOString().slice(0, 10);
+  }
+  try {
+    if(typeof p.showPicker === 'function'){
+      p.showPicker();
+    } else {
+      p.click();
+    }
+  } catch(err){
+    p.click();
+  }
+}
+
 function opts(a,v){return '<option value=""></option>'+a.map(s=>`<option value="${esc(s)}" ${v===s?'selected':''}>${esc(s)}</option>`).join('')}
 function beneficiaryForRequest(x){return DB.beneficiaries.find(b=>String(b.id)===String(x.beneficiary_id))||DB.beneficiaries.find(b=>normName(b.name)===normName(x.payee_name))||null}
 function beneficiaryDisplay(x){let b=beneficiaryForRequest(x);return b&&String(b.short_name||'').trim()?b.short_name:x.payee_name}
@@ -1977,7 +2110,7 @@ function findBeneficiary(v){let k=normName(v);return DB.beneficiaries.find(b=>no
 
 function renderTable(){
   let q=el('search').value.toLocaleLowerCase('vi'),st=el('statusFilter').value,gf=el('groupFilter').value;
-  let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.invoice_date,x.item_name,x.created_by_name].join(' ').toLocaleLowerCase('vi').includes(q)));
+  let list=[...DB.requests].sort((a,b)=>b.id-a.id).filter(x=>(!st||x.status===st)&&(!gf||String(x.group_id||'')===gf)&&(!q||[x.legacy_stt,x.payee_name,beneficiaryDisplay(x),x.description,x.invoice_no,x.invoice_date,formatDisplayDate(x.invoice_date),x.item_name,x.created_by_name].join(' ').toLocaleLowerCase('vi').includes(q)));
   el('count').textContent=list.length+' / '+DB.requests.length+' đề nghị';
 
   el('tbody').innerHTML=list.map(x=>{
@@ -2014,7 +2147,10 @@ function renderTable(){
       ${multilineField('item_name',180,'','Hàng hóa / Dịch vụ')}
       ${multilineField('invoice_no',120,'','Số hóa đơn')}
       <td style="min-width:115px">
-        <input class="cell-editor" type="date" aria-label="Ngày hóa đơn" value="${esc(x.invoice_date||'')}" onchange="setInvoiceDate(${x.id},this.value)">
+        <div class="cell-date-wrap">
+          <input class="cell-editor" type="text" placeholder="dd/mm/yyyy" title="Ngày hóa đơn (gõ 15/10 tự điền năm hiện tại, có thể sửa năm)" aria-label="Ngày hóa đơn" value="${esc(formatDisplayDate(x.invoice_date))}" onchange="setInvoiceDate(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+          <button type="button" tabindex="-1" class="cell-date-btn" title="Chọn ngày hóa đơn từ lịch" onclick="pickDateWithCalendar('${esc(x.invoice_date||'')}', val => setInvoiceDate(${x.id}, val))">📅</button>
+        </div>
       </td>
       <td class="edit-amount" style="min-width:130px">
         <input class="cell-editor" value="${esc(formatMoneyDisplay(x.amount))}" 
@@ -2027,7 +2163,10 @@ function renderTable(){
         <button class="doc-cell-btn cell-editor" title="Chọn hồ sơ đi kèm" onclick="openDocModal(${x.id})">📎 ${(x.documents||[]).length} hồ sơ ▾</button>
       </td>
       <td style="min-width:115px">
-        <input class="cell-editor" type="date" aria-label="Ngày đề nghị" value="${esc(x.request_date||'')}" onchange="setField(${x.id},'request_date',this.value)">
+        <div class="cell-date-wrap">
+          <input class="cell-editor" type="text" placeholder="dd/mm/yyyy" title="Ngày đề nghị (gõ 15/10 tự điền năm hiện tại)" aria-label="Ngày đề nghị" value="${esc(formatDisplayDate(x.request_date||x.raw_date))}" onchange="setRequestDate(${x.id},this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+          <button type="button" tabindex="-1" class="cell-date-btn" title="Chọn ngày đề nghị từ lịch" onclick="pickDateWithCalendar('${esc(x.request_date||x.raw_date||'')}', val => setRequestDate(${x.id}, val))">📅</button>
+        </div>
       </td>
       ${sl('payment_type',TYPES,125)}
       ${sl('status',STATUSES,160)}
@@ -2135,7 +2274,22 @@ function setField(id,k,v){
     if(b){Object.assign(x,{payee_name:b.name,beneficiary_id:b.id,address:b.address,account_no:b.account_no,bank:b.bank})}
     else{x.beneficiary_id=null;x.address='';x.account_no='';x.bank=''}
   }
-  if(k==='request_date'){x.raw_date=v?`${v.slice(8,10)}/${v.slice(5,7)}/${v.slice(0,4)}`:''}
+  if(k==='request_date'){
+    let clean = parseFlexibleDate(v);
+    let p = printDate(clean);
+    if(p){
+      x.request_date = `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;
+      x.raw_date = `${String(p.d).padStart(2,'0')}/${String(p.m).padStart(2,'0')}/${p.y}`;
+    } else {
+      x.request_date = clean;
+      x.raw_date = clean;
+    }
+  }
+  if(k==='invoice_date'){
+    let clean = parseFlexibleDate(v);
+    x.invoice_date = clean;
+    if(Array.isArray(x.lines) && x.lines.length >= 1) x.lines[0].invoice_date = clean;
+  }
   if(k==='item_name'||k==='invoice_no'){
    if(!Array.isArray(x.lines))x.lines=[];
    if(x.lines.length===0)x.lines.push({description:'',invoice_no:'',amount:String(x.amount||'0')});
@@ -2172,9 +2326,33 @@ function setInvoiceDate(id, v){
   active=id;
   let x=request(id);
   if(!x)return;
-  x.invoice_date=String(v||'').trim();
-  if((x.lines||[]).length===1){
-    x.lines[0].invoice_date=x.invoice_date;
+  let clean = parseFlexibleDate(v);
+  x.invoice_date = clean;
+  if(!Array.isArray(x.lines)) x.lines = [];
+  if(x.lines.length === 0){
+    x.lines.push({description: x.item_name||'', invoice_no: x.invoice_no||'', invoice_date: clean, amount: String(x.amount||'0')});
+  } else {
+    x.lines[0].invoice_date = clean;
+  }
+  save();
+  renderTable();
+  if(active===id)renderDetail();
+}
+
+function setRequestDate(id, v){
+  active=id;
+  let x=request(id);
+  if(!x)return;
+  let clean = parseFlexibleDate(v);
+  let p = printDate(clean);
+  if(p){
+    let dd = String(p.d).padStart(2, '0');
+    let mm = String(p.m).padStart(2, '0');
+    x.request_date = `${p.y}-${mm}-${dd}`;
+    x.raw_date = `${dd}/${mm}/${p.y}`;
+  } else {
+    x.request_date = clean;
+    x.raw_date = clean;
   }
   save();
   renderTable();
@@ -2250,6 +2428,9 @@ function tableTab(e){if(e.key!=='Tab'||!e.target.matches('.cell-editor'))return;
 
 function lineChanged(i,k,v){
   let x=request(active);if(!x)return;
+  if(k==='invoice_date'){
+    v = parseFlexibleDate(v);
+  }
   x.lines[i][k]=v;
   if(k==='amount'){
     let n=Number(plainAmount(v));
@@ -2263,6 +2444,7 @@ function lineChanged(i,k,v){
     if(k==='invoice_date') x.invoice_date=x.lines[0].invoice_date||'';
   } else {
     if(k==='invoice_no') x.invoice_no=x.lines.map(l=>l.invoice_no).filter(Boolean).join(', ');
+    if(k==='invoice_date' && !x.invoice_date) x.invoice_date=v;
   }
   save();
   renderTable();
@@ -2288,7 +2470,6 @@ function delLine(i){
 }
 
 function moneyWords(x){let n=Number(x.amount);if(!Number.isFinite(n))return 'Chưa có số tiền hợp lệ';const digits=['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];function group(num,full){let h=Math.floor(num/100),t=Math.floor(num%100/10),u=num%10,out=[];if(h||full){out.push(digits[h]+' trăm')}if(t>1){out.push(digits[t]+' mươi');if(u)out.push(u===1?'mốt':u===5?'lăm':digits[u])}else if(t===1){out.push('mười');if(u)out.push(u===5?'lăm':digits[u])}else if(u){if(h||full)out.push('lẻ');out.push(digits[u])}return out.join(' ')}function whole(num){if(num===0)return 'không';let parts=[],units=['','nghìn','triệu','tỷ','nghìn tỷ'];let i=0;while(num>0&&i<units.length){let v=num%1000;if(v)parts.unshift(group(v,i>0&&num>=1000)+' '+units[i]);num=Math.floor(num/1000);i++}return parts.join(' ').replace(/\s+/g,' ').trim()}let main=whole(Math.floor(n));let decimals=Math.round((n-Math.floor(n))*100);let end=x.currency==='USD'?'đô la Mỹ':x.currency==='EUR'?'euro':x.currency==='VND'?'đồng':'(chưa xác nhận loại tiền)';let w=main+(decimals?' phẩy '+whole(decimals):'')+' '+end;return w.charAt(0).toUpperCase()+w.slice(1)}
-function printDate(raw){let s=raw||'';let m=s.match(/^(\d{4})-(\d\d)-(\d\d)$/);return m?{d:+m[3],m:+m[2],y:+m[1]}:(s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/)?(()=>{let a=s.split(/[\/.-]/);return {d:+a[0],m:+a[1],y:+(a[2].length===2?'20'+a[2]:a[2])}})():null)}
 
 function printEntries(x){
  let arr=Array.isArray(x.lines)?x.lines:[];
@@ -2482,7 +2663,10 @@ function renderDetail(){
     <div class="lineitem">
       <input title="Tên hàng hóa" placeholder="Tên hàng hóa / dịch vụ" value="${esc(l.description||'')}" onchange="lineChanged(${i},'description',this.value)">
       <input title="Số hóa đơn" placeholder="Số HĐ" value="${esc(l.invoice_no||'')}" onchange="lineChanged(${i},'invoice_no',this.value)">
-      <input type="date" title="Ngày hóa đơn" value="${esc(l.invoice_date||'')}" onchange="lineChanged(${i},'invoice_date',this.value)">
+      <div class="cell-date-wrap" style="border:1px solid #c8d3e0;border-radius:4px;padding:0 4px;background:#fff">
+        <input class="cell-editor" type="text" placeholder="dd/mm/yyyy" title="Ngày hóa đơn (gõ 15/10 tự điền năm hiện tại, có thể sửa năm)" value="${esc(formatDisplayDate(l.invoice_date))}" onchange="lineChanged(${i},'invoice_date',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+        <button type="button" tabindex="-1" class="cell-date-btn" title="Chọn ngày từ lịch" onclick="pickDateWithCalendar('${esc(l.invoice_date||'')}', val => lineChanged(${i},'invoice_date',val))">📅</button>
+      </div>
       <input title="Số tiền" placeholder="Số tiền" value="${esc(formatMoneyDisplay(l.amount))}" onfocus="this.value=plainAmount(this.value)" onblur="this.value=formatMoneyDisplay(this.value)" onchange="lineChanged(${i},'amount',this.value)">
       <button title="Xóa dòng" onclick="delLine(${i})">×</button>
     </div>`
