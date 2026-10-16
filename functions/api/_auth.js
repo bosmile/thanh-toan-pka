@@ -133,6 +133,17 @@ export async function ensureUsersTable(db) {
       updated_at TEXT NOT NULL
     )
   `).run();
+
+  const adminUser = await db.prepare('SELECT id FROM app_users WHERE LOWER(username) = "admin"').first();
+  if (!adminUser) {
+    const salt = randomHex(16);
+    const hash = await hashPassword('140792', salt);
+    const now = new Date().toISOString();
+    await db.prepare(`
+      INSERT INTO app_users (username, password_hash, salt, full_name, role, is_active, created_at, updated_at)
+      VALUES ('admin', ?, ?, 'Quản trị hệ thống', 'admin', 1, ?, ?)
+    `).bind(hash, salt, now, now).run();
+  }
 }
 
 export async function authenticateRequest(request, db) {

