@@ -40,7 +40,7 @@ table.grid tr.row-done .rownum button{color:#1b5e20}
 table.grid tr.row-done .doc-cell-btn{background:#d4edd9;border-color:#a3d9b0;color:#1b5e20}
 table.grid td input,table.grid td select{width:100%;min-height:38px;border:0;outline:0;padding:4px 6px;background:transparent;font-size:12px;color:#202d3e;box-sizing:border-box}
 table.grid td input:focus,table.grid td select:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
-.cell-multiline{width:100%;min-height:38px;height:auto;border:0;outline:0;padding:5px 6px;background:transparent;font-size:12px;color:#202d3e;resize:none;line-height:1.35;white-space:pre-wrap;word-break:break-word;overflow:hidden;font-family:inherit;box-sizing:border-box;display:block}
+.cell-multiline{field-sizing:content;width:100%;min-height:38px;height:auto;border:0;outline:0;padding:5px 6px;background:transparent;font-size:12px;color:#202d3e;resize:none;line-height:1.35;white-space:pre-wrap;word-break:break-word;overflow:hidden;font-family:inherit;box-sizing:border-box;display:block}
 .cell-multiline:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
 table.grid td.cell-disabled input,table.grid td.cell-disabled select,table.grid td.cell-disabled textarea{background:#f3f4f6;color:#6b7280;cursor:not-allowed}
 table.grid .rownum{position:sticky;left:0;z-index:1;background:#ecf2f9!important;font-weight:600;text-align:center;min-width:56px;border-right:2px solid #a9bacd}
@@ -502,7 +502,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
   <div id="dataPage">
     <div class="tools">
       <button class="primary" id="btnNewRow" onclick="newRow()">＋ Thêm đề nghị (thêm dòng)</button>
-      <input id="search" placeholder="Tìm NCC, STT, nội dung, hóa đơn..." oninput="renderTable()">
+      <input id="search" placeholder="Tìm NCC, STT, nội dung, hóa đơn..." oninput="onSearchInput()">
       <select id="statusFilter" onchange="renderTable()"><option value="">Tất cả trạng thái</option></select>
       <select id="groupFilter" onchange="renderTable()"><option value="">Tất cả nhóm</option></select>
       <div style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#1e3a5f;font-weight:600;background:#f0f4f9;padding:3px 9px;border-radius:6px;border:1px solid #cbd5e1">
@@ -1893,85 +1893,115 @@ function applyFreezeColumns(){
   const sel = el('freezeColSelect');
   if(sel && sel.value !== String(freezeCount)) sel.value = String(freezeCount);
 
+  let styleTag = document.getElementById('freezeColStyles');
+  if(!styleTag){
+    styleTag = document.createElement('style');
+    styleTag.id = 'freezeColStyles';
+    document.head.appendChild(styleTag);
+  }
+
+  if(freezeCount <= 0){
+    styleTag.textContent = '';
+    return;
+  }
+
   const ths = Array.from(table.querySelectorAll('thead th'));
-  const rows = Array.from(table.querySelectorAll('tbody tr'));
-
-  // Reset previously frozen styles
-  ths.forEach(th => {
-    th.classList.remove('col-frozen', 'col-frozen-last');
-    th.style.left = '';
-  });
-  rows.forEach(r => {
-    Array.from(r.children).forEach(td => {
-      td.classList.remove('col-frozen', 'col-frozen-last');
-      td.style.left = '';
-    });
-  });
-
-  if(freezeCount <= 0) return;
-
-  // Calculate cumulative left offsets
-  let leftOffsets = [];
   let cum = 0;
+  let css = '';
   for(let i = 0; i < freezeCount && i < ths.length; i++){
-    leftOffsets[i] = cum;
+    const colIdx = i + 1;
+    const isLast = (i === freezeCount - 1);
+    css += `
+      table.grid th:nth-child(${colIdx}), table.grid td:nth-child(${colIdx}) {
+        position: sticky !important;
+        left: ${cum}px !important;
+      }
+      table.grid th:nth-child(${colIdx}) {
+        z-index: 6 !important;
+        background-color: #e7edf5 !important;
+      }
+      table.grid td:nth-child(${colIdx}) {
+        z-index: 2 !important;
+        background-color: #fff !important;
+      }
+      table.grid tr:nth-child(even) td:nth-child(${colIdx}) {
+        background-color: #f9fbfe !important;
+      }
+      table.grid tr.chosen td:nth-child(${colIdx}) {
+        background-color: #e6f2ff !important;
+      }
+      table.grid tr.row-done td:nth-child(${colIdx}) {
+        background-color: #e8f5e9 !important;
+      }
+      table.grid tr.row-done:nth-child(even) td:nth-child(${colIdx}) {
+        background-color: #def0df !important;
+      }
+      table.grid tr.row-done.chosen td:nth-child(${colIdx}) {
+        background-color: #bcebc5 !important;
+      }
+      table.grid td.rownum:nth-child(${colIdx}) {
+        background-color: #ecf2f9 !important;
+      }
+      table.grid tr.row-done td.rownum:nth-child(${colIdx}) {
+        background-color: #c8e6c9 !important;
+      }
+    `;
+    if(isLast){
+      css += `
+        table.grid th:nth-child(${colIdx}), table.grid td:nth-child(${colIdx}) {
+          border-right: 2.5px solid #0284c7 !important;
+          box-shadow: 3px 0 6px -2px rgba(0,0,0,0.18) !important;
+        }
+      `;
+    }
     cum += ths[i].offsetWidth;
   }
-
-  // Freeze thead th
-  for(let i = 0; i < freezeCount && i < ths.length; i++){
-    const th = ths[i];
-    th.classList.add('col-frozen');
-    if(i === freezeCount - 1) th.classList.add('col-frozen-last');
-    th.style.left = leftOffsets[i] + 'px';
-  }
-
-  // Freeze tbody td
-  rows.forEach(r => {
-    const cells = r.children;
-    for(let i = 0; i < freezeCount && i < cells.length; i++){
-      const td = cells[i];
-      td.classList.add('col-frozen');
-      if(i === freezeCount - 1) td.classList.add('col-frozen-last');
-      td.style.left = leftOffsets[i] + 'px';
-    }
-  });
+  styleTag.textContent = css;
 }
 
+let resizersInitialized = false;
 function initColumnResizers(){
-  const ths=document.querySelectorAll('table.grid th');
-  ths.forEach((th,index)=>{
-    const saved=localStorage.getItem('pka_col_w_'+index);
-    if(saved){th.style.width=saved+'px';th.style.minWidth=saved+'px'}
-    if(th.querySelector('.th-resizer'))return;
-    const resizer=document.createElement('div');
-    resizer.className='th-resizer';
+  if(resizersInitialized) return;
+  const ths = document.querySelectorAll('table.grid th');
+  if(!ths.length) return;
+  resizersInitialized = true;
+  ths.forEach((th, index) => {
+    const saved = localStorage.getItem('pka_col_w_' + index);
+    if(saved){ th.style.width = saved + 'px'; th.style.minWidth = saved + 'px'; }
+    if(th.querySelector('.th-resizer')) return;
+    const resizer = document.createElement('div');
+    resizer.className = 'th-resizer';
     th.appendChild(resizer);
-    let startX,startWidth;
-    resizer.addEventListener('mousedown',e=>{
-      e.stopPropagation();e.preventDefault();
-      startX=e.pageX;startWidth=th.offsetWidth;
+    let startX, startWidth;
+    resizer.addEventListener('mousedown', e => {
+      e.stopPropagation(); e.preventDefault();
+      startX = e.pageX; startWidth = th.offsetWidth;
       resizer.classList.add('resizing');
-      const onMouseMove=moveEvent=>{
-        const diff=moveEvent.pageX-startX;
-        const newWidth=Math.max(35,startWidth+diff);
-        th.style.width=newWidth+'px';th.style.minWidth=newWidth+'px';
-        localStorage.setItem('pka_col_w_'+index,newWidth);
-        applyFreezeColumns();
+      const onMouseMove = moveEvent => {
+        const diff = moveEvent.pageX - startX;
+        const newWidth = Math.max(35, startWidth + diff);
+        th.style.width = newWidth + 'px'; th.style.minWidth = newWidth + 'px';
+        localStorage.setItem('pka_col_w_' + index, newWidth);
       };
-      const onMouseUp=()=>{
+      const onMouseUp = () => {
         resizer.classList.remove('resizing');
-        document.removeEventListener('mousemove',onMouseMove);
-        document.removeEventListener('mouseup',onMouseUp);
-        document.body.style.cursor='';document.body.style.userSelect='';
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.body.style.cursor = ''; document.body.style.userSelect = '';
         applyFreezeColumns();
       };
-      document.addEventListener('mousemove',onMouseMove);
-      document.addEventListener('mouseup',onMouseUp);
-      document.body.style.cursor='col-resize';document.body.style.userSelect='none';
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
     });
   });
   applyFreezeColumns();
+}
+
+let searchDebounceTimer = null;
+function onSearchInput(){
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(renderTable, 120);
 }
 
 function printDate(raw){
@@ -2136,7 +2166,7 @@ function renderTable(){
 
     const isDone = String(x.status || '').trim().toLowerCase() === 'done';
     const rowClass = [x.id===active?'chosen':'', isDone?'row-done':''].filter(Boolean).join(' ');
-    return `<tr class="${rowClass}">
+    return `<tr class="${rowClass}" id="r_${x.id}">
       <td style="text-align:center"><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td>
       <td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>
       ${multilineField('payee_name',180,'beneficiaryList','Nhập NCC')}
@@ -2180,12 +2210,11 @@ function renderTable(){
     </tr>`;
   }).join('');
 
-  document.querySelectorAll('table.grid textarea.cell-multiline').forEach(ta => autoExpandTextarea(ta));
-  initColumnResizers();
+  if(!resizersInitialized) initColumnResizers();
   applyFreezeColumns();
 
   const mc = el('mobileDataCards');
-  if(mc){
+  if(mc && window.innerWidth <= 768){
     mc.innerHTML = list.map(x => {
       const isDone = String(x.status || '').trim().toLowerCase() === 'done';
       let stClass = 'mb-badge-default';
@@ -2244,7 +2273,17 @@ function renderTable(){
   }
 }
 
-function selectRow(id,v){id=Number(id);v?checked.add(id):checked.delete(id);if(v)active=id;renderTable();renderDetail()}
+function selectRow(id,v){
+  id=Number(id);
+  v?checked.add(id):checked.delete(id);
+  const row = document.getElementById('r_' + id);
+  if(row){
+    const cb = row.querySelector('input[type=checkbox]');
+    if(cb && cb.checked !== !!v) cb.checked = !!v;
+  }
+  if(v) activate(id);
+  else renderDetail();
+}
 function request(id){return DB.requests.find(x=>x.id===id)}
 function normName(v){return String(v||'').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi')}
 
@@ -2396,7 +2435,22 @@ function newRow(){
   message('Đã thêm dòng mới. Nhập dữ liệu ngay trong bảng DATA.');
 }
 
-function activate(id){active=id;renderTable();renderDetail()}
+function activate(id){
+  const prev = active;
+  active = id;
+  if(prev !== id){
+    const oldRow = document.getElementById('r_' + prev);
+    if(oldRow) oldRow.classList.remove('chosen');
+    const newRow = document.getElementById('r_' + id);
+    if(newRow){
+      newRow.classList.add('chosen');
+    } else {
+      renderTable();
+      return;
+    }
+  }
+  renderDetail();
+}
 
 function deleteSelected(){
   const ids=checked.size?[...checked].map(Number).filter(id=>DB.requests.some(x=>Number(x.id)===id)):(active==null?[]:[Number(active)]);
