@@ -96,6 +96,269 @@ datalist{display:none}
 table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-radius:4px;background:#f0f6ff;color:#185284;font-size:12px;cursor:pointer;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;text-align:left;padding:0 9px}
 @media(max-width:520px){.doc-options{grid-template-columns:1fr}}
 
+/* ========================================================
+   GIAO DIỆN XEM DỮ LIỆU TỐI ƯU CHO MOBILE (READ-ONLY)
+   ======================================================== */
+.mobile-cards-container {
+  display: none;
+}
+.btn-mobile-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body:not(.force-desktop) {
+    background: #f1f5f9;
+  }
+  
+  body:not(.force-desktop) header {
+    height: auto;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  body:not(.force-desktop) header > div:first-child b {
+    font-size: 15px;
+  }
+  body:not(.force-desktop) header > div:first-child small {
+    display: none;
+  }
+  body:not(.force-desktop) #btnExport,
+  body:not(.force-desktop) #btnRestore,
+  body:not(.force-desktop) #cloudStatus {
+    display: none !important;
+  }
+  body:not(.force-desktop) .btn-mobile-toggle {
+    display: inline-block !important;
+    background: #1e3a5f;
+    border: 1px solid #4a6fa5;
+    color: #fff;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  body:not(.force-desktop) .user-profile {
+    padding: 3px 6px;
+    font-size: 11px;
+    margin-left: auto;
+  }
+  body:not(.force-desktop) .user-profile button {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
+
+  body:not(.force-desktop) main {
+    padding: 10px 10px 40px;
+  }
+  body:not(.force-desktop) .page-tabs {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #cbd5e1;
+    -webkit-overflow-scrolling: touch;
+  }
+  body:not(.force-desktop) .page-tabs button {
+    padding: 7px 12px;
+    font-size: 12px;
+    border-radius: 18px;
+    flex-shrink: 0;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+  }
+  body:not(.force-desktop) .page-tabs button.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  
+  body:not(.force-desktop) #tabTemplate,
+  body:not(.force-desktop) #tabSettings {
+    display: none !important;
+  }
+
+  body:not(.force-desktop) #btnNewRow,
+  body:not(.force-desktop) #btnDeleteSelected,
+  body:not(.force-desktop) #btnAddGroup,
+  body:not(.force-desktop) #btnAddNcc,
+  body:not(.force-desktop) #handoverActionBtns,
+  body:not(.force-desktop) .tools button,
+  body:not(.force-desktop) .detail-inline,
+  body:not(.force-desktop) .role-banner,
+  body:not(.force-desktop) .group-note,
+  body:not(.force-desktop) .ncc-help,
+  body:not(.force-desktop) .panelhead,
+  body:not(.force-desktop) .sheet-panel,
+  body:not(.force-desktop) .preview-panel,
+  body:not(.force-desktop) .workspace,
+  body:not(.force-desktop) .ncc-panel {
+    display: none !important;
+  }
+
+  body:not(.force-desktop) .tools {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  body:not(.force-desktop) .tools input,
+  body:not(.force-desktop) .tools select {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    box-sizing: border-box;
+  }
+  body:not(.force-desktop) .tools .count {
+    margin: 0;
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  body:not(.force-desktop) .mobile-cards-container {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  body:not(.force-desktop) h2 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  body:not(.force-desktop) .desc {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+}
+
+.m-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.m-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.m-card-stt {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+.m-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.mb-badge-done { background: #dcfce7; color: #15803d; }
+.mb-badge-paid { background: #e0f2fe; color: #0369a1; }
+.mb-badge-wait { background: #fef3c7; color: #b45309; }
+.mb-badge-default { background: #f1f5f9; color: #475569; }
+.mb-badge-dept { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+.m-card-payee {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+.m-card-amount {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0d9488;
+  margin: 1px 0;
+}
+.m-card-amount small {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+.m-card-desc {
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.4;
+}
+.m-card-meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  background: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+.m-card-meta b {
+  color: #1e293b;
+}
+.m-card-docs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.m-doc-tag {
+  font-size: 11px;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+.m-card-lines {
+  margin-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 6px;
+  font-size: 12px;
+}
+.m-card-lines summary {
+  cursor: pointer;
+  color: #2563eb;
+  font-weight: 600;
+}
+.m-lines-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 6px;
+}
+.m-line-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  padding: 3px 0;
+  border-bottom: 1px dotted #e2e8f0;
+}
+.m-empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: #94a3b8;
+  font-size: 13px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px dashed #cbd5e1;
+}
+
 .workspace{display:block}.sheet-panel{width:100%}.sheet-scroll{max-height:calc(100vh - 255px)}
 .page-tabs{display:flex;gap:6px;margin:0 0 14px}
 .page-tabs button{border:1px solid #c3d0df;background:white;padding:10px 18px;border-radius:6px;font-weight:600;color:#26425c}
@@ -186,6 +449,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
     <small>HỆ THỐNG QUẢN LÝ VÀ TẠO PHIẾU THANH TOÁN TRỰC TUYẾN D1</small>
   </div>
   <div class="header-actions">
+    <button id="btnMobileToggle" class="btn-mobile-toggle" onclick="toggleMobileView()">💻 Xem bản desktop</button>
     <div id="userProfile" class="user-profile" style="display:none">
       <span>👤 <b id="userFullName">Đang nạp...</b></span>
       <span id="userRoleBadge" class="user-badge badge-admin">Quản lý</span>
@@ -219,6 +483,8 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
       <button class="btn-danger" id="btnDeleteSelected" onclick="deleteSelected()">Xóa dòng đã chọn</button>
       <span class="count" id="count"></span>
     </div>
+
+    <div id="mobileDataCards" class="mobile-cards-container"></div>
 
     <div class="workspace">
       <section class="sheet-panel">
@@ -276,6 +542,9 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
       <input id="groupSearch" placeholder="Tìm mã nhóm, hợp đồng, NCC..." oninput="renderGroups()">
       <span id="groupCount" class="count"></span>
     </div>
+
+    <div id="mobileGroupsCards" class="mobile-cards-container"></div>
+
     <div class="ncc-panel">
       <div class="ncc-wrapper">
         <table class="ncc-table group-table">
@@ -308,7 +577,7 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
           Lập và quản lý danh sách vật tư bàn giao cho các bộ phận. Đơn vị giao mặc định: <b>Phòng Cung ứng (KHCU)</b>. Hỗ trợ sao chép dán nhiều ô/cột từ file Excel và in 02 bản biên bản giao nhận.
         </div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div id="handoverActionBtns" style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="primary" style="background:#0284c7;border-color:#0369a1" onclick="loadAllExcelData(true)" title="Cập nhật toàn bộ 85 vật tư từ file Excel Phenikaa vào bảng">📥 Nạp 85 vật tư từ Excel gốc</button>
         <button class="primary" style="background:#107c41;border-color:#0b5c30" onclick="openPasteModal()">📋 Dán từ Excel (Ctrl+V)</button>
         <button class="primary" style="background:#0f766e;border-color:#0d5e56" onclick="printHandoverSelected()">🖨️ In biên bản đã chọn (2 bản)</button>
@@ -324,6 +593,8 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
       <button class="btn-danger" onclick="deleteSelectedHandovers()">🗑️ Xóa dòng đã chọn</button>
       <span class="count" id="handoverCount">0 vật tư</span>
     </div>
+
+    <div id="mobileHandoverCards" class="mobile-cards-container"></div>
 
     <div class="sheet-panel">
       <div class="panelhead">
@@ -361,6 +632,9 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
       <input id="nccSearch" placeholder="Tìm tên đầy đủ, tên viết tắt, tài khoản, ngân hàng..." oninput="renderNcc()" style="min-width:360px">
       <span id="nccCount" class="count"></span>
     </div>
+
+    <div id="mobileNccCards" class="mobile-cards-container"></div>
+
     <section class="ncc-panel">
       <div class="panelhead">NCC · Danh mục đơn vị hưởng lợi</div>
       <div class="ncc-wrapper">
@@ -1291,7 +1565,34 @@ function addGroup(){let code=prompt('Nhập mã nhóm/hợp đồng (không trù
 function editGroup(id,key,value){let g=groupById(id);if(!g)return;value=String(value).trim();if(key==='code'){if(!value||groups().some(z=>z!==g&&normName(z.code)===normName(value))){alert('Mã nhóm không được trống hoặc trùng');renderGroups();return}}if(key==='total_amount'){let n=Number(plainAmount(value));if(!Number.isFinite(n)||n<0){alert('Giá trị không hợp lệ');renderGroups();return}value=String(n)}if(key==='currency'&&DB.requests.some(x=>String(x.group_id)===String(id)&&x.currency!==value)){alert('Có phiếu thuộc nhóm đang dùng tiền tệ khác. Không thể đổi.');renderGroups();return}g[key]=value;save();refreshGroupOptions();renderGroups();renderTable()}
 function deleteGroup(id){let g=groupById(id);if(!g)return;if(DB.requests.some(x=>String(x.group_id)===String(id))){alert('Nhóm đang có phiếu liên kết. Hãy chuyển các phiếu sang nhóm khác trước khi xóa.');return}if(!confirm('Xóa nhóm '+g.code+'?'))return;DB.payment_groups=groups().filter(z=>String(z.id)!==String(id));save();refreshGroupOptions();renderGroups();renderTable()}
 function showGroup(id){switchPage('data');el('groupFilter').value=String(id);renderTable()}
-function renderGroups(){let target=el('groupsBody');if(!target)return;let q=normName(el('groupSearch')?.value||'');let gg=groups().filter(g=>!q||normName([g.code,g.name,g.payee_name].join(' ')).includes(q));el('groupCount').textContent=gg.length+' / '+groups().length+' nhóm';target.innerHTML=gg.map(g=>{let t=groupTotals(g),input=(k,w)=>`<input class="ncc-cell" style="min-width:${w}px" value="${esc(g[k]||'')}" onchange="editGroup(${g.id},'${k}',this.value)">`;return `<tr><td>${input('code',115)}</td><td>${input('name',230)}</td><td>${input('payee_name',230)}</td><td>${input('total_amount',130)}</td><td><select onchange="editGroup(${g.id},'currency',this.value)">${['VND','USD','EUR'].map(c=>`<option ${g.currency===c?'selected':''}>${c}</option>`).join('')}</select></td><td style="white-space:nowrap">${moneyGroup(t.paid)} ${esc(g.currency)}</td><td style="white-space:nowrap">${moneyGroup(t.pending)} ${esc(g.currency)}</td><td style="white-space:nowrap;color:${t.remaining<0?'#b91c1c':'#145a32'}">${moneyGroup(t.remaining)} ${esc(g.currency)}</td><td><button class="btn" onclick="showGroup(${g.id})">${t.count} phiếu ↗</button></td><td><button class="btn" onclick="deleteGroup(${g.id})">Xóa</button></td></tr>`}).join('')}
+function renderGroups(){let target=el('groupsBody');if(!target)return;let q=normName(el('groupSearch')?.value||'');let gg=groups().filter(g=>!q||normName([g.code,g.name,g.payee_name].join(' ')).includes(q));el('groupCount').textContent=gg.length+' / '+groups().length+' nhóm';target.innerHTML=gg.map(g=>{let t=groupTotals(g),input=(k,w)=>`<input class="ncc-cell" style="min-width:${w}px" value="${esc(g[k]||'')}" onchange="editGroup(${g.id},'${k}',this.value)">`;return `<tr><td>${input('code',115)}</td><td>${input('name',230)}</td><td>${input('payee_name',230)}</td><td>${input('total_amount',130)}</td><td><select onchange="editGroup(${g.id},'currency',this.value)">${['VND','USD','EUR'].map(c=>`<option ${g.currency===c?'selected':''}>${c}</option>`).join('')}</select></td><td style="white-space:nowrap">${moneyGroup(t.paid)} ${esc(g.currency)}</td><td style="white-space:nowrap">${moneyGroup(t.pending)} ${esc(g.currency)}</td><td style="white-space:nowrap;color:${t.remaining<0?'#b91c1c':'#145a32'}">${moneyGroup(t.remaining)} ${esc(g.currency)}</td><td><button class="btn" onclick="showGroup(${g.id})">${t.count} phiếu ↗</button></td><td><button class="btn" onclick="deleteGroup(${g.id})">Xóa</button></td></tr>`}).join('');
+  const mgc = el('mobileGroupsCards');
+  if(mgc){
+    mgc.innerHTML = gg.map(g => {
+      let t = groupTotals(g);
+      let pct = (Number(g.total_amount) > 0) ? Math.min(100, Math.round((t.paid / Number(g.total_amount)) * 100)) : 0;
+      return `
+      <div class="m-card">
+        <div class="m-card-header">
+          <div class="m-card-stt" style="color:#0369a1">${esc(g.code || 'Chưa có mã')}</div>
+          <span class="m-badge mb-badge-paid">${t.count} phiếu TT</span>
+        </div>
+        <div class="m-card-payee" style="font-size:13.5px">${esc(g.name || 'Hợp đồng / Đơn hàng')}</div>
+        ${g.payee_name ? `<div style="font-size:12px;color:#64748b;margin-bottom:2px">NCC: <b>${esc(g.payee_name)}</b></div>` : ''}
+        <div class="m-card-amount" style="font-size:14.5px">
+          Tổng: ${formatMoneyDisplay(g.total_amount)} <small>${esc(g.currency || 'VND')}</small>
+        </div>
+        <div style="margin:6px 0 3px;background:#e2e8f0;border-radius:10px;height:7px;overflow:hidden">
+          <div style="background:#0f766e;width:${pct}%;height:100%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#334155;margin-top:2px">
+          <span>Đã trả: <b>${formatMoneyDisplay(t.paid)}</b> (${pct}%)</span>
+          <span style="color:${t.remaining < 0 ? '#b91c1c' : '#15803d'}">Còn: <b>${formatMoneyDisplay(t.remaining)}</b></span>
+        </div>
+      </div>`;
+    }).join('') || '<div class="m-empty">Không có nhóm nào</div>';
+  }
+}
 
 function syncStatus(s,color){const node=el('cloudStatus');if(node){node.textContent=s;node.style.color=color||'#d7f5dc'}}
 
@@ -1498,9 +1799,66 @@ function renderTable(){
       <td style="min-width:130px;font-size:11px;color:#64748b;padding:0 8px;vertical-align:middle;white-space:nowrap">
         ${esc(x.created_by_name||x.created_by||'Chưa rõ')}
       </td>
-    </tr>`;
   }).join('');
   initColumnResizers();
+
+  const mc = el('mobileDataCards');
+  if(mc){
+    mc.innerHTML = list.map(x => {
+      let stClass = 'mb-badge-default';
+      if(x.status === 'Done') stClass = 'mb-badge-done';
+      else if(x.status && x.status.includes('Đã thanh toán')) stClass = 'mb-badge-paid';
+      else if(x.status && x.status.includes('chờ')) stClass = 'mb-badge-wait';
+      
+      const payee = x.payee_name || beneficiaryDisplay(x) || 'Chưa có NCC';
+      const grp = groupById(x.group_id);
+      const docs = (x.documents || []).filter(Boolean);
+      const lines = (x.lines || []).filter(l => l.description || l.amount);
+
+      return `
+      <div class="m-card">
+        <div class="m-card-header">
+          <div class="m-card-stt">STT ${esc(x.legacy_stt ?? x.id)}</div>
+          <span class="m-badge ${stClass}">${esc(x.status || 'Chưa có')}</span>
+        </div>
+        <div class="m-card-payee">${esc(payee)}</div>
+        <div class="m-card-amount">
+          ${formatMoneyDisplay(x.amount)} <small>${esc(x.currency || 'VND')}</small>
+        </div>
+        <div class="m-card-desc">${esc(x.description || x.item_name || 'Không có mô tả')}</div>
+        
+        <div class="m-card-meta">
+          ${x.request_date ? `<div>📅 Ngày: <b>${esc(x.request_date)}</b></div>` : ''}
+          ${grp ? `<div>📁 Nhóm HĐ: <b>${esc(grp.code)}</b></div>` : ''}
+          ${x.invoice_no ? `<div>🧾 HĐ: <b>${esc(x.invoice_no)}</b></div>` : ''}
+          ${x.bank ? `<div>🏦 ${esc(x.bank)} - TK: <b>${esc(x.account_no || '---')}</b></div>` : ''}
+        </div>
+
+        ${docs.length ? `
+          <div class="m-card-docs">
+            ${docs.map(d => `<span class="m-doc-tag">📎 ${esc(d)}</span>`).join('')}
+          </div>
+        ` : ''}
+
+        ${lines.length ? `
+          <details class="m-card-lines">
+            <summary>Chi tiết ${lines.length} hóa đơn / hàng hóa</summary>
+            <div class="m-lines-list">
+              ${lines.map((l, li) => `
+                <div class="m-line-item">
+                  <div>${li+1}. ${esc(l.description || 'Hàng hóa')}</div>
+                  <div style="white-space:nowrap;margin-left:8px">
+                    ${l.invoice_no ? `<span style="color:#64748b;margin-right:6px">HĐ: ${esc(l.invoice_no)}</span>` : ''}
+                    <b>${formatMoneyDisplay(l.amount)}</b>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </details>
+        ` : ''}
+      </div>`;
+    }).join('') || '<div class="m-empty">Không tìm thấy đề nghị thanh toán nào</div>';
+  }
 }
 
 function selectRow(id,v){id=Number(id);v?checked.add(id):checked.delete(id);if(v)active=id;renderTable();renderDetail()}
@@ -1861,6 +2219,24 @@ function renderHandovers(){
       <td style="text-align:center"><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="deleteHandover(${h.id})">×</button></td>
     </tr>`;
   }).join('');
+
+  const mhc = el('mobileHandoverCards');
+  if(mhc){
+    mhc.innerHTML = list.map((h, idx) => `
+      <div class="m-card">
+        <div class="m-card-header">
+          <div class="m-card-stt">#${idx + 1}</div>
+          <span class="m-badge mb-badge-dept">📍 ${esc(h.department || 'Chưa gán')}</span>
+        </div>
+        <div class="m-card-payee" style="font-size:14px;color:#1e293b">${esc(h.item_name || 'Vật tư chưa đặt tên')}</div>
+        <div class="m-card-meta" style="margin-top:4px">
+          <div>Số lượng: <b style="font-size:14px;color:#0f766e">${esc(h.quantity_doc || '1')} ${esc(h.unit || 'Cái')}</b></div>
+          ${h.handover_date ? `<div>Ngày giao: <b>${esc(h.handover_date)}</b></div>` : ''}
+          ${h.note ? `<div>Ghi chú: <i>${esc(h.note)}</i></div>` : ''}
+        </div>
+      </div>
+    `).join('') || '<div class="m-empty">Không có vật tư nào trong danh sách</div>';
+  }
 }
 
 function addHandoverRow(){
@@ -2273,7 +2649,25 @@ function switchPage(page){
   if(page==='settings')renderSettings();
 }
 
-function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn btn-danger" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('')}
+function renderNcc(){let q=normName(el('nccSearch').value);let list=[...DB.beneficiaries].sort((a,b)=>Number(b.id)-Number(a.id)).filter(b=>!q||normName([b.name,b.short_name,b.address,b.account_no,b.bank].join(' ')).includes(q));el('nccCount').textContent=list.length+' / '+DB.beneficiaries.length+' NCC';el('nccBody').innerHTML=list.map((b,i)=>`<tr><td class="ncc-id">${esc(b.id)}</td>${['name','short_name','address','account_no','bank'].map((k,j)=>`<td><input class="ncc-cell" aria-label="${k}" list="${k==='bank'?'bankList':'__none__'}" value="${esc(b[k])}" onchange="editNcc(${b.id},'${k}',this.value)"></td>`).join('')}<td><button class="btn btn-danger" onclick="deleteNcc(${b.id})">Xóa</button></td></tr>`).join('');
+  const mnc = el('mobileNccCards');
+  if(mnc){
+    mnc.innerHTML = list.map(b => `
+      <div class="m-card">
+        <div class="m-card-header">
+          <div class="m-card-stt">NCC #${esc(b.id)}</div>
+          ${b.short_name ? `<span class="m-badge mb-badge-dept">${esc(b.short_name)}</span>` : ''}
+        </div>
+        <div class="m-card-payee" style="font-size:14px">${esc(b.name || 'Chưa có tên NCC')}</div>
+        <div class="m-card-meta" style="margin-top:4px">
+          <div>🏦 Ngân hàng: <b>${esc(b.bank || '---')}</b></div>
+          <div>Số tài khoản: <b>${esc(b.account_no || '---')}</b></div>
+          ${b.address ? `<div>📍 Địa chỉ: ${esc(b.address)}</div>` : ''}
+        </div>
+      </div>
+    `).join('') || '<div class="m-empty">Không có NCC nào</div>';
+  }
+}
 function addNcc(){let id=Math.max(0,...DB.beneficiaries.map(b=>Number(b.id)||0))+1;DB.beneficiaries.push({id,name:'',short_name:'',address:'',account_no:'',bank:''});save();el('nccSearch').value='';renderNcc();const first=el('nccBody').querySelector('.ncc-cell');if(first)first.focus()}
 function editNcc(id,k,v){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;v=String(v).trim();if((k==='name'||k==='short_name')&&v&&DB.beneficiaries.some(z=>Number(z.id)!==id&&(normName(z.name)===normName(v)||normName(z.short_name)===normName(v)))){alert('Tên này đã được một NCC khác sử dụng (tên đầy đủ hoặc tên viết tắt). Vui lòng nhập tên khác.');renderNcc();return}if(k==='short_name'&&v&&normName(b.name)===normName(v)){alert('Tên viết tắt trùng tên đầy đủ; hãy để trống hoặc chọn tên ngắn khác.');renderNcc();return}b[k]=v;save();refreshLists();}
 function deleteNcc(id){let b=DB.beneficiaries.find(z=>Number(z.id)===id);if(!b)return;if(DB.requests.some(x=>Number(x.beneficiary_id)===id)){alert('NCC đã được dùng trong đề nghị thanh toán. Không thể xóa để bảo toàn liên kết.');return}if(!confirm('Xóa NCC '+(b.name||id)+' khỏi danh mục?'))return;DB.beneficiaries=DB.beneficiaries.filter(z=>Number(z.id)!==id);save();refreshLists();renderNcc()}
@@ -2360,6 +2754,26 @@ document.addEventListener('keydown',e=>{
     if(!el('pasteModal').hidden)closePasteModal();
   }
 });
+
+function toggleMobileView(){
+  document.body.classList.toggle('force-desktop');
+  const isDesktop = document.body.classList.contains('force-desktop');
+  try{localStorage.setItem('pka_force_desktop', isDesktop ? '1' : '0')}catch{}
+  updateMobileToggleBtn();
+}
+function updateMobileToggleBtn(){
+  const btn = el('btnMobileToggle');
+  if(!btn) return;
+  const isDesktop = document.body.classList.contains('force-desktop');
+  btn.textContent = isDesktop ? '📱 Xem dạng thẻ' : '💻 Xem bảng desktop';
+}
+
+try{
+  if(localStorage.getItem('pka_force_desktop') === '1'){
+    document.body.classList.add('force-desktop');
+  }
+}catch{}
+updateMobileToggleBtn();
 
 // Check auth on startup
 if(authToken){
