@@ -31,6 +31,13 @@ table.grid th{position:sticky;top:0;z-index:2;background:#e7edf5;color:#283b55;f
 .th-resizer:hover,.th-resizer.resizing{background:var(--primary)}
 table.grid td{border-right:1px solid #e1e6ed;border-bottom:1px solid #e1e6ed;padding:0;min-height:46px;height:46px;background:#fff;vertical-align:middle}
 table.grid tr:nth-child(even) td{background:#f9fbfe}table.grid tr.chosen td{background:#e6f2ff}
+table.grid tr.row-done td{background:#e8f5e9}
+table.grid tr.row-done:nth-child(even) td{background:#def0df}
+table.grid tr.row-done:hover td{background:#d0ebd3}
+table.grid tr.row-done.chosen td{background:#bcebc5}
+table.grid tr.row-done .rownum{background:#c8e6c9!important;border-right:2px solid #81c784!important}
+table.grid tr.row-done .rownum button{color:#1b5e20}
+table.grid tr.row-done .doc-cell-btn{background:#d4edd9;border-color:#a3d9b0;color:#1b5e20}
 table.grid td input,table.grid td select{width:100%;height:44px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e}
 table.grid td input:focus,table.grid td select:focus{outline:2px solid #1f78c1;outline-offset:-2px;background:#fff}
 .cell-multiline{width:100%;height:44px;border:0;outline:0;padding:4px 7px;background:transparent;font-size:12px;color:#202d3e;resize:none;line-height:1.35;white-space:pre-wrap;word-break:break-word;overflow-y:auto;font-family:inherit;box-sizing:border-box;display:block}
@@ -249,6 +256,14 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+.m-card.m-card-done {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-left: 5px solid #16a34a;
+}
+.m-card.m-card-done .m-card-meta {
+  background: #e8f7ee;
 }
 .m-card-header {
   display: flex;
@@ -1766,7 +1781,9 @@ function renderTable(){
       </td>`;
     };
 
-    return `<tr class="${x.id===active?'chosen':''}">
+    const isDone = String(x.status || '').trim().toLowerCase() === 'done';
+    const rowClass = [x.id===active?'chosen':'', isDone?'row-done':''].filter(Boolean).join(' ');
+    return `<tr class="${rowClass}">
       <td><input type="checkbox" ${checked.has(x.id)?'checked':''} onchange="selectRow(${x.id},this.checked)"></td>
       <td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>
       ${field('payee_name',255)}
@@ -1805,8 +1822,9 @@ function renderTable(){
   const mc = el('mobileDataCards');
   if(mc){
     mc.innerHTML = list.map(x => {
+      const isDone = String(x.status || '').trim().toLowerCase() === 'done';
       let stClass = 'mb-badge-default';
-      if(x.status === 'Done') stClass = 'mb-badge-done';
+      if(isDone) stClass = 'mb-badge-done';
       else if(x.status && x.status.includes('Đã thanh toán')) stClass = 'mb-badge-paid';
       else if(x.status && x.status.includes('chờ')) stClass = 'mb-badge-wait';
       
@@ -1816,7 +1834,7 @@ function renderTable(){
       const lines = (x.lines || []).filter(l => l.description || l.amount);
 
       return `
-      <div class="m-card">
+      <div class="m-card ${isDone ? 'm-card-done' : ''}">
         <div class="m-card-header">
           <div class="m-card-stt">STT ${esc(x.legacy_stt ?? x.id)}</div>
           <span class="m-badge ${stClass}">${esc(x.status || 'Chưa có')}</span>
