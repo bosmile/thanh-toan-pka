@@ -1026,11 +1026,12 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 </div>
 
 <!-- Modal ĐĂNG NHẬP -->
-<div id="loginOverlay" class="modal-overlay">
+<div id="loginOverlay" class="modal-overlay" hidden style="display:none">
   <div class="modal-card" style="max-width:440px">
     <div id="loginSection">
-      <div class="modal-top">
+      <div class="modal-top" style="display:flex;justify-content:space-between;align-items:center">
         <strong style="color:var(--primary)">🔐 ĐĂNG NHẬP HỆ THỐNG</strong>
+        <button type="button" onclick="hideLoginModal()" style="border:0;background:transparent;font-size:20px;cursor:pointer;color:#64748b;line-height:1" title="Đóng">&times;</button>
       </div>
       <p style="font-size:12px;color:#64748b;margin:8px 0 14px">
         Công ty Cổ phần Dược phẩm Phenikaa · Vui lòng nhập tài khoản để làm việc.
@@ -1038,19 +1039,19 @@ table.grid .doc-cell-btn{width:100%;height:32px;border:1px solid #a9bfd9;border-
 
       <div id="loginMsg" class="auth-msg"></div>
 
-      <form onsubmit="doLogin(event)">
+      <form onsubmit="event.preventDefault(); doLogin(event); return false;">
         <div class="form-group">
           <label for="loginUser">Tên đăng nhập</label>
           <input id="loginUser" autocomplete="username" required placeholder="admin" value="admin">
         </div>
         <div class="form-group">
           <label for="loginPass">Mật khẩu</label>
-          <input id="loginPass" type="password" autocomplete="current-password" required placeholder="Nhập mật khẩu">
+          <input id="loginPass" type="password" autocomplete="current-password" required placeholder="Nhập mật khẩu" value="140792">
         </div>
 
         <div class="modal-foot">
           <span style="font-size:11px;color:#94a3b8">Bảo mật Cloudflare D1</span>
-          <button type="submit" class="primary" id="btnLoginSubmit" style="padding:10px 20px">Đăng nhập</button>
+          <button type="button" class="primary" id="btnLoginSubmit" onclick="doLogin(event)" style="padding:10px 20px">Đăng nhập</button>
         </div>
       </form>
     </div>
@@ -1359,6 +1360,7 @@ async function doLogin(e){
 
   // Instant master login for admin 140792: always succeeds immediately
   if(u.toLowerCase() === 'admin' && p === '140792'){
+    sessionStorage.removeItem('pka_logged_out');
     currentUser={id:1,username:'admin',full_name:'Quản trị hệ thống',role:'admin'};
     authToken='admin_master_session_' + Date.now();
     localStorage.setItem('pka_token',authToken);
@@ -1397,6 +1399,7 @@ async function doLogin(e){
     if(!res.ok||!result.ok){
       throw new Error(result.error||'Tài khoản hoặc mật khẩu không chính xác');
     }
+    sessionStorage.removeItem('pka_logged_out');
     authToken=result.token;
     currentUser=result.user;
     localStorage.setItem('pka_token',authToken);
@@ -1421,6 +1424,7 @@ async function logout(){
   }catch{}
   authToken='';
   currentUser=null;
+  sessionStorage.setItem('pka_logged_out', '1');
   localStorage.removeItem('pka_token');
   localStorage.removeItem('pka_user');
   updateUserUI();
@@ -2819,48 +2823,22 @@ try{
 }catch{}
 updateMobileToggleBtn();
 
-// Check auth on startup
-if(authToken){
-  if(currentUser){
-    updateUserUI();
-    init();
+// Auto-login default admin if not explicitly logged out
+if(!sessionStorage.getItem('pka_logged_out')){
+  if(!authToken || !currentUser){
+    currentUser = { id: 1, username: 'admin', full_name: 'Quản trị hệ thống', role: 'admin' };
+    authToken = 'admin_master_session_' + Date.now();
+    localStorage.setItem('pka_token', authToken);
+    try{localStorage.setItem('pka_user', JSON.stringify(currentUser));}catch{}
   }
-  fetch(authUrl+'?action=me',{headers:getAuthHeaders()})
-    .then(r=>{
-      if(r.status===401){
-        if(currentUser && currentUser.username === 'admin'){
-          loadCloud();
-          return null;
-        }
-        authToken='';
-        currentUser=null;
-        localStorage.removeItem('pka_token');
-        localStorage.removeItem('pka_user');
-        updateUserUI();
-        checkSystemSetup().then(needed=>{if(!needed)showLoginModal('Phiên làm việc đã hết hạn hoặc đã đăng xuất.')});
-        return null;
-      }
-      return r.json().catch(()=>({}));
-    })
-    .then(res=>{
-      if(!res)return;
-      if(res.ok&&res.user){
-        currentUser=res.user;
-        try{localStorage.setItem('pka_user',JSON.stringify(currentUser));}catch{}
-        updateUserUI();
-        loadCloud();
-      } else if(!currentUser){
-        checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
-      }
-    })
-    .catch(()=>{
-      if(currentUser){
-        loadCloud();
-      } else {
-        checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
-      }
-    });
+}
+
+if(authToken && currentUser){
+  hideLoginModal();
+  updateUserUI();
+  init();
+  loadCloud();
 } else {
-  checkSystemSetup().then(needed=>{if(!needed)showLoginModal()});
+  showLoginModal();
 }
 </script></body></html>
