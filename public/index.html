@@ -1621,7 +1621,7 @@ function groups(){if(!Array.isArray(DB.payment_groups))DB.payment_groups=[];retu
 function groupById(id){return groups().find(g=>String(g.id)===String(id))}
 function groupTotals(g){let rows=DB.requests.filter(x=>String(x.group_id||'')===String(g.id));let paid=0,pending=0;for(const x of rows){let v=Number(x.amount||0);if(!Number.isFinite(v))continue;if(PAID_STATUSES.includes(x.status))paid+=v;else pending+=v;}return {paid,pending,remaining:Number(g.total_amount||0)-paid,count:rows.length}}
 function moneyGroup(n){return Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2})}
-function refreshGroupOptions(){const cur=el('groupFilter')?.value||'';if(el('groupFilter')){el('groupFilter').innerHTML='<option value="">Tất cả nhóm</option>'+groups().map(g=>`<option value="${esc(g.id)}">${esc(g.code||g.name||g.id)}</option>`).join('');el('groupFilter').value=groups().some(g=>String(g.id)===cur)?cur:'';}if(el('groupList'))el('groupList').innerHTML=groups().map(g=>`<option value="${esc(g.code)}"></option>`).join('')}
+function refreshGroupOptions(){const cur=el('groupFilter')?.value||'';if(el('groupFilter')){el('groupFilter').innerHTML='<option value="">Tất cả nhóm</option>'+groups().map(g=>`<option value="${esc(g.id)}">${esc(g.code||g.name||g.id)}</option>`).join('');el('groupFilter').value=groups().some(g=>String(g.id)===cur)?cur:'';}if(el('groupList'))el('groupList').innerHTML=groups().filter(g=>g&&g.code).map(g=>{const lbl=[g.name,g.payee_name].filter(Boolean).join(' - ');return `<option value="${esc(g.code)}"${lbl?` label="${esc(lbl)}"`:''}></option>`;}).join('')}
 
 function setGroupForRequest(id,value){
  let x=request(id);if(!x)return;
@@ -2146,9 +2146,19 @@ function renderTable(){
   el('tbody').innerHTML=list.map(x=>{
     let multilineField=(k,w=150,list='',placeholder='')=>{
       let val = k==='payee_name' ? beneficiaryDisplay(x) : (x[k]||'');
+      if(list){
+        return `<td style="min-width:${w}px">
+          <input class="cell-editor" list="${list}" aria-label="${k}" placeholder="${esc(placeholder)}"
+            value="${esc(val)}"
+            title="${esc(val)}"
+            onclick="try{if(this.showPicker)this.showPicker()}catch(e){}"
+            onfocus="try{if(this.showPicker)this.showPicker()}catch(e){}"
+            onchange="setField(${x.id},'${k}',this.value)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+        </td>`;
+      }
       return `<td style="min-width:${w}px">
         <textarea class="cell-editor cell-multiline" rows="1" aria-label="${k}" placeholder="${esc(placeholder)}"
-          ${list ? `list="${list}"` : ''}
           oninput="autoExpandTextarea(this)"
           onchange="setField(${x.id},'${k}',this.value)"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}"
@@ -2171,7 +2181,13 @@ function renderTable(){
       <td class="rownum"><button onclick="activate(${x.id})">${esc(x.legacy_stt??'Mới '+x.id)}</button></td>
       ${multilineField('payee_name',180,'beneficiaryList','Nhập NCC')}
       <td style="min-width:160px">
-        <textarea class="cell-editor cell-multiline group-entry" rows="1" list="groupList" aria-label="Nhóm PO" title="Chọn nhóm hoặc gõ mã mới, nhấn Enter để tạo" placeholder="Chọn / gõ mã nhóm" oninput="autoExpandTextarea(this)" onchange="setGroupForRequest(${x.id},this.value)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}">${esc(groupById(x.group_id)?.code||'')}</textarea>
+        <input class="cell-editor group-entry" list="groupList" aria-label="Nhóm PO"
+          title="Chọn nhóm hoặc gõ mã mới, nhấn Enter để tạo" placeholder="Chọn / gõ mã nhóm"
+          value="${esc(groupById(x.group_id)?.code||'')}"
+          onclick="try{if(this.showPicker)this.showPicker()}catch(e){}"
+          onfocus="try{if(this.showPicker)this.showPicker()}catch(e){}"
+          onchange="setGroupForRequest(${x.id},this.value)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
       </td>
       ${multilineField('description',240,'','Nội dung chuyển tiền')}
       ${multilineField('item_name',180,'','Hàng hóa / Dịch vụ')}
@@ -2288,7 +2304,7 @@ function request(id){return DB.requests.find(x=>x.id===id)}
 function normName(v){return String(v||'').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi')}
 
 function refreshLists(){
-  el('beneficiaryList').innerHTML=DB.beneficiaries.flatMap(b=>[b.short_name?`<option value="${esc(b.short_name)}" label="${esc(b.name)}"></option>`:'',`<option value="${esc(b.name)}" label="${esc(b.short_name||'Tên đầy đủ')}"></option>`]).join('');
+  el('beneficiaryList').innerHTML=DB.beneficiaries.filter(b=>b&&(b.name||b.short_name)).flatMap(b=>[b.short_name?`<option value="${esc(b.short_name)}" label="${esc(b.name)}"></option>`:'',b.name?`<option value="${esc(b.name)}" label="${esc(b.short_name||'Tên đầy đủ')}"></option>`:'']).filter(Boolean).join('');
   let banks=[...new Set(DB.beneficiaries.map(b=>String(b.bank||'').trim()).concat(DB.requests.map(x=>String(x.bank||'').trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'vi'));
   el('bankList').innerHTML=banks.map(v=>`<option value="${esc(v)}"></option>`).join('');
 }
